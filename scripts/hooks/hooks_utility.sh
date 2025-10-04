@@ -10,10 +10,8 @@
 # log message  #################################################################
 
 # TODO
-# print standard-formatted log message  ----------------------------------------
-_print_log_message() {
-
-}
+# create standard-formatted log message  ---------------------------------------
+_generate_log_message() { }
 
 
 # hooks_utility_log_debug - print debug message  -------------------------------
@@ -27,7 +25,6 @@ hooks_utility_log_error() {}
 
 hooks_utility_log_critical() {}
 
-hooks_utility_log_critical() {}
 
 
 # search annotation markers  ###################################################
