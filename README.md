@@ -1,4 +1,4 @@
-# hooks-utility
+# hooks-utility README
 
 a collections of utility functions for **git hooks**
 
