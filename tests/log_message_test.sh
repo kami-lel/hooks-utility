@@ -1,6 +1,3 @@
 
-# BUG
-source "./../scripts/hooks/hooks_utility.sh"
-
-
-_hooks_utility_generate_log_message
+# TODO
+source "$(dirname "${BASH_SOURCE[0]}")/../scripts/hooks/hooks_utility.sh"

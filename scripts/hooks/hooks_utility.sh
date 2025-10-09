@@ -15,7 +15,7 @@
 # other args: if date/time, if coloring, stdout/stderr
 _hooks_utility_generate_log_message() { 
     local message = "$1"
-    echo "HI"  # HACK
+    echo $1
 }
 
 
