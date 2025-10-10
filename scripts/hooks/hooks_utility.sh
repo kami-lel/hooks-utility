@@ -29,6 +29,7 @@ ANSI_COLOR_RED='\e[0;31m'
 ANSI_RESET='\e[0m'
 
 # _print_log_message - create standardized log messages  -----------------------
+# TODO write comments
 # Arguments:
 #   message     message content (String)
 #   level        integer
@@ -79,6 +80,7 @@ _print_log_message() {
 }
 
 
+# TODO write comments for each
 # hooks_utility_debug - print debug message  -----------------------------------
 hooks_utility_debug() {
     _print_log_message "$1" 10
