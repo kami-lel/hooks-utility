@@ -35,49 +35,62 @@ ANSI_RESET='\e[0m'
 #   message     message content (String)
 #   level        integer
 _print_log_message() { 
+    local message="$1"
     local -i level="$2"
-    local ansi_reset="$ANSI_RESET"
+    local is_print_to_stderr=$((ENABLE_SPLIT_OUTPUT_STREAM && level >= 40))
 
-    # decide prefix & color based on level
+    # create prefix content with coloring  -------------------------------------
+    # decide prefix tag & color based on level
     local prefix ansi_color
     case "$level" in
     10)  # debug
-        prefix="$PREFIX_ERROR_DEBUG"
+        prefix_tag="$PREFIX_ERROR_DEBUG"
         ansi_color="$ANSI_COLOR_BLUE"
         ;;
     20)  # info
-        prefix="$PREFIX_ERROR_INFO"
+        prefix_tag="$PREFIX_ERROR_INFO"
         ansi_color="$ANSI_COLOR_YELLOW"
         ;;
     30)  # warning
-        prefix="$PREFIX_ERROR_WARNING"
+        prefix_tag="$PREFIX_ERROR_WARNING"
         ansi_color="$ANSI_COLOR_YELLOW"
         ;;
     40)  # error
-        prefix="$PREFIX_ERROR_ERROR"
+        prefix_tag="$PREFIX_ERROR_ERROR"
         ansi_color="$ANSI_COLOR_RED"
         ;;
     50)  # critical
-        prefix="$PREFIX_ERROR_CRITICAL"
+        prefix_tag="$PREFIX_ERROR_CRITICAL"
         ansi_color="$ANSI_COLOR_RED"
         ;;
     esac
 
-    # only use ansi function if set
-    if ! ((ENABLE_ANSI_COLOR)); then
-        ansi_color=""
-        ansi_reset=""
+    # decide if using coloring
+    # BUG fail to turn of coloring when print to file
+    local use_coloring="$ENABLE_ANSI_COLOR"
+    if ((is_print_to_stderr)); then
+        if ! [[ -t 1 ]]; then use_coloring=0; fi
+    else
+        if ! [[ -t 0 ]]; then use_coloring=0; fi
+    fi
+
+    # create prefix part w/ coloring
+    if (( use_coloring )); then
+        prefix="${ansi_color}${prefix_tag}${ANSI_RESET}"
+    else
+        prefix="${prefix_tag}"
     fi
 
     # TODO date/time
-    # BUG check if output terminal allowing color
 
     # actually print
-    local content="${ansi_color}${prefix}${ansi_reset}:\t$1"
-    if ((ENABLE_SPLIT_OUTPUT_STREAM && level >= 40)); then
-        printf "%b\n" "$content" >&2  # print to stderr
+    local content="${prefix}:\t$1"
+    if (( is_print_to_stderr )); then
+        # print to stderr
+        printf "%b\n" "$content" >&2
     else
-        printf "%b\n" "$content"  # print to stdout
+        # print to stdout
+        printf "%b\n" "$content"
     fi
 }
 
