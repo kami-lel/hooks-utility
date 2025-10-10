@@ -10,6 +10,7 @@
 
 
 # configurations
+# use ANSI color codes when print to terminal
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
 ENABLE_SPLIT_OUTPUT_STREAM=1
@@ -69,6 +70,7 @@ _print_log_message() {
     fi
 
     # TODO date/time
+    # BUG check if output terminal allowing color
 
     # actually print
     local content="${ansi_color}${prefix}${ansi_reset}:\t$1"
