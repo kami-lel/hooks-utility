@@ -28,12 +28,7 @@ ANSI_COLOR_YELLOW='\e[0;33m'
 ANSI_COLOR_RED='\e[0;31m'
 ANSI_RESET='\e[0m'
 
-# _print_log_message - create standardized log messages  -----------------------
-# TODO write comments
-# Arguments:
-#   message     message content (String)
-#   level        integer
-#   -d, -t
+# create standardized log messages  --------------------------------------------
 _print_log_message() { 
     # parse 2 starting position args
     local -i level="$1"
