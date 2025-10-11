@@ -17,7 +17,6 @@ ENABLE_SPLIT_OUTPUT_STREAM=1
 
 
 # log style message  ###########################################################
-
 PREFIX_ERROR_DEBUG="DEBUG"
 PREFIX_ERROR_INFO="INFO "
 PREFIX_ERROR_WARNING="WARN "
@@ -35,11 +34,10 @@ ANSI_RESET='\e[0m'
 #   message     message content (String)
 #   level        integer
 _print_log_message() { 
-    local message="$1"
-    local -i level="$2"
-    local is_print_to_stderr=$((ENABLE_SPLIT_OUTPUT_STREAM && level >= 40))
+    # TODO date/time
+    local -i level="$1"
+    local message="$2"
 
-    # create prefix content with coloring  -------------------------------------
     # decide prefix tag & color based on level
     local prefix ansi_color
     case "$level" in
@@ -65,32 +63,23 @@ _print_log_message() {
         ;;
     esac
 
-    # decide if using coloring
-    # BUG fail to turn of coloring when print to file
-    local use_coloring="$ENABLE_ANSI_COLOR"
-    if ((is_print_to_stderr)); then
-        if ! [[ -t 1 ]]; then use_coloring=0; fi
-    else
-        if ! [[ -t 0 ]]; then use_coloring=0; fi
-    fi
-
     # create prefix part w/ coloring
-    if (( use_coloring )); then
+    local target_fd=$((ENABLE_SPLIT_OUTPUT_STREAM && level >= 40 ?\
+            2 : 1))
+    if (( "${ENABLE_ANSI_COLOR}" )) && [[ -t "${target_fd}" ]]; then
         prefix="${ansi_color}${prefix_tag}${ANSI_RESET}"
     else
         prefix="${prefix_tag}"
     fi
 
-    # TODO date/time
-
     # actually print
-    local content="${prefix}:\t$1"
-    if (( is_print_to_stderr )); then
-        # print to stderr
-        printf "%b\n" "$content" >&2
-    else
+    local content="${prefix}:\t${message}"
+    if [[ ${target_fd} == 1 ]]; then
         # print to stdout
         printf "%b\n" "$content"
+    else
+        # print to stderr
+        printf "%b\n" "$content" >&2
     fi
 }
 
@@ -98,23 +87,23 @@ _print_log_message() {
 # TODO write comments for each
 # hooks_utility_debug - print debug message  -----------------------------------
 hooks_utility_debug() {
-    _print_log_message "$1" 10
+    _print_log_message 10 "$1"
 }
 
 hooks_utility_info() {
-    _print_log_message "$1" 20
+    _print_log_message 20 "$1"
 }
 
 hooks_utility_warning() {
-    _print_log_message "$1" 30
+    _print_log_message 30 "$1"
 }
 
 hooks_utility_error() {
-    _print_log_message "$1" 40
+    _print_log_message 40 "$1"
 }
 
 hooks_utility_critical() {
-    _print_log_message "$1" 50
+    _print_log_message 50 "$1"
 }
 
 
