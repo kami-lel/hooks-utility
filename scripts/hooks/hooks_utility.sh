@@ -33,10 +33,25 @@ ANSI_RESET='\e[0m'
 # Arguments:
 #   message     message content (String)
 #   level        integer
+#   -d, -t
 _print_log_message() { 
-    # TODO date/time
+    # parse 2 starting position args
     local -i level="$1"
     local message="$2"
+    shift 2
+
+    # BUG fail to parse -dt, ...
+    # parse options
+    local d_flag=0 t_flag=0
+    while getopts ":dt" opt; do
+        case "$opt" in
+            d) d_flag=1 ;;
+            t) t_flag=1 ;;
+            \?);;  # ignore invalid options
+        esac
+    done
+
+    echo "${d_flag} ${t_flag}"  # HACK
 
     # decide prefix tag & color based on level
     local prefix ansi_color
@@ -72,8 +87,21 @@ _print_log_message() {
         prefix="${prefix_tag}"
     fi
 
+    # create date/time part
+    local date_time=""
+
+    if ((d_flag || t_flag)); then
+        if ((d_flag)); then
+            date_format='%Y-%m-%d'
+        fi
+        if ((t_flag)); then
+            time_format='%H:%M:%S'
+        fi
+        date_time=$(date +"[${date_format:-} ${time_format:-}]")
+    fi
+
     # actually print
-    local content="${prefix}:\t${message}"
+    local content="${date_time}${prefix}:\t${message}"
     if [[ ${target_fd} == 1 ]]; then
         # print to stdout
         printf "%b\n" "$content"
@@ -83,27 +111,26 @@ _print_log_message() {
     fi
 }
 
-
 # TODO write comments for each
 # hooks_utility_debug - print debug message  -----------------------------------
 hooks_utility_debug() {
-    _print_log_message 10 "$1"
+    _print_log_message 10 "$@"
 }
 
 hooks_utility_info() {
-    _print_log_message 20 "$1"
+    _print_log_message 20 "$@"
 }
 
 hooks_utility_warning() {
-    _print_log_message 30 "$1"
+    _print_log_message 30 "$@"
 }
 
 hooks_utility_error() {
-    _print_log_message 40 "$1"
+    _print_log_message 40 "$@"
 }
 
 hooks_utility_critical() {
-    _print_log_message 50 "$1"
+    _print_log_message 50 "$@"
 }
 
 
