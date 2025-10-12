@@ -28,7 +28,10 @@ ANSI_COLOR_YELLOW='\e[0;33m'
 ANSI_COLOR_RED='\e[0;31m'
 ANSI_RESET='\e[0m'
 
-# create standardized log messages  --------------------------------------------
+DATE_FORMAT="%Y-%m-%d"
+TIME_FORMAT="%H:%M:%S"
+
+# create standardized log messages
 _print_log_message() { 
     # parse 2 starting position args
     local -i level="$1"
@@ -38,17 +41,18 @@ _print_log_message() {
     # BUG fail to parse -dt, ...
     # parse options
     local d_flag=0 t_flag=0
+
+    local OPTIND opt OPTARG
+    OPTIND=1
     while getopts ":dt" opt; do
         case "$opt" in
-            d) d_flag=1 ;;
-            t) t_flag=1 ;;
-            \?);;  # ignore invalid options
+            d) d_flag=1;;
+            t) t_flag=1;;
+            \?) ;;  # ignore invalid options
         esac
     done
 
-    echo "${d_flag} ${t_flag}"  # HACK
-
-    # decide prefix tag & color based on level
+    # decide prefix tag & color based on level  --------------------------------
     local prefix ansi_color
     case "$level" in
     10)  # debug
@@ -82,21 +86,24 @@ _print_log_message() {
         prefix="${prefix_tag}"
     fi
 
-    # create date/time part
-    local date_time=""
+    # create date/time part  ---------------------------------------------------
+    local timestamp=""
 
-    if ((d_flag || t_flag)); then
-        if ((d_flag)); then
-            date_format='%Y-%m-%d'
-        fi
-        if ((t_flag)); then
-            time_format='%H:%M:%S'
-        fi
-        date_time=$(date +"[${date_format:-} ${time_format:-}]")
+    local date_time_format=""
+    if ((d_flag && t_flag)); then
+        date_time_format="${DATE_FORMAT} ${TIME_FORMAT}"
+    elif ((d_flag)); then
+        date_time_format="${DATE_FORMAT}"
+    elif ((t_flag)); then
+        date_time_format="${TIME_FORMAT}"
     fi
 
-    # actually print
-    local content="${date_time}${prefix}:\t${message}"
+    if [[ -n ${date_time_format} ]]; then
+        printf -v timestamp "%([${date_time_format}] )T" -1
+    fi
+
+    # actually print  ----------------------------------------------------------
+    local content="${timestamp}${prefix}:\t${message}"
     if [[ ${target_fd} == 1 ]]; then
         # print to stdout
         printf "%b\n" "$content"
@@ -106,8 +113,9 @@ _print_log_message() {
     fi
 }
 
+# usable log style message functions  ==========================================
 # TODO write comments for each
-# hooks_utility_debug - print debug message  -----------------------------------
+# hooks_utility_debug - print debug message 
 hooks_utility_debug() {
     _print_log_message 10 "$@"
 }

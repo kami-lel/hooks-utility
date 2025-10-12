@@ -4,7 +4,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/../scripts/hooks/hooks_utility.sh"
 
 echo \
-"tests for functions: Log Style Message  ######################################\
+"tests: log style message, basic tests  #######################################\
 ##"
 
 echo \
@@ -16,9 +16,11 @@ hooks_utility_warning "Warning!"
 hooks_utility_error "Some Error Message"
 hooks_utility_critical "Giving Critical Error Message"
 
+
 echo \
 "message with multiple lines  -------------------------------------------------\
 --"
+
 hooks_utility_info "This informational message is intentionally long and spans \
 multiple lines to test wrapping and handling by the logging function.
 It includes several paragraphs and list-like lines to increase length and \
@@ -43,30 +45,3 @@ Caused by: Unexpected token '}' in line 45 of config.yaml
           password: pass}word
 Suggestion: check configuration file for syntax errors and escape
 special characters."
-
-
-echo \
-"date & time functions  =======================================================\
-=="
-echo \
-"only date  -------------------------------------------------------------------\
---"
-
-hooks_utility_debug "Some Debugging Message Content" -d
-hooks_utility_info "Content of Informational Message" -d
-hooks_utility_warning "Warning!" -d
-
-echo \
-"only time  -------------------------------------------------------------------\
---"
-
-hooks_utility_error "Some Error Message" -t
-hooks_utility_critical "Giving Critical Error Message" -t
-
-echo \
-"date & time  -----------------------------------------------------------------\
---"
-
-hooks_utility_debug "Some Debugging Message Content" -dt
-hooks_utility_info "Content of Informational Message" -td
-hooks_utility_warning "Warning!" -d -t
