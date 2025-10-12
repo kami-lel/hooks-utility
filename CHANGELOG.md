@@ -19,7 +19,7 @@
 ### Added
 ### Changed
 
-- write certain`README.md`
+- write basic instructions in `README.md`
 
 ### Deprecated
 ### Removed
