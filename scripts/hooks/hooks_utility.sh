@@ -178,5 +178,5 @@ hooks_utility_critical() {
 
 
 # merging annotation markers check  ############################################
-# Todo
+# TODO
 # hooks_utility_merging_annotation_markers_check() {}
