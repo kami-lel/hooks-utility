@@ -34,6 +34,26 @@
 
 
 
+## [1.0.0] - 2025-10-12
+
+### Added
+
+- log style message
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 [unreleased]: https://github.com/kami-lel/kami-log-py/compare/v1.0.0...dev
 [1.0.0]: https://github.com/kami-lel/kami-log-py/releases/tag/v1.0.0
 
