@@ -2,16 +2,41 @@
 
 a collections of utility functions for **git hooks**
 
-<!-- Todo installation instructions -->
 
-<!-- ## Installation
 
-enable git hooks:
+
+
+
+
+
+
+
+
+
+
+## Installation
+
+Use `hooks_utility.sh` by place it alongside git hooks scripts.
+
+Typical folder structure:
+
+```
+.
+└── scripts
+    └── hooks
+        ├── hooks_utility.sh
+        ├── pre-merge-commit
+        └── ...
+```
+
+And in the git hook scripts (e.g. `pre-merge-commit` above,)
+**source** the `hooks_utility.sh`:
 
 ```bash
-git config core.hooksPath scripts/hooks
+source "$(dirname "${BASH_SOURCE[0]}")/hooks_utility.sh"
 ```
--->
+
+
 
 
 
