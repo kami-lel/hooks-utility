@@ -5,7 +5,7 @@
 # a collections of utility functions for git hooks
 #
 # author:  kamiLeL
-# version: v1.0.0
+# version: v1.0.1-alpha
 ################################################################################
 
 
@@ -178,5 +178,5 @@ hooks_utility_critical() {
 
 
 # merging annotation markers check  ############################################
-# todo
+# Todo
 # hooks_utility_merging_annotation_markers_check() {}

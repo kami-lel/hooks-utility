@@ -2,7 +2,7 @@
 
 a collections of utility functions for **git hooks**
 
-<!-- todo installation instructions -->
+<!-- Todo installation instructions -->
 
 <!-- ## Installation
 
@@ -36,13 +36,11 @@ git config core.hooksPath scripts/hooks
 
 ### merging annotation marker (AM) check
 
-<!-- 
-
 Annotation markers:
 
 - `TODO`s, `BUG`s, `FIXME`s, `HACK`s:
 - `Todo`s, ...:
-- `todo`s, ...: -->
+- `todo`s, ...:
 
 ```mermaid
 flowchart TD        
