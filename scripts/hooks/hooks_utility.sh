@@ -8,6 +8,8 @@
 # version: v1.0.1-alpha
 ################################################################################
 
+# todo use a standard doc comment format
+
 
 # configurations
 # use ANSI color codes when print to terminal
@@ -120,7 +122,7 @@ _print_log_message() {
 # 
 # usage: hooks_utility_debug MESSAGE [-d] [-t]
 #
-# print a MESSAGE prefixed with "DEBUG" to stdout
+# print a MESSAGE prefixed with "DEBUG"
 # 
 # positional arguments:
 #   MESSAGE     content of message to be printed
@@ -128,6 +130,10 @@ _print_log_message() {
 # options:
 #   -d          prefix message with current date
 #   -t          prefix message with current time
+# 
+# output:
+#   print the given MESSAGE with log style formatting to stdout,
+#   utilize ANSI coloring if stdout is a console
 hooks_utility_debug() {
     _print_log_message 10 "$@"
 }
@@ -138,7 +144,11 @@ hooks_utility_debug() {
 #
 # print a MESSAGE prefixed with "INFO" to stdout
 # 
-# positional arguments & options: same as hooks_utility_debug()
+# positional arguments & options:
+#   same as hooks_utility_debug()
+#
+# outputs:
+#   same as hooks_utility_debug()
 hooks_utility_info() {
     _print_log_message 20 "$@"
 }
@@ -149,7 +159,11 @@ hooks_utility_info() {
 #
 # print a MESSAGE prefixed with "INFO" to stdout
 # 
-# positional arguments & options: same as hooks_utility_debug()
+# positional arguments & options:
+#   same as hooks_utility_debug()
+#
+# outputs:
+#   same as hooks_utility_debug()
 hooks_utility_warning() {
     _print_log_message 30 "$@"
 }
@@ -159,8 +173,14 @@ hooks_utility_warning() {
 # usage: hooks_utility_error MESSAGE [-d] [-t]
 #
 # print a MESSAGE prefixed with "ERROR" to stderr/stdout
+#
+# positional arguments & options:
+#   same as hooks_utility_debug()
 # 
-# positional arguments & options: same as hooks_utility_debug()
+# output:
+#   print the given MESSAGE with log style formatting to stdout/stderr
+#   depending on configuration ENABLE_SPLIT_OUTPUT_STREAM;
+#   utilize ANSI coloring if stdout is a console
 hooks_utility_error() {
     _print_log_message 40 "$@"
 }
@@ -170,8 +190,12 @@ hooks_utility_error() {
 # usage: hooks_utility_critical MESSAGE [-d] [-t]
 #
 # print a MESSAGE prefixed with "CRIT" to stderr/stdout
-# 
-# positional arguments & options: same as hooks_utility_debug()
+#
+# positional arguments & options:
+#   same as hooks_utility_debug()
+#
+# outputs:
+#   same as hooks_utility_error()
 hooks_utility_critical() {
     _print_log_message 50 "$@"
 }

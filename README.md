@@ -11,6 +11,8 @@ enable git hooks:
 ```bash
 git config core.hooksPath scripts/hooks
 ```
+-->
+
 
 
 
@@ -25,10 +27,28 @@ git config core.hooksPath scripts/hooks
 
 ## Functionality
 
-### log message
+### log style message
 
--->
+Print log style message (i.e. prefixed with `DEBUG`, `ERROR`, ...)
+to `stdout` or `stderr`, using these 5 functions, e.g.:
 
+```bash
+hooks_utility_debug "Debug Message Content"
+hooks_utility_info "Informational Message Content"
+hooks_utility_warning "Warning Message Content" -dt
+hooks_utility_error "Error Message Content" -d
+hooks_utility_critical "Critical Error Message Content" -t
+```
+
+Outputs:
+
+```
+DEBUG:  Debug Message Content
+INFO :  Informational Message Content
+[2025-10-12 16:23:16] WARN :    Warning Message Content
+[2025-10-12] ERROR:     Error Message Content
+[16:23:16] CRIT :       Critical Error Message Content
+```
 
 
 
