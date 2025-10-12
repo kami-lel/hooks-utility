@@ -178,5 +178,35 @@ hooks_utility_critical() {
 
 
 # merging annotation markers check  ############################################
-# TODO
-# hooks_utility_merging_annotation_markers_check() {}
+hooks_utility_merging_annotation_markers_check() {
+    # TODO
+    local merge_type=""
+
+    if [[ ${merge_type} == 'feature2dev' ]]; then
+        _test_feature_merge_dev
+    elif [[ ${merge_type} == 'dev2main' ]]; then
+        _test_dev_merge_main
+    fi
+
+}
+
+# AM checks when merging from feature branch to dev branch
+_test_feature_merge_dev() {
+    _assert_no_primary_am
+}
+
+# AM checks when merging from dev branch to main branch
+_test_dev_merge_main() {
+    _assert_no_primary_am
+    _assert_no_secondary_am
+}
+
+# assert no TODO,BUG,FIXME,HACK occurs
+_assert_no_primary_am() {
+    :  # TODO
+}
+
+# assert no Todo,Bug,Fixme,Hack occurs
+_assert_no_secondary_am() {
+    :  # TODO
+}
