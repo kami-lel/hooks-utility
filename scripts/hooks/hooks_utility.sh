@@ -38,7 +38,6 @@ _print_log_message() {
     local message="$2"
     shift 2
 
-    # BUG fail to parse -dt, ...
     # parse options
     local d_flag=0 t_flag=0
 
@@ -114,7 +113,7 @@ _print_log_message() {
 }
 
 # usable log style message functions  ==========================================
-# TODO write comments for each
+# Todo write doc comments
 # hooks_utility_debug - print debug message 
 hooks_utility_debug() {
     _print_log_message 10 "$@"
