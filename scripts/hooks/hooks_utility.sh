@@ -17,6 +17,7 @@ ENABLE_SPLIT_OUTPUT_STREAM=1
 
 
 # log style message  ###########################################################
+
 PREFIX_ERROR_DEBUG="DEBUG"
 PREFIX_ERROR_INFO="INFO "
 PREFIX_ERROR_WARNING="WARN "
@@ -112,33 +113,70 @@ _print_log_message() {
     fi
 }
 
-# usable log style message functions  ==========================================
-# Todo write doc comments
+
+# API log-style-message functions  =============================================
+
 # hooks_utility_debug - print debug message 
+# 
+# usage: hooks_utility_debug MESSAGE [-d] [-t]
+#
+# print a MESSAGE prefixed with "DEBUG" to stdout
+# 
+# positional arguments:
+#   MESSAGE     content of message to be printed
+#
+# options:
+#   -d          prefix message with current date
+#   -t          prefix message with current time
 hooks_utility_debug() {
     _print_log_message 10 "$@"
 }
 
+# hooks_utility_info - print informational message 
+# 
+# usage: hooks_utility_info MESSAGE [-d] [-t]
+#
+# print a MESSAGE prefixed with "INFO" to stdout
+# 
+# positional arguments & options: same as hooks_utility_debug()
 hooks_utility_info() {
     _print_log_message 20 "$@"
 }
 
+# hooks_utility_warning - print warning message 
+# 
+# usage: hooks_utility_warning MESSAGE [-d] [-t]
+#
+# print a MESSAGE prefixed with "INFO" to stdout
+# 
+# positional arguments & options: same as hooks_utility_debug()
 hooks_utility_warning() {
     _print_log_message 30 "$@"
 }
 
+# hooks_utility_error - print error message 
+# 
+# usage: hooks_utility_error MESSAGE [-d] [-t]
+#
+# print a MESSAGE prefixed with "ERROR" to stderr/stdout
+# 
+# positional arguments & options: same as hooks_utility_debug()
 hooks_utility_error() {
     _print_log_message 40 "$@"
 }
 
+# hooks_utility_critical - print critical error message 
+# 
+# usage: hooks_utility_critical MESSAGE [-d] [-t]
+#
+# print a MESSAGE prefixed with "CRIT" to stderr/stdout
+# 
+# positional arguments & options: same as hooks_utility_debug()
 hooks_utility_critical() {
     _print_log_message 50 "$@"
 }
 
 
-
-
-# search annotation markers  ###################################################
-
+# merging annotation markers check  ############################################
 # todo
-# hooks_utility_pre_merge_test_annotation_markers() {}
+# hooks_utility_merging_annotation_markers_check() {}

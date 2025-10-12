@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Todo provide a template that use todo check
+# todo provide a template that use merging AM check
 
 set -euo pipefail
 

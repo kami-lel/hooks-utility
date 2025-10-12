@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-# Todo provide a template that use todo check
-
-set -euo pipefail
-
-# ...
-
-exit 0
