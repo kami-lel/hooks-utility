@@ -221,6 +221,8 @@ hooks_utility_critical() {
 
 
 # merging annotation markers check  ############################################
+# hooks_utility_merging_annotation_markers_check()
+# TODO doc comment
 hooks_utility_merging_annotation_markers_check() {
     # TODO
     local merge_type=""
