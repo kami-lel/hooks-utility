@@ -18,6 +18,9 @@
 
 ### Added
 ### Changed
+
+- write basic instructions in `README.md`
+
 ### Deprecated
 ### Removed
 ### Fixed

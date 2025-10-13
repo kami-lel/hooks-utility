@@ -23,6 +23,7 @@ PREFIX_ERROR_INFO="INFO "
 PREFIX_ERROR_WARNING="WARN "
 PREFIX_ERROR_ERROR="ERROR"
 PREFIX_ERROR_CRITICAL="CRIT "
+# all of length 5
 
 ANSI_COLOR_BLUE='\e[0;34m'
 ANSI_COLOR_YELLOW='\e[0;33m'
@@ -34,23 +35,24 @@ TIME_FORMAT="%H:%M:%S"
 
 # create standardized log messages
 _print_log_message() { 
-    # parse 2 starting position args
-    local -i level="$1"
-    local message="$2"
-    shift 2
+    # parsing args & options
+    local -i level="$1"; shift
 
-    # parse options
-    local d_flag=0 t_flag=0
-
-    local OPTIND opt OPTARG
+    # parse options first
+    local d_flag t_flag
     OPTIND=1
     while getopts ":dt" opt; do
         case "$opt" in
-            d) d_flag=1;;
-            t) t_flag=1;;
+            d) d_flag=1 ;;
+            t) t_flag=1 ;;
             \?) ;;  # ignore invalid options
         esac
     done
+    shift $((OPTIND - 1))
+
+    # parse args
+    local message="$1"
+    local source_arg="$2"
 
     # decide prefix tag & color based on level  --------------------------------
     local prefix ansi_color
@@ -91,19 +93,25 @@ _print_log_message() {
 
     local date_time_format=""
     if ((d_flag && t_flag)); then
-        date_time_format="${DATE_FORMAT} ${TIME_FORMAT}"
+        date_time_format="[${DATE_FORMAT} ${TIME_FORMAT}]"
     elif ((d_flag)); then
-        date_time_format="${DATE_FORMAT}"
+        date_time_format="[${DATE_FORMAT}]"
     elif ((t_flag)); then
-        date_time_format="${TIME_FORMAT}"
+        date_time_format="[${TIME_FORMAT}]"
     fi
 
     if [[ -n ${date_time_format} ]]; then
-        printf -v timestamp "%([${date_time_format}] )T" -1
+        printf -v timestamp "%(${date_time_format})T" -1
+    fi
+
+    # create source part  ------------------------------------------------------
+    local source=""
+    if [[ -n ${source_arg} ]]; then
+        source="(${source_arg})"
     fi
 
     # actually print  ----------------------------------------------------------
-    local content="${timestamp}${prefix}:\t${message}"
+    local content="${timestamp}${prefix}${source}:\t${message}"
     if [[ ${target_fd} == 1 ]]; then
         # print to stdout
         printf "%b\n" "$content"
@@ -114,66 +122,101 @@ _print_log_message() {
 }
 
 
-# API log-style-message functions  =============================================
+# API log style message functions  =============================================
 
-# hooks_utility_debug - print debug message 
-# 
-# usage: hooks_utility_debug MESSAGE [-d] [-t]
+
+# hooks_utility_debug()
 #
-# print a MESSAGE prefixed with "DEBUG" to stdout
+# print a MESSAGE in log style message, prefixed with "DEBUG"
 # 
-# positional arguments:
-#   MESSAGE     content of message to be printed
+# USAGE:
+#   hooks_utility_debug [-d] [-t] MESSAGE [SOURCE]
 #
-# options:
-#   -d          prefix message with current date
-#   -t          prefix message with current time
+# ARGUMENT:
+#   MESSAGE     main message content to be printed
+#   SOURCE      indicate reason/source of the message, as part of the message
+#
+# OPTION:
+#   -d      contains current date in the printed message
+#   -t      contains current time in the printed message
+# 
+# OUTPUT:
+#   print the given MESSAGE, in log style formatting, to stdout;
+#   utilizing ANSI coloring if stdout is a console
+#
+# RETURN:
+#   0       success
+#
+# EXAMPLE:
+#   hooks_utility_debug "some debug information"
+#   hooks_utility_debug -dt "some debug information" "Main Component"
 hooks_utility_debug() {
     _print_log_message 10 "$@"
+    return "$?"
 }
 
-# hooks_utility_info - print informational message 
-# 
-# usage: hooks_utility_info MESSAGE [-d] [-t]
+
+# hooks_utility_info()
 #
-# print a MESSAGE prefixed with "INFO" to stdout
+# print a MESSAGE in log style message, prefixed with "INFO"
 # 
-# positional arguments & options: same as hooks_utility_debug()
+# USAGE:
+#   hooks_utility_info [-d] [-t] MESSAGE [SOURCE]
+#
+# other aspects are same as hooks_utility_debug()
 hooks_utility_info() {
     _print_log_message 20 "$@"
+    return "$?"
 }
 
-# hooks_utility_warning - print warning message 
-# 
-# usage: hooks_utility_warning MESSAGE [-d] [-t]
+
+# hooks_utility_warning()
 #
-# print a MESSAGE prefixed with "INFO" to stdout
+# print a MESSAGE in log style message, prefixed with "WARN"
 # 
-# positional arguments & options: same as hooks_utility_debug()
+# USAGE:
+#   hooks_utility_warning [-d] [-t] MESSAGE [SOURCE]
+#
+# other aspects are same as hooks_utility_debug()
 hooks_utility_warning() {
     _print_log_message 30 "$@"
+    return "$?"
 }
 
-# hooks_utility_error - print error message 
-# 
-# usage: hooks_utility_error MESSAGE [-d] [-t]
+
+# hooks_utility_error()
 #
-# print a MESSAGE prefixed with "ERROR" to stderr/stdout
+# print a MESSAGE in log style message, prefixed with "ERROR"
 # 
-# positional arguments & options: same as hooks_utility_debug()
+# USAGE:
+#   hooks_utility_error [-d] [-t] MESSAGE [SOURCE]
+#
+# OUTPUT:
+#   print the given MESSAGE, in log style formatting,
+#   to stdout/stderr depending on configuration ENABLE_SPLIT_OUTPUT_STREAM,
+#   utilizing ANSI coloring if stdout/stderr is a console
+#
+# other aspects are same as hooks_utility_debug()
 hooks_utility_error() {
     _print_log_message 40 "$@"
+    return "$?"
 }
 
-# hooks_utility_critical - print critical error message 
-# 
-# usage: hooks_utility_critical MESSAGE [-d] [-t]
+
+# hooks_utility_critical()
 #
-# print a MESSAGE prefixed with "CRIT" to stderr/stdout
+# print a MESSAGE in log style message, prefixed with "CRIT"
 # 
-# positional arguments & options: same as hooks_utility_debug()
+# USAGE:
+#   hooks_utility_critical [-d] [-t] MESSAGE [SOURCE]
+#
+# OUTPUT:
+#   same as hooks_utility_error()
+#
+# other aspects are same as hooks_utility_debug()
 hooks_utility_critical() {
     _print_log_message 50 "$@"
+    return "$?"
 }
 
 
