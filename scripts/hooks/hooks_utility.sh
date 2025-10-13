@@ -8,8 +8,6 @@
 # version: v1.0.1-alpha
 ################################################################################
 
-# TODO add new arg for names
-
 
 # configurations
 # use ANSI color codes when print to terminal
@@ -54,7 +52,7 @@ _print_log_message() {
 
     # parse args
     local message="$1"
-    local source="$2"
+    local source_arg="$2"
 
     # decide prefix tag & color based on level  --------------------------------
     local prefix ansi_color
@@ -95,19 +93,25 @@ _print_log_message() {
 
     local date_time_format=""
     if ((d_flag && t_flag)); then
-        date_time_format="[${DATE_FORMAT} ${TIME_FORMAT}] "
+        date_time_format="[${DATE_FORMAT} ${TIME_FORMAT}]"
     elif ((d_flag)); then
-        date_time_format="[${DATE_FORMAT}] "
+        date_time_format="[${DATE_FORMAT}]"
     elif ((t_flag)); then
-        date_time_format="[${TIME_FORMAT}] "
+        date_time_format="[${TIME_FORMAT}]"
     fi
 
     if [[ -n ${date_time_format} ]]; then
         printf -v timestamp "%(${date_time_format})T" -1
     fi
 
+    # create source part  ------------------------------------------------------
+    local source=""
+    if [[ -n ${source_arg} ]]; then
+        source="(${source_arg})"
+    fi
+
     # actually print  ----------------------------------------------------------
-    local content="${timestamp}${prefix}:\t${message}"
+    local content="${timestamp}${prefix}${source}:\t${message}"
     if [[ ${target_fd} == 1 ]]; then
         # print to stdout
         printf "%b\n" "$content"
