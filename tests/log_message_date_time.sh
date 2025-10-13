@@ -13,14 +13,14 @@ echo \
 
 hooks_utility_debug "Some Debugging Message Content" -d
 hooks_utility_info "Content of Informational Message" -d
-hooks_utility_warning "Warning!" -d
+hooks_utility_warning -d "Warning!"
 
 echo \
 "only time  -------------------------------------------------------------------\
 --"
 
 hooks_utility_error "Some Error Message" -t
-hooks_utility_critical "Giving Critical Error Message" -t
+hooks_utility_critical -t "Giving Critical Error Message"
 
 echo \
 "date & time  -----------------------------------------------------------------\
@@ -29,3 +29,4 @@ echo \
 hooks_utility_debug "Some Debugging Message Content" -dt
 hooks_utility_info "Content of Informational Message" -td
 hooks_utility_warning "Warning!" -d -t
+hooks_utility_error -t -d "Some Error Message"
