@@ -8,7 +8,6 @@
 # version: v1.0.1-alpha
 ################################################################################
 
-# TODO use a standard doc comment format
 # TODO add new arg for names
 
 
@@ -26,6 +25,7 @@ PREFIX_ERROR_INFO="INFO "
 PREFIX_ERROR_WARNING="WARN "
 PREFIX_ERROR_ERROR="ERROR"
 PREFIX_ERROR_CRITICAL="CRIT "
+# all of length 5
 
 ANSI_COLOR_BLUE='\e[0;34m'
 ANSI_COLOR_YELLOW='\e[0;33m'
@@ -117,88 +117,101 @@ _print_log_message() {
 }
 
 
-# API log-style-message functions  =============================================
+# API log style message functions  =============================================
 
-# hooks_utility_debug - print debug message 
-# 
-# usage: hooks_utility_debug MESSAGE [-d] [-t]
+
+# hooks_utility_debug()
 #
-# print a MESSAGE prefixed with "DEBUG"
+# print a MESSAGE in log style message, prefixed with "DEBUG"
 # 
-# positional arguments:
-#   MESSAGE     content of message to be printed
+# USAGE:
+#   hooks_utility_debug MESSAGE [SOURCE] [-d] [-t]
 #
-# options:
-#   -d          prefix message with current date
-#   -t          prefix message with current time
+# ARGUMENT:
+#   MESSAGE     main message content to be printed
+#   SOURCE      indicate reason/source of the message, as part of the message
+#
+# OPTION:
+#   -d      contains current date in the printed message
+#   -t      contains current time in the printed message
 # 
-# output:
-#   print the given MESSAGE with log style formatting to stdout,
-#   utilize ANSI coloring if stdout is a console
+# OUTPUT:
+#   print the given MESSAGE, in log style formatting, to stdout;
+#   utilizing ANSI coloring if stdout is a console
+#
+# RETURN:
+#   0       success
+#
+# EXAMPLE:
+#   hooks_utility_debug "some debug information"
+#   hooks_utility_debug -dt "some debug information" "Main Component"
 hooks_utility_debug() {
     _print_log_message 10 "$@"
+    return "$?"
 }
 
-# hooks_utility_info - print informational message 
-# 
-# usage: hooks_utility_info MESSAGE [-d] [-t]
+
+# hooks_utility_info()
 #
-# print a MESSAGE prefixed with "INFO" to stdout
+# print a MESSAGE in log style message, prefixed with "INFO"
 # 
-# positional arguments & options:
-#   same as hooks_utility_debug()
+# USAGE:
+#   hooks_utility_info MESSAGE [SOURCE] [-d] [-t]
 #
-# outputs:
-#   same as hooks_utility_debug()
+# other aspects are same as hooks_utility_debug()
 hooks_utility_info() {
     _print_log_message 20 "$@"
+    return "$?"
 }
 
-# hooks_utility_warning - print warning message 
-# 
-# usage: hooks_utility_warning MESSAGE [-d] [-t]
+
+# hooks_utility_warning()
 #
-# print a MESSAGE prefixed with "INFO" to stdout
+# print a MESSAGE in log style message, prefixed with "WARN"
 # 
-# positional arguments & options:
-#   same as hooks_utility_debug()
+# USAGE:
+#   hooks_utility_warning MESSAGE [SOURCE] [-d] [-t]
 #
-# outputs:
-#   same as hooks_utility_debug()
+# other aspects are same as hooks_utility_debug()
 hooks_utility_warning() {
     _print_log_message 30 "$@"
+    return "$?"
 }
 
-# hooks_utility_error - print error message 
-# 
-# usage: hooks_utility_error MESSAGE [-d] [-t]
+
+# hooks_utility_error()
 #
-# print a MESSAGE prefixed with "ERROR" to stderr/stdout
-#
-# positional arguments & options:
-#   same as hooks_utility_debug()
+# print a MESSAGE in log style message, prefixed with "ERROR"
 # 
-# output:
-#   print the given MESSAGE with log style formatting to stdout/stderr
-#   depending on configuration ENABLE_SPLIT_OUTPUT_STREAM;
-#   utilize ANSI coloring if stdout is a console
+# USAGE:
+#   hooks_utility_error MESSAGE [SOURCE] [-d] [-t]
+#
+# OUTPUT:
+#   print the given MESSAGE, in log style formatting,
+#   to stdout/stderr depending on configuration ENABLE_SPLIT_OUTPUT_STREAM,
+#   utilizing ANSI coloring if stdout/stderr is a console
+#
+# other aspects are same as hooks_utility_debug()
 hooks_utility_error() {
     _print_log_message 40 "$@"
+    return "$?"
 }
 
-# hooks_utility_critical - print critical error message 
+
+# hooks_utility_critical()
+#
+# print a MESSAGE in log style message, prefixed with "CRIT"
 # 
-# usage: hooks_utility_critical MESSAGE [-d] [-t]
+# USAGE:
+#   hooks_utility_critical MESSAGE [SOURCE] [-d] [-t]
 #
-# print a MESSAGE prefixed with "CRIT" to stderr/stdout
-#
-# positional arguments & options:
-#   same as hooks_utility_debug()
-#
-# outputs:
+# OUTPUT:
 #   same as hooks_utility_error()
+#
+# other aspects are same as hooks_utility_debug()
 hooks_utility_critical() {
     _print_log_message 50 "$@"
+    return "$?"
 }
 
 
