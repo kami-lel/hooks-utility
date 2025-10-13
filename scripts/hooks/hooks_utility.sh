@@ -34,7 +34,7 @@ DATE_FORMAT="%Y-%m-%d"
 TIME_FORMAT="%H:%M:%S"
 
 # create standardized log messages
-_print_log_message() { 
+_print_log_message() {
     # parsing args & options
     local -i level="$1"; shift
 
@@ -128,7 +128,7 @@ _print_log_message() {
 # hooks_utility_debug()
 #
 # print a MESSAGE in log style message, prefixed with "DEBUG"
-# 
+#
 # USAGE:
 #   hooks_utility_debug [-d] [-t] MESSAGE [SOURCE]
 #
@@ -139,7 +139,7 @@ _print_log_message() {
 # OPTION:
 #   -d      contains current date in the printed message
 #   -t      contains current time in the printed message
-# 
+#
 # OUTPUT:
 #   print the given MESSAGE, in log style formatting, to stdout;
 #   utilizing ANSI coloring if stdout is a console
@@ -159,7 +159,7 @@ hooks_utility_debug() {
 # hooks_utility_info()
 #
 # print a MESSAGE in log style message, prefixed with "INFO"
-# 
+#
 # USAGE:
 #   hooks_utility_info [-d] [-t] MESSAGE [SOURCE]
 #
@@ -173,7 +173,7 @@ hooks_utility_info() {
 # hooks_utility_warning()
 #
 # print a MESSAGE in log style message, prefixed with "WARN"
-# 
+#
 # USAGE:
 #   hooks_utility_warning [-d] [-t] MESSAGE [SOURCE]
 #
@@ -187,7 +187,7 @@ hooks_utility_warning() {
 # hooks_utility_error()
 #
 # print a MESSAGE in log style message, prefixed with "ERROR"
-# 
+#
 # USAGE:
 #   hooks_utility_error [-d] [-t] MESSAGE [SOURCE]
 #
@@ -206,7 +206,7 @@ hooks_utility_error() {
 # hooks_utility_critical()
 #
 # print a MESSAGE in log style message, prefixed with "CRIT"
-# 
+#
 # USAGE:
 #   hooks_utility_critical [-d] [-t] MESSAGE [SOURCE]
 #
