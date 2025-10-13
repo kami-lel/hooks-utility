@@ -8,7 +8,8 @@
 # version: v1.0.1-alpha
 ################################################################################
 
-# todo use a standard doc comment format
+# TODO use a standard doc comment format
+# TODO add new arg for names
 
 
 # configurations
@@ -93,15 +94,15 @@ _print_log_message() {
 
     local date_time_format=""
     if ((d_flag && t_flag)); then
-        date_time_format="${DATE_FORMAT} ${TIME_FORMAT}"
+        date_time_format="[${DATE_FORMAT} ${TIME_FORMAT}] "
     elif ((d_flag)); then
-        date_time_format="${DATE_FORMAT}"
+        date_time_format="[${DATE_FORMAT}] "
     elif ((t_flag)); then
-        date_time_format="${TIME_FORMAT}"
+        date_time_format="[${TIME_FORMAT}] "
     fi
 
     if [[ -n ${date_time_format} ]]; then
-        printf -v timestamp "%([${date_time_format}] )T" -1
+        printf -v timestamp "%(${date_time_format})T" -1
     fi
 
     # actually print  ----------------------------------------------------------
