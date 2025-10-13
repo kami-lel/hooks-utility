@@ -9,7 +9,8 @@
 ################################################################################
 
 
-# configurations
+# configurations  ##############################################################
+
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
 LOGGING_LEVEL=10
