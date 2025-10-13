@@ -37,23 +37,24 @@ TIME_FORMAT="%H:%M:%S"
 
 # create standardized log messages
 _print_log_message() { 
-    # parse 2 starting position args
-    local -i level="$1"
-    local message="$2"
-    shift 2
+    # parsing args & options
+    local -i level="$1"; shift
 
-    # parse options
-    local d_flag=0 t_flag=0
-
-    local OPTIND opt OPTARG
+    # parse options first
+    local d_flag t_flag
     OPTIND=1
     while getopts ":dt" opt; do
         case "$opt" in
-            d) d_flag=1;;
-            t) t_flag=1;;
+            d) d_flag=1 ;;
+            t) t_flag=1 ;;
             \?) ;;  # ignore invalid options
         esac
     done
+    shift $((OPTIND - 1))
+
+    # parse args
+    local message="$1"
+    local source="$2"
 
     # decide prefix tag & color based on level  --------------------------------
     local prefix ansi_color
@@ -125,7 +126,7 @@ _print_log_message() {
 # print a MESSAGE in log style message, prefixed with "DEBUG"
 # 
 # USAGE:
-#   hooks_utility_debug MESSAGE [SOURCE] [-d] [-t]
+#   hooks_utility_debug [-d] [-t] MESSAGE [SOURCE]
 #
 # ARGUMENT:
 #   MESSAGE     main message content to be printed
@@ -156,7 +157,7 @@ hooks_utility_debug() {
 # print a MESSAGE in log style message, prefixed with "INFO"
 # 
 # USAGE:
-#   hooks_utility_info MESSAGE [SOURCE] [-d] [-t]
+#   hooks_utility_info [-d] [-t] MESSAGE [SOURCE]
 #
 # other aspects are same as hooks_utility_debug()
 hooks_utility_info() {
@@ -170,7 +171,7 @@ hooks_utility_info() {
 # print a MESSAGE in log style message, prefixed with "WARN"
 # 
 # USAGE:
-#   hooks_utility_warning MESSAGE [SOURCE] [-d] [-t]
+#   hooks_utility_warning [-d] [-t] MESSAGE [SOURCE]
 #
 # other aspects are same as hooks_utility_debug()
 hooks_utility_warning() {
@@ -184,7 +185,7 @@ hooks_utility_warning() {
 # print a MESSAGE in log style message, prefixed with "ERROR"
 # 
 # USAGE:
-#   hooks_utility_error MESSAGE [SOURCE] [-d] [-t]
+#   hooks_utility_error [-d] [-t] MESSAGE [SOURCE]
 #
 # OUTPUT:
 #   print the given MESSAGE, in log style formatting,
@@ -203,7 +204,7 @@ hooks_utility_error() {
 # print a MESSAGE in log style message, prefixed with "CRIT"
 # 
 # USAGE:
-#   hooks_utility_critical MESSAGE [SOURCE] [-d] [-t]
+#   hooks_utility_critical [-d] [-t] MESSAGE [SOURCE]
 #
 # OUTPUT:
 #   same as hooks_utility_error()

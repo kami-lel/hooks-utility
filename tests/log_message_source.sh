@@ -16,6 +16,6 @@ echo \
 "combined w/ date time  -------------------------------------------------------\
 --"
 
-hooks_utility_debug "Some Debugging Message Content" "MainComponent" -d
+hooks_utility_debug -d "Some Debugging Message Content" "MainComponent"
 hooks_utility_warning -dt \
         "Warning!" "Information Test Component from this Script"

@@ -11,22 +11,21 @@ echo \
 "only date  -------------------------------------------------------------------\
 --"
 
-hooks_utility_debug "Some Debugging Message Content" -d
-hooks_utility_info "Content of Informational Message" -d
+hooks_utility_debug -d "Some Debugging Message Content"
+hooks_utility_info -d "Content of Informational Message"
 hooks_utility_warning -d "Warning!"
 
 echo \
 "only time  -------------------------------------------------------------------\
 --"
 
-hooks_utility_error "Some Error Message" -t
+hooks_utility_error -t "Some Error Message"
 hooks_utility_critical -t "Giving Critical Error Message"
 
 echo \
 "date & time  -----------------------------------------------------------------\
 --"
 
-hooks_utility_debug "Some Debugging Message Content" -dt
-hooks_utility_info "Content of Informational Message" -td
-hooks_utility_warning "Warning!" -d -t
-hooks_utility_error -t -d "Some Error Message"
+hooks_utility_debug -dt "Some Debugging Message Content"
+hooks_utility_info -td "Content of Informational Message"
+hooks_utility_warning -d -t "Warning!"
