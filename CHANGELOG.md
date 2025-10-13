@@ -20,6 +20,9 @@
 ### Changed
 
 - write basic instructions in `README.md`
+- change parameter parsing logic for *log style message* functions
+
+  - add `SOURCE` optional argument & related logic
 
 ### Deprecated
 ### Removed

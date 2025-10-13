@@ -9,7 +9,11 @@
 ################################################################################
 
 
-# configurations
+# configurations  ##############################################################
+
+# filtering log messages:
+# 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
+LOGGING_LEVEL=10
 # use ANSI color codes when print to terminal
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
@@ -35,8 +39,16 @@ TIME_FORMAT="%H:%M:%S"
 
 # create standardized log messages
 _print_log_message() {
-    # parsing args & options
+    # filtering
     local -i level="$1"; shift
+
+    if [[ level -lt LOGGING_LEVEL ]]; then
+        # this message is filtered out
+        return 1
+    fi
+
+
+    # parsing rest args & options  ---------------------------------------------
 
     # parse options first
     local d_flag t_flag
@@ -146,6 +158,7 @@ _print_log_message() {
 #
 # RETURN:
 #   0       success
+#   1       not print because this message is filtered out by LOGGING_LEVEL
 #
 # EXAMPLE:
 #   hooks_utility_debug "some debug information"
