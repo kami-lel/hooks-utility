@@ -233,19 +233,40 @@ hooks_utility_critical() {
 }
 
 
-# merging annotation markers check  ############################################
-# hooks_utility_merging_annotation_markers_check()
+# merge annotation markers check  ############################################
+
+DEV_BRANCH_NAME='dev'
+MAIN_BRANCH_NAME='main'
+MERGE_AM_CHECK_COMPONENT_NAME='hooks_utility.sh: merge AM check'
+
+# hooks_utility_merge_annotation_markers_check()
 # TODO doc comment
-hooks_utility_merging_annotation_markers_check() {
+hooks_utility_merge_annotation_markers_check() {
+    # get source_branch
+    # i.e. branch which merge from
+    local source_branch=
     # TODO
-    local merge_type=""
 
-    if [[ ${merge_type} == 'feature2dev' ]]; then
+    # get target_branch  -------------------------------------------------------
+    # i.e. branch which merge into
+    local target_branch=
+    # TODO
+
+    if [[ ${target_branch} == DEV_BRANCH_NAME ]]; then
+        # from feature branches -> dev branch
         _test_feature_merge_dev
-    elif [[ ${merge_type} == 'dev2main' ]]; then
-        _test_dev_merge_main
-    fi
+        return "$?"
 
+    elif [[ ${source_branch} == DEV_BRANCH_NAME && \
+            ${target_branch} == MAIN_BRANCH_NAME ]]; then
+        # from dev branch -> main branch
+        _test_dev_merge_main
+        return "$?"
+    else
+        hooks_utility_info "skip check, not a critical merge" \
+                "${MERGE_AM_CHECK_COMPONENT_NAME}"
+        return 0
+    fi
 }
 
 # AM checks when merging from feature branch to dev branch
@@ -261,10 +282,10 @@ _test_dev_merge_main() {
 
 # assert no TODO,BUG,FIXME,HACK occurs
 _assert_no_primary_am() {
-    :  # TODO
+    hooks_utility_debug "assert no TODO"  # TODO
 }
 
 # assert no Todo,Bug,Fixme,Hack occurs
 _assert_no_secondary_am() {
-    :  # TODO
+    hooks_utility_debug "assert no Todo"  # TODO
 }

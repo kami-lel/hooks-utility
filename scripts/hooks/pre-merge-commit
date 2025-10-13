@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
-# TODO provide a template that use merging AM check
-
 set -euo pipefail
 
-# ...
+# shellcheck source=/dev/null
+source "$(dirname "${BASH_SOURCE[0]}")/hooks_utility.sh"
+
+hooks_utility_merge_annotation_markers_check
 
 exit 0
