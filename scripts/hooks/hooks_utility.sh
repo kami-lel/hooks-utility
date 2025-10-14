@@ -343,24 +343,64 @@ _print_with_padding() {
 
     # print newline ending
     printf '\n'
+    return 0
 }
 
 
-# TODO doc comment
+# API padding print functions  =================================================
+
+# hooks_utility_padding_left_just()
+#
+# print the MESSAGE with its right space filled with PADDING
+#
+# USAGE:
+#   hooks_utility_padding_left_just PADDING MESSAGE
+#
+# ARGUMENT:
+#   PADDING     single symbol padding, e.g. '='
+#   MESSAGE     main message content to be printed
+#
+# OUTPUT:
+#   print the MESSAGE with padding to stdout
+#
+# RETURN:
+#   0       success
+#
+# EXAMPLE:
+#   hooks_utility_padding_left_just '*' "Book Title"
 hooks_utility_padding_left_just() {
     _print_with_padding 0 "$@"
     return "$?"
 }
 
+
+# hooks_utility_padding_right_just()
+#
+# print the MESSAGE with its left space filled with PADDING
+#
+# USAGE:
+#   hooks_utility_padding_right_just PADDING MESSAGE
+#
+# other aspects are same as hooks_utility_padding_left_just()
 hooks_utility_padding_right_just() {
     _print_with_padding 1 "$@"
     return "$?"
 }
 
+
+# hooks_utility_padding_centered()
+#
+# print the MESSAGE with its left and right space filled with PADDING
+#
+# USAGE:
+#   hooks_utility_padding_centered PADDING MESSAGE
+#
+# other aspects are same as hooks_utility_padding_left_just()
 hooks_utility_padding_centered() {
     _print_with_padding 2 "$@"
     return "$?"
 }
+
 
 # AM check  ####################################################################
 
