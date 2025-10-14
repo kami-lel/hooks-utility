@@ -258,21 +258,23 @@ hooks_utility_critical() {
 
 
 _print_with_padding() {
-    local padding="$1"
-    local message="$2"
-    local -i left_cnt="$3" right_cnt="$4"
+    local -i type="$1"
+    local padding="$2" message="$3"
 }
 
 hooks_utility_padding_left_just() {
-    :
+    _print_with_padding 0 "$@"
+    return "$?"
 }
 
 hooks_utility_padding_right_just() {
-    :
+    _print_with_padding 1 "$@"
+    return "$?"
 }
 
-hooks_utility_padding_centered_just() {
-    :
+hooks_utility_padding_centered() {
+    _print_with_padding 2 "$@"
+    return "$?"
 }
 
 # AM check  ####################################################################
