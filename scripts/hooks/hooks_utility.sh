@@ -19,7 +19,7 @@ set -euo pipefail
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
 LOGGING_LEVEL=10
-# use ANSI color codes when print to terminal
+# use ANSI color codes when print to terminal by default
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
 ENABLE_SPLIT_OUTPUT_STREAM=1
@@ -51,38 +51,41 @@ PREFIX_ERROR_CRITICAL="CRIT "
 DATE_FORMAT="%Y-%m-%d"
 TIME_FORMAT="%H:%M:%S"
 
-# create standardized log messages
+
 _print_log_message() {
-    # filtering
+    # filtering by log level
     local -i level="$1"; shift
 
-    if [[ level -lt LOGGING_LEVEL ]]; then
+    if [[ level -lt LOGGING_LEVEL  ]]; then
         # this message is filtered out
         return 0
     fi
 
-    # parsing rest args & options  ---------------------------------------------
+    # consider configurations
+    local target_fd=1 use_color=0
+    (( ENABLE_SPLIT_OUTPUT_STREAM )) && [[ level -ge 40 ]]  && target_fd=2
+    (( ENABLE_ANSI_COLOR )) && [[ -t "$target_fd" ]] && use_color=1
 
-    # parse options first
-    local d_flag="" t_flag=""
+    # parse inputs  ------------------------------------------------------------
+    # read from stdin
+    local message=$(cat -)
+
+    # parse options
+    local -i d_flag=0 t_flag=0
     OPTIND=1
-    while getopts ":dt" opt; do
+    while getopts ":dtcC" opt; do
         case "$opt" in
             d) d_flag=1 ;;
             t) t_flag=1 ;;
+            c) use_color=1 ;;
+            C) use_color=0 ;;
             \?) ;;  # ignore invalid options
         esac
     done
     shift $((OPTIND - 1))
 
     # parse args
-    local message="$1"
-    local source_arg="${2-}"
-
-    # consider configurations  -------------------------------------------------
-    local target_fd=1 use_color=0
-    (( ENABLE_SPLIT_OUTPUT_STREAM )) && [[ level -ge 40 ]]  && target_fd=2
-    (( ENABLE_ANSI_COLOR )) && [[ -t "$target_fd" ]] && use_color=1
+    local source_arg="${1-}"
 
     # decide prefix tag & color based on level  --------------------------------
     local prefix prefix_color
@@ -156,33 +159,36 @@ _print_log_message() {
     fi
 }
 
+
 # API log style message functions  =============================================
 
 # hooks_utility_debug()
 #
-# print a MESSAGE in log style message, prefixed with "DEBUG"
+# print message from stdin in log style message, prefixed with "DEBUG"
 #
 # USAGE:
-#   hooks_utility_debug [-d] [-t] MESSAGE [SOURCE]
+#   hooks_utility_debug [-d] [-t] [-c|-C] [SOURCE]
 #
 # ARGUMENT:
 #   MESSAGE     main message content to be printed
 #   SOURCE      indicate reason/source of the message, as part of the message
 #
 # OPTION:
-#   -d      contains current date in the printed message
-#   -t      contains current time in the printed message
+#   -d      contains current date
+#   -t      contains current time
+#   -c      always use ANSI coloring
+#   -C      never use ANSI coloring
 #
 # OUTPUT:
-#   print the given MESSAGE, in log style formatting, to stdout;
+#   print the formatted message to stdout;
 #   utilizing ANSI coloring if stdout is a console
 #
 # RETURN:
 #   0       success
 #
 # EXAMPLE:
-#   hooks_utility_debug "some debug information"
-#   hooks_utility_debug -dt "some debug information" "Main Component"
+#   echo "some debug information" | hooks_utility_debug
+#   echo "some debug information" | hooks_utility_debug -dt  "Main Component"
 hooks_utility_debug() {
     _print_log_message 10 "$@"
     return "$?"
