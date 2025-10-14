@@ -10,6 +10,7 @@
 
 # Todo use grey out color for time
 # todo auto generate better commit/merge message
+# Todo line padding print
 
 
 # configurations  ##############################################################
