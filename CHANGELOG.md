@@ -26,6 +26,7 @@
 - change parameter parsing logic for *log style message* functions
 
   - add `SOURCE` optional argument & related logic
+  - date/time format distinguishable by coloring
 
 ### Deprecated
 ### Removed
