@@ -11,7 +11,6 @@ set -euo pipefail
 ################################################################################
 
 # todo auto generate better commit/merge message
-# Todo line padding print
 # todo merge into dev, make sure CHANGELOG is edited
 
 
@@ -24,6 +23,8 @@ LOGGING_LEVEL=20
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
 ENABLE_SPLIT_OUTPUT_STREAM=1
+# width of the imagined terminal
+PADDING_TERMINAL_WIDTH=80
 
 
 # constants  ###################################################################
@@ -154,9 +155,7 @@ _print_log_message() {
     fi
 }
 
-
 # API log style message functions  =============================================
-
 
 # hooks_utility_debug()
 #
@@ -179,7 +178,6 @@ _print_log_message() {
 #
 # RETURN:
 #   0       success
-#   1       not print because this message is filtered out by LOGGING_LEVEL
 #
 # EXAMPLE:
 #   hooks_utility_debug "some debug information"
@@ -250,6 +248,156 @@ hooks_utility_error() {
 # other aspects are same as hooks_utility_debug()
 hooks_utility_critical() {
     _print_log_message 50 "$@"
+    return "$?"
+}
+
+
+# padding print  ###############################################################
+
+# number of spaces surround the message text
+PADDING_MARGIN=2
+
+PADDING_PRINT_NAME="${HOOKS_UTILITY_NAME}:padding print"
+
+
+# print space character as margin b/t padding & message to stdout
+_print_padding_margin() {
+    printf '%*s' "${PADDING_MARGIN}" ''
+}
+
+# print padding of given count to stdout
+_print_padding_by_count() {
+    local padding="$1"
+    local -i cnt="$2" use_color="$3"
+
+    # generating padding by cnt
+    result=$( printf '%*s' "${cnt}" '' | tr ' ' "${padding}" )
+
+    if (( use_color )); then
+        result="${ANSI_COLOR_GREY}${result}${ANSI_RESET}"
+    fi
+
+    printf '%b' "${result}"
+}
+
+
+_print_with_padding() {
+    local -i type="$1"
+    local padding="$2" message="$3"
+
+    local -i message_len
+    message_len=$(printf '%s' "${message}" | wc -m)
+    hooks_utility_debug "type=${type} message_len=${message_len}" \
+            "${PADDING_PRINT_NAME}"
+
+    # calculate left/right padding count  --------------------------------------
+    local -i short_cnt long_cnt
+    case "${type}" in
+        0|1)
+            # left & right just
+            long_cnt=$((PADDING_TERMINAL_WIDTH - message_len - PADDING_MARGIN))
+            short_cnt=1
+            ;;
+        2)
+            # centered
+            local remained=$((PADDING_TERMINAL_WIDTH \
+                    - message_len - 2 * PADDING_MARGIN))
+            short_cnt=$((remained / 2))
+            long_cnt=$((remained - short_cnt))
+            ;;
+    esac
+
+    hooks_utility_debug "short_cnt=${short_cnt} long_cnt=${long_cnt}" \
+            "${PADDING_PRINT_NAME}"
+
+    # generate actual printout  ------------------------------------------------
+    # special case: message too long, just print message itself
+    if [[ short_cnt -lt 1 || long_cnt -lt 1 ]]; then
+        hooks_utility_debug "message too long"
+        printf '%s\n' "${message}"
+        return 0
+    fi
+
+    local use_color=0
+    (( ENABLE_ANSI_COLOR )) && [[ -t 1 ]] && use_color=1
+
+    case "${type}" in
+        0)
+            printf '%s' "${message}";
+            _print_padding_margin;
+            _print_padding_by_count "${padding}" "${long_cnt}" "${use_color}";
+            ;;
+        1)
+            _print_padding_by_count "${padding}" "${long_cnt}" "${use_color}";
+            _print_padding_margin;
+            printf '%s' "${message}";
+            ;;
+        2)
+            _print_padding_by_count "${padding}" "${short_cnt}" "${use_color}";
+            _print_padding_margin;
+            printf '%s' "${message}";
+            _print_padding_margin;
+            _print_padding_by_count "${padding}" "${long_cnt}" "${use_color}";
+            ;;
+    esac
+
+    # print newline ending
+    printf '\n'
+    return 0
+}
+
+
+# API padding print functions  =================================================
+
+# hooks_utility_padding_left_just()
+#
+# print the MESSAGE with its right space filled with PADDING
+#
+# USAGE:
+#   hooks_utility_padding_left_just PADDING MESSAGE
+#
+# ARGUMENT:
+#   PADDING     single symbol padding, e.g. '='
+#   MESSAGE     main message content to be printed
+#
+# OUTPUT:
+#   print the MESSAGE with padding to stdout
+#
+# RETURN:
+#   0       success
+#
+# EXAMPLE:
+#   hooks_utility_padding_left_just '*' "Book Title"
+hooks_utility_padding_left_just() {
+    _print_with_padding 0 "$@"
+    return "$?"
+}
+
+
+# hooks_utility_padding_right_just()
+#
+# print the MESSAGE with its left space filled with PADDING
+#
+# USAGE:
+#   hooks_utility_padding_right_just PADDING MESSAGE
+#
+# other aspects are same as hooks_utility_padding_left_just()
+hooks_utility_padding_right_just() {
+    _print_with_padding 1 "$@"
+    return "$?"
+}
+
+
+# hooks_utility_padding_centered()
+#
+# print the MESSAGE with its left and right space filled with PADDING
+#
+# USAGE:
+#   hooks_utility_padding_centered PADDING MESSAGE
+#
+# other aspects are same as hooks_utility_padding_left_just()
+hooks_utility_padding_centered() {
+    _print_with_padding 2 "$@"
     return "$?"
 }
 
@@ -375,7 +523,7 @@ _search_am_generate_printout() {
     esac
 
     # print class name
-    # Fixme use padding
+    # Fixme use padding for file name & category
     printf "found %s:\n" "${class_name}" >> "${tmp_printout}"
 
     # iterate each added & modified files
@@ -388,7 +536,6 @@ _search_am_generate_printout() {
 
         # Bug sometimes still prevent merge
         if [[ -n ${lines} ]]; then
-            # Fixme use padding
             printf "%s\n%s" "${file}" "${lines}" >> "${tmp_printout}"
         fi
 
