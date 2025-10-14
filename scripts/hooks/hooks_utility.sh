@@ -322,13 +322,13 @@ hooks_utility_am_check() {
     tmp_printout=$(mktemp)
 
     case "${merge_type}" in
-    1)  # feature -> dev
-        _search_am_generate_printout 1 "${tmp_printout}"
-        ;;
-    2)  # dev -> main
-        _search_am_generate_printout 1 "${tmp_printout}"
-        _search_am_generate_printout 2 "${tmp_printout}"
-        ;;
+        1)  # feature -> dev
+            _search_am_generate_printout 1 "${tmp_printout}"
+            ;;
+        2)  # dev -> main
+            _search_am_generate_printout 1 "${tmp_printout}"
+            _search_am_generate_printout 2 "${tmp_printout}"
+            ;;
     esac
 
     if [[ -s "${tmp_printout}" ]]; then
@@ -349,14 +349,20 @@ _search_am_generate_printout() {
     local -i am_class="$1"  # 1:primary AM, 2:secondary AM
     local tmp_printout="$2"
 
-    local pattern
+    local pattern class_name
     case "${am_class}" in
-        1) pattern="${PRIMARY_AM_PATTERN}" ;;
-        2) pattern="${SECONDARY_AM_PATTERN}" ;;
+        1)
+            pattern="${PRIMARY_AM_PATTERN}"
+            class_name='primary AM'
+             ;;
+        2)
+            pattern="${SECONDARY_AM_PATTERN}"
+            class_name='secondary AM';;
     esac
 
-    # HACK
-    printf "%s================\n" "${pattern}" >>"${tmp_printout}"
+    # print class name
+    # Fixme use padding
+    printf "found %s:\n" "${class_name}" >> "${tmp_printout}"
 
     # iterate each added & modified files
     while IFS= read -r -d '' file; do
@@ -364,10 +370,12 @@ _search_am_generate_printout() {
         lines=$(git diff --cached --unified=0 --no-color -- "${file}" \
                 | grep '^+[^+]'\
                 | cut -c2-\
-                | grep -E "${pattern}")
+                | grep -E "${pattern}" || true)
 
-        # FIXME better format
-        printf "%s\n" "${lines}" >>"${tmp_printout}"
+        if [[ -n ${lines} ]]; then
+            # Fixme use padding
+            printf "%s\n%s" "${file}" "${lines}" >>"${tmp_printout}"
+        fi
 
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 
