@@ -7,8 +7,6 @@ echo \
 "tests: padding print, basic  #################################################\
 ##"
 
-hooks_utility_info "left just w/ #"
-
 
 hooks_utility_info "left just w/ #"
 hooks_utility_padding_left_just "#" "Title"
