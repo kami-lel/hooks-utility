@@ -304,7 +304,7 @@ hooks_utility_am_check() {
         return 0
     fi
 
-    # TOD
+    # TODO use merge type to perform search
 
     # TODO cleanup 2 temp files
 }
