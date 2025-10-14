@@ -18,4 +18,10 @@ hooks_utility_padding_centered "=" "\
 Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex \
 sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis."
 
-# TODO just enough cases
+hooks_utility_info "left, just enough"
+hooks_utility_padding_left_just "-" "\
+Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibu eaibr"
+
+hooks_utility_info "centered just enough"
+hooks_utility_padding_centered "=" "\
+Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibu ex"

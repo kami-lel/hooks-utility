@@ -313,7 +313,8 @@ _print_with_padding() {
     # generate actual printout  ------------------------------------------------
     # special case: message too long, just print message itself
     if [[ short_cnt -lt 1 || long_cnt -lt 1 ]]; then
-        printf '%s' "${message}"
+        hooks_utility_debug "message too long"
+        printf '%s\n' "${message}"
         return 0
     fi
 
@@ -482,7 +483,7 @@ _search_am_generate_printout() {
     esac
 
     # print class name
-    # FIXME use padding
+    # Fixme use padding for file name & category
     printf "found %s:\n" "${class_name}" >> "${tmp_printout}"
 
     # iterate each added & modified files
@@ -495,7 +496,6 @@ _search_am_generate_printout() {
 
         # Bug sometimes still prevent merge
         if [[ -n ${lines} ]]; then
-            # FIXME use padding
             printf "%s\n%s" "${file}" "${lines}" >> "${tmp_printout}"
         fi
 
