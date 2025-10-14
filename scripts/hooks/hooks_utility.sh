@@ -254,12 +254,16 @@ hooks_utility_critical() {
 
 
 # padding print  ###############################################################
+
+PADDING_MARGIN=2
+
 # TODO
-
-
 _print_with_padding() {
     local -i type="$1"
     local padding="$2" message="$3"
+
+    # calculate  left/right padding count  -------------------------------------
+    local -i left_cnt right_cnt
 }
 
 hooks_utility_padding_left_just() {
