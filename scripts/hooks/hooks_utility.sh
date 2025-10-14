@@ -24,6 +24,8 @@ LOGGING_LEVEL=20
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
 ENABLE_SPLIT_OUTPUT_STREAM=1
+# width of the imagined terminal
+TERMINAL_MAX_WIDTH=80
 
 
 # constants  ###################################################################
@@ -154,9 +156,7 @@ _print_log_message() {
     fi
 }
 
-
 # API log style message functions  =============================================
-
 
 # hooks_utility_debug()
 #
@@ -179,7 +179,6 @@ _print_log_message() {
 #
 # RETURN:
 #   0       success
-#   1       not print because this message is filtered out by LOGGING_LEVEL
 #
 # EXAMPLE:
 #   hooks_utility_debug "some debug information"
@@ -253,6 +252,28 @@ hooks_utility_critical() {
     return "$?"
 }
 
+
+# padding print  ###############################################################
+# TODO
+
+
+_print_with_padding() {
+    local padding="$1"
+    local message="$2"
+    local -i left_cnt="$3" right_cnt="$4"
+}
+
+hooks_utility_padding_left_just() {
+    :
+}
+
+hooks_utility_padding_right_just() {
+    :
+}
+
+hooks_utility_padding_centered_just() {
+    :
+}
 
 # AM check  ####################################################################
 
