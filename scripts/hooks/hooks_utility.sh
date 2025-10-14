@@ -317,7 +317,7 @@ hooks_utility_am_check() {
 
     # search AM in incoming content  ===========================================
     local tmp_printout
-    tmp_printout=$(maketemp)
+    tmp_printout=$(mktemp)
 
     case "${merge_type}" in
     1)  # feature -> dev
@@ -333,7 +333,7 @@ hooks_utility_am_check() {
         local printout_content
         printout_content=$(cat "${tmp_printout}")
         hooks_utility_error "found undesired AM(s) in incoming content:\n\
-                ${printout_content}" \
+${printout_content}" \
                 "${AM_CHECK_NAME}"
         return 1
     else
@@ -347,5 +347,5 @@ _search_am_generate_printout() {
     local tmp_printout="$2"
 
     # HACK
-    cat "hi type=${am_class}" > "${tmp_printout}"
+    echo "hi type=${am_class}" >> "${tmp_printout}"
 }
