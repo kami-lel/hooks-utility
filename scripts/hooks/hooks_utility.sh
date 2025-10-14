@@ -65,8 +65,8 @@ _print_log_message() {
     (( ENABLE_ANSI_COLOR )) && [[ -t "$target_fd" ]] && use_color=1
 
     # parse inputs  ------------------------------------------------------------
-    # read from stdin
-    local message=$(cat -)
+    local message
+    message=$(cat -)  # read from stdin
 
     # parse options
     local -i d_flag=0 t_flag=0
@@ -352,6 +352,7 @@ _print_with_padding() {
 
 # API padding print functions  =================================================
 
+# TODO update doc comment
 # hooks_utility_padding_left_just()
 #
 # print the MESSAGE with its right space filled with PADDING
