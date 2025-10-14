@@ -1,10 +1,10 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -euo pipefail
 
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/hooks_utility.sh"
 
-hooks_utility_merge_annotation_markers_check
+hooks_utility_merge_am_check
 
 exit 0

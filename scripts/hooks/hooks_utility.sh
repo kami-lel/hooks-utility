@@ -19,6 +19,7 @@ ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
 ENABLE_SPLIT_OUTPUT_STREAM=1
 
+HOOKS_UTILITY_NAME="hooks_utility"
 
 # log style message  ###########################################################
 
@@ -233,15 +234,17 @@ hooks_utility_critical() {
 }
 
 
-# merge annotation markers check  ############################################
+# merge AM check  ##############################################################
 
 DEV_BRANCH_NAME='dev'
 MAIN_BRANCH_NAME='main'
-MERGE_AM_CHECK_COMPONENT_NAME='hooks_utility.sh: merge AM check'
+MERGE_AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:merge AM check"
 
-# hooks_utility_merge_annotation_markers_check()
 # TODO doc comment
-hooks_utility_merge_annotation_markers_check() {
+hooks_utility_merge_am_check() {
+    hooks_utility_debug "start" "${MERGE_AM_CHECK_NAME}"
+
+
     # get source_branch
     # i.e. branch which merge from
     local source_branch=
