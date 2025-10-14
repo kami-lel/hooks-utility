@@ -39,8 +39,6 @@ ANSI_RESET='\e[0m'
 
 
 # log style message  ###########################################################
-# FIXME change functions to pipe friendly, take stdin
-
 PREFIX_ERROR_DEBUG="DEBUG"
 PREFIX_ERROR_INFO="INFO "
 PREFIX_ERROR_WARNING="WARN "
@@ -170,7 +168,6 @@ _print_log_message() {
 #   hooks_utility_debug [-d] [-t] [-c|-C] [SOURCE]
 #
 # ARGUMENT:
-#   MESSAGE     main message content to be printed
 #   SOURCE      indicate reason/source of the message, as part of the message
 #
 # OPTION:
@@ -197,10 +194,10 @@ hooks_utility_debug() {
 
 # hooks_utility_info()
 #
-# print a MESSAGE in log style message, prefixed with "INFO"
+# print message from stdin in log style message, prefixed with "INFO"
 #
 # USAGE:
-#   hooks_utility_info [-d] [-t] MESSAGE [SOURCE]
+#   hooks_utility_info [-d] [-t] [-c|-C] [SOURCE]
 #
 # other aspects are same as hooks_utility_debug()
 hooks_utility_info() {
@@ -211,10 +208,10 @@ hooks_utility_info() {
 
 # hooks_utility_warning()
 #
-# print a MESSAGE in log style message, prefixed with "WARN"
+# print message from stdin in log style message, prefixed with "WARN"
 #
 # USAGE:
-#   hooks_utility_warning [-d] [-t] MESSAGE [SOURCE]
+#   hooks_utility_warning [-d] [-t] [-c|-C] [SOURCE]
 #
 # other aspects are same as hooks_utility_debug()
 hooks_utility_warning() {
@@ -225,14 +222,14 @@ hooks_utility_warning() {
 
 # hooks_utility_error()
 #
-# print a MESSAGE in log style message, prefixed with "ERROR"
+# print message from stdin in log style message, prefixed with "ERROR"
 #
 # USAGE:
-#   hooks_utility_error [-d] [-t] MESSAGE [SOURCE]
+#   hooks_utility_error [-d] [-t] [-c|-C] [SOURCE]
 #
 # OUTPUT:
-#   print the given MESSAGE, in log style formatting,
-#   to stdout/stderr depending on configuration ENABLE_SPLIT_OUTPUT_STREAM,
+#   print the formatted message to stdout/stderr
+#   depending on configuration ENABLE_SPLIT_OUTPUT_STREAM;
 #   utilizing ANSI coloring if stdout/stderr is a console
 #
 # other aspects are same as hooks_utility_debug()
@@ -244,10 +241,10 @@ hooks_utility_error() {
 
 # hooks_utility_critical()
 #
-# print a MESSAGE in log style message, prefixed with "CRIT"
+# print message from stdin in log style message, prefixed with "CRIT"
 #
 # USAGE:
-#   hooks_utility_critical [-d] [-t] MESSAGE [SOURCE]
+#   hooks_utility_critical [-d] [-t] [-c|-C] [SOURCE]
 #
 # OUTPUT:
 #   same as hooks_utility_error()
@@ -264,9 +261,7 @@ hooks_utility_critical() {
 
 # number of spaces surround the message text
 PADDING_MARGIN=2
-
 PADDING_PRINT_NAME="${HOOKS_UTILITY_NAME}:padding print"
-
 
 # print space character as margin b/t padding & message to stdout
 _print_padding_margin() {
