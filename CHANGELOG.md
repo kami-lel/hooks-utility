@@ -17,6 +17,9 @@
 ## [Unreleased]
 
 ### Added
+
+- merge AM check functionality
+
 ### Changed
 
 - write basic instructions in `README.md`
