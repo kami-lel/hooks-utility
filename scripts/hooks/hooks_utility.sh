@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 ################################################################################
 # hooks_utility.sh
 # a collections of utility functions for git hooks
@@ -19,7 +21,16 @@ ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
 ENABLE_SPLIT_OUTPUT_STREAM=1
 
+
+# constants  ###################################################################
+
 HOOKS_UTILITY_NAME="hooks_utility"
+
+ANSI_COLOR_BLUE='\e[0;34m'
+ANSI_COLOR_YELLOW='\e[0;33m'
+ANSI_COLOR_RED='\e[0;31m'
+ANSI_RESET='\e[0m'
+
 
 # log style message  ###########################################################
 
@@ -28,12 +39,7 @@ PREFIX_ERROR_INFO="INFO "
 PREFIX_ERROR_WARNING="WARN "
 PREFIX_ERROR_ERROR="ERROR"
 PREFIX_ERROR_CRITICAL="CRIT "
-# all of length 5
-
-ANSI_COLOR_BLUE='\e[0;34m'
-ANSI_COLOR_YELLOW='\e[0;33m'
-ANSI_COLOR_RED='\e[0;31m'
-ANSI_RESET='\e[0m'
+# note: all of length 5
 
 DATE_FORMAT="%Y-%m-%d"
 TIME_FORMAT="%H:%M:%S"
@@ -234,52 +240,81 @@ hooks_utility_critical() {
 }
 
 
-# merge AM check  ##############################################################
+# AM check  ####################################################################
 
 DEV_BRANCH_NAME='dev'
 MAIN_BRANCH_NAME='main'
-MERGE_AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:merge AM check"
+AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:AM check"
 
-# TODO doc comment
-hooks_utility_merge_am_check() {
-    hooks_utility_debug "start" "${MERGE_AM_CHECK_NAME}"
 
-    # find out .git directory
-    local git_dir
-    git_dir=$(git rev-parse --git-dir)
+# hooks_utility_am_check()
+#
+# assert there is NO annotation markers (AM) merging into protected branches,
+# (i.e. 'dev' and 'main' branches.)
+#
+# - any branch (except main) -> dev:
+#   assert no primary AM (TODO, BUG, ...) is merging into dev branch
+#
+# - dev -> main:
+#   assert no primary nor secondary AM (TODO, BUG, ..., Todo, Bug, ...)
+#   is merging into main branch
+#
+# USAGE:
+#   hooks_utility_am_check
+#
+# RETURN:
+#   0   success: pass or skip checks
+#   1   failure: undesired AM detected
+hooks_utility_am_check() {
+    hooks_utility_debug "start" "${AM_CHECK_NAME}"
 
-    if [[ -f "${git_dir}/MERGE_HEAD" ]]; then
-        # get source_branch
-        # i.e. branch which merge from
-        local source_branch=
-        # TODO
-
-        # get target_branch  -------------------------------------------------------
-        # i.e. branch which merge into
-        local target_branch=
-        # TODO
-
-        if [[ ${target_branch} == DEV_BRANCH_NAME ]]; then
-            # from feature branches -> dev branch
-            _test_feature_merge_dev
-            return "$?"
-
-        elif [[ ${source_branch} == DEV_BRANCH_NAME && \
-                ${target_branch} == MAIN_BRANCH_NAME ]]; then
-            # from dev branch -> main branch
-            _test_dev_merge_main
-            return "$?"
-        else
-            hooks_utility_info "skipped, irrelevant merge" \
-                    "${MERGE_AM_CHECK_COMPONENT_NAME}"
-            return 0
-        fi
-
-    else
-        hooks_utility_info \
-                "skipped, not a merge commit" "${MERGE_AM_CHECK_NAME}"
+    # skip non-merge commit
+    if ! [[ -f "$(git rev-parse --git-dir)/MERGE_HEAD" ]]; then
+        hooks_utility_debug \
+                "skipped, not a merge commit" "${AM_CHECK_NAME}"
         return 0
     fi
+
+    # determine merge type  ====================================================
+    local -i merge_type
+
+    # find source_branch
+    # i.e. branch which merge from
+    local source_branch=
+    # TODO
+
+    # find target_branch  ---------------------------------------------------
+    # i.e. branch which merge into
+    local target_branch=
+    # TODO
+
+    if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" && \
+            "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
+        # from feature branches -> dev branch
+        merge_type=1
+
+    elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" && \
+            "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
+        # from dev branch -> main branch
+        merge_type=2
+
+    else
+        hooks_utility_debug "skipped, irrelevant merge" \
+                "${AM_CHECK_NAME}"
+        return 0
+    fi
+
+    # TOD
+
+    # TODO cleanup 2 temp files
+}
+
+_search_am_generate_printout() {
+    local git_diff_content="$1"
+    local -i type="$2"
+    local outfile="$3"
+
+    # TODO
 }
 
 # AM checks when merging from feature branch to dev branch
