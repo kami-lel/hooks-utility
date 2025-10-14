@@ -11,6 +11,7 @@
 # Todo use grey out color for time
 # todo auto generate better commit/merge message
 # Todo line padding print
+# todo merge into dev, make sure CHANGELOG is edited
 
 
 # configurations  ##############################################################
