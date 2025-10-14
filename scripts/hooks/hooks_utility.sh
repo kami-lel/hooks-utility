@@ -19,7 +19,7 @@ set -euo pipefail
 
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
-LOGGING_LEVEL=10
+LOGGING_LEVEL=20
 # use ANSI color codes when print to terminal
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
@@ -56,7 +56,7 @@ _print_log_message() {
 
     if [[ level -lt LOGGING_LEVEL ]]; then
         # this message is filtered out
-        return 1
+        return 0
     fi
 
     # parsing rest args & options  ---------------------------------------------
