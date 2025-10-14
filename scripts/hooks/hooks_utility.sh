@@ -39,6 +39,7 @@ ANSI_RESET='\e[0m'
 
 
 # log style message  ###########################################################
+# Fixme change functions to pipe friendly, take stdin
 
 PREFIX_ERROR_DEBUG="DEBUG"
 PREFIX_ERROR_INFO="INFO "
@@ -253,6 +254,7 @@ hooks_utility_critical() {
 
 
 # padding print  ###############################################################
+# Fixme change functions to pipe friendly, take stdin
 
 # number of spaces surround the message text
 PADDING_MARGIN=2
@@ -403,13 +405,13 @@ hooks_utility_padding_centered() {
 
 
 # AM check  ####################################################################
+# Fixme change functions to pipe friendly, take stdin
 
 DEV_BRANCH_NAME='dev'
 MAIN_BRANCH_NAME='main'
 AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:AM check"
 PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
 SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
-
 
 # hooks_utility_am_check()
 #
@@ -534,7 +536,7 @@ _search_am_generate_printout() {
                 | cut -c2-\
                 | grep -E "${pattern}" || true)
 
-        # Bug sometimes still prevent merge
+        # BUG sometimes still prevent merge
         if [[ -n ${lines} ]]; then
             printf "%s\n%s" "${file}" "${lines}" >> "${tmp_printout}"
         fi
