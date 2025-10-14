@@ -245,6 +245,8 @@ hooks_utility_critical() {
 DEV_BRANCH_NAME='dev'
 MAIN_BRANCH_NAME='main'
 AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:AM check"
+PRIMARY_AM_PATTERN=
+SECONDARY_AM_PATTERN=
 
 
 # hooks_utility_am_check()
@@ -342,10 +344,29 @@ ${printout_content}" \
     fi
 }
 
+
 _search_am_generate_printout() {
     local -i am_class="$1"  # 1:primary AM, 2:secondary AM
     local tmp_printout="$2"
 
-    # HACK
-    echo "hi type=${am_class}" >> "${tmp_printout}"
+    local pattern
+    case "${am_class}" in
+        1) pattern='TODO|BUG|FIXME|HACK' ;;
+        2) pattern='Todo|Bug|Fixme|Hack' ;;
+    esac
+
+    # iterate each added & modified files
+    while IFS= read -r -d '' file; do
+        local lines
+        lines=$(git diff --cached --unified=0 --no-color -- "${file}" \
+                | grep '^+[^+]'\
+                | cut -c2-\
+                | grep -E "${pattern}")
+
+        # FIXME better format
+        printf "%s:\n%s" "${file}" "${lines}" >>"${tmp_printout}"
+
+
+    done < <(git diff --cached --name-only -z --diff-filter=ACMR)
+
 }
