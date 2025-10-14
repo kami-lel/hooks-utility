@@ -11,7 +11,7 @@ set -euo pipefail
 ################################################################################
 
 # todo auto generate better commit/merge message
-# Todo line padding print
+# TODO line padding print
 # todo merge into dev, make sure CHANGELOG is edited
 
 
@@ -375,7 +375,7 @@ _search_am_generate_printout() {
     esac
 
     # print class name
-    # Fixme use padding
+    # FIXME use padding
     printf "found %s:\n" "${class_name}" >> "${tmp_printout}"
 
     # iterate each added & modified files
@@ -388,7 +388,7 @@ _search_am_generate_printout() {
 
         # Bug sometimes still prevent merge
         if [[ -n ${lines} ]]; then
-            # Fixme use padding
+            # FIXME use padding
             printf "%s\n%s" "${file}" "${lines}" >> "${tmp_printout}"
         fi
 
