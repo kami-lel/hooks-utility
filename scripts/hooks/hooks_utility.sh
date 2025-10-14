@@ -245,8 +245,8 @@ hooks_utility_critical() {
 DEV_BRANCH_NAME='dev'
 MAIN_BRANCH_NAME='main'
 AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:AM check"
-PRIMARY_AM_PATTERN=
-SECONDARY_AM_PATTERN=
+PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
+SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
 
 
 # hooks_utility_am_check()
@@ -351,8 +351,8 @@ _search_am_generate_printout() {
 
     local pattern
     case "${am_class}" in
-        1) pattern='TODO|BUG|FIXME|HACK' ;;
-        2) pattern='Todo|Bug|Fixme|Hack' ;;
+        1) pattern="${PRIMARY_AM_PATTERN}" ;;
+        2) pattern="${SECONDARY_AM_PATTERN}" ;;
     esac
 
     # iterate each added & modified files
