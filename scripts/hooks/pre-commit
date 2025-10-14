@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# shellcheck source=/dev/null
+source "$(dirname "${BASH_SOURCE[0]}")/hooks_utility.sh"
+
+hooks_utility_am_check
+
+exit 0

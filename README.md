@@ -75,6 +75,8 @@ DEBUG:  Debug Message Content
 
 ### merging annotation marker (AM) check
 
+TODO write simple docs
+
 Annotation markers:
 
 - `TODO`s, `BUG`s, `FIXME`s, `HACK`s:

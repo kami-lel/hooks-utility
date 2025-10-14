@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-# Todo provide a template that use merging AM check
-
-set -euo pipefail
-
-# ...
-
-exit 0
