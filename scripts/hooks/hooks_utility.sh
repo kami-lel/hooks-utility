@@ -18,7 +18,7 @@ set -euo pipefail
 
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
-LOGGING_LEVEL=20
+LOGGING_LEVEL=10
 # use ANSI color codes when print to terminal
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
@@ -513,20 +513,14 @@ _search_am_generate_printout() {
     local -i am_class="$1"  # 1:primary AM, 2:secondary AM
     local tmp_printout="$2"
 
-    local pattern class_name
+    local pattern
     case "${am_class}" in
         1)
             pattern="${PRIMARY_AM_PATTERN}"
-            class_name='primary AM'
              ;;
         2)
             pattern="${SECONDARY_AM_PATTERN}"
-            class_name='secondary AM';;
     esac
-
-    # print class name
-    # Fixme use padding for file name & category
-    printf "found %s:\n" "${class_name}" >> "${tmp_printout}"
 
     # iterate each added & modified files
     while IFS= read -r -d '' file; do
@@ -536,7 +530,6 @@ _search_am_generate_printout() {
                 | cut -c2-\
                 | grep -E "${pattern}" || true)
 
-        # BUG sometimes still prevent merge
         if [[ -n ${lines} ]]; then
             printf "%s\n%s" "${file}" "${lines}" >> "${tmp_printout}"
         fi
