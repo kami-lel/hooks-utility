@@ -19,13 +19,13 @@ set -euo pipefail
 
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
-LOGGING_LEVEL=20
+LOGGING_LEVEL=10
 # use ANSI color codes when print to terminal
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
 ENABLE_SPLIT_OUTPUT_STREAM=1
 # width of the imagined terminal
-TERMINAL_MAX_WIDTH=80
+PADDING_TERMINAL_WIDTH=80
 
 
 # constants  ###################################################################
@@ -255,15 +255,49 @@ hooks_utility_critical() {
 
 # padding print  ###############################################################
 
+# number of spaces surround the message text
 PADDING_MARGIN=2
+
+PADDING_PRINT_NAME="${HOOKS_UTILITY_NAME}:padding print"
 
 # TODO
 _print_with_padding() {
     local -i type="$1"
     local padding="$2" message="$3"
 
-    # calculate  left/right padding count  -------------------------------------
-    local -i left_cnt right_cnt
+    local -i message_len
+    message_len=$(printf '%s' "${message}" | wc -m)
+    hooks_utility_debug "message_len=${message_len}" "${PADDING_PRINT_NAME}"
+
+    # calculate left/right padding count  --------------------------------------
+    local -i short_cnt long_cnt
+    case "${type}" in
+        0|1)
+            # left just
+            short_cnt=0
+            long_cnt=$((PADDING_TERMINAL_WIDTH - message_len - PADDING_MARGIN))
+            ;;
+        2)
+            # centered
+            local remained=$((PADDING_TERMINAL_WIDTH \
+                    - message_len - 2 * PADDING_MARGIN))
+            short_cnt=$((remained / 2))
+            long_cnt=$((remained - short_cnt))
+            ;;
+    esac
+
+    # assert it is 0+
+    if [[ short_cnt -lt 0 ]]; then
+        short_cnt=0
+    fi
+
+    hooks_utility_debug "short_cnt=${short_cnt} long_cnt=${long_cnt}" \
+            "${PADDING_PRINT_NAME}"
+
+    # generate actual printout  ------------------------------------------------
+    # TODO print
+
+    # TODO color
 }
 
 hooks_utility_padding_left_just() {
