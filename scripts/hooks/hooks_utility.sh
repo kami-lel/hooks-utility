@@ -268,42 +268,54 @@ AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:AM check"
 hooks_utility_am_check() {
     hooks_utility_debug "start" "${AM_CHECK_NAME}"
 
+    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
+
     # skip non-merge commit
-    if ! [[ -f "$(git rev-parse --git-dir)/MERGE_HEAD" ]]; then
-        hooks_utility_debug \
+    if ! [[ -f "${merge_head_dir}" ]]; then
+        hooks_utility_info \
                 "skipped, not a merge commit" "${AM_CHECK_NAME}"
+        return 0
+    elif [[ $(wc -l < "${merge_head_dir}") -ne 1 ]]; then
+        hooks_utility_info \
+                "skipped, octopus merge" "${AM_CHECK_NAME}"
         return 0
     fi
 
-    # determine merge type  ====================================================
+
+    # find merge type  =========================================================
     local -i merge_type
 
-    # find source_branch
-    # i.e. branch which merge from
-    local source_branch=
-    # TODO
+    # find source_branch, i.e. branch which merge from
+    local source_sha source_branch
+    source_sha=$(cat "${merge_head_dir}")
+    source_branch=$(git name-rev --name-only "${source_sha}")
 
-    # find target_branch  ---------------------------------------------------
-    # i.e. branch which merge into
-    local target_branch=
-    # TODO
+    # find target_branch, i.e. branch which merge into
+    local target_branch
+    target_branch=$(git rev-parse --abbrev-ref HEAD)
 
+    hooks_utility_debug \
+            "source_branch=${source_branch}; target_branch=${target_branch}" \
+            "${AM_CHECK_NAME}"
+
+    # decide merge type  -------------------------------------------------------
     if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" && \
             "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
-        # from feature branches -> dev branch
-        merge_type=1
+        merge_type=1  # from feature branches -> dev branch
 
     elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" && \
             "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
-        # from dev branch -> main branch
-        merge_type=2
+        merge_type=2  # from dev branch -> main branch
 
     else
-        hooks_utility_debug "skipped, irrelevant merge" \
+        hooks_utility_info "skipped, irrelevant merge" \
                 "${AM_CHECK_NAME}"
         return 0
     fi
 
+    hooks_utility_debug "merge_type=${merge_type}" "${AM_CHECK_NAME}"
+
+    # search AM in incoming content  ===========================================
     # TODO use merge type to perform search
 
     # TODO cleanup 2 temp files
