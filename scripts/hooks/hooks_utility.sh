@@ -386,6 +386,7 @@ _search_am_generate_printout() {
                 | cut -c2-\
                 | grep -E "${pattern}" || true)
 
+        # Bug sometimes still prevent merge
         if [[ -n ${lines} ]]; then
             # Fixme use padding
             printf "%s\n%s" "${file}" "${lines}" >> "${tmp_printout}"
