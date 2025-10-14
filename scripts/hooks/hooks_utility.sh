@@ -10,7 +10,6 @@ set -euo pipefail
 # version: v1.0.1-alpha
 ################################################################################
 
-# TODO use grey out color for time
 # todo auto generate better commit/merge message
 # Todo line padding print
 # todo merge into dev, make sure CHANGELOG is edited
@@ -34,6 +33,7 @@ HOOKS_UTILITY_NAME="hooks_utility"
 ANSI_COLOR_BLUE='\e[0;34m'
 ANSI_COLOR_YELLOW='\e[0;33m'
 ANSI_COLOR_RED='\e[0;31m'
+ANSI_COLOR_GREY='\e[0;90m'
 ANSI_RESET='\e[0m'
 
 
@@ -59,7 +59,6 @@ _print_log_message() {
         return 1
     fi
 
-
     # parsing rest args & options  ---------------------------------------------
 
     # parse options first
@@ -76,38 +75,41 @@ _print_log_message() {
 
     # parse args
     local message="$1"
-    local source_arg="$2"
+    local source_arg="${2-}"
+
+    # consider configurations  -------------------------------------------------
+    local target_fd=1 use_color=0
+    (( ENABLE_SPLIT_OUTPUT_STREAM )) && [[ level -ge 40 ]]  && target_fd=2
+    (( ENABLE_ANSI_COLOR )) && [[ -t "$target_fd" ]] && use_color=1
 
     # decide prefix tag & color based on level  --------------------------------
-    local prefix ansi_color
+    local prefix prefix_color
     case "$level" in
     10)  # debug
         prefix_tag="$PREFIX_ERROR_DEBUG"
-        ansi_color="$ANSI_COLOR_BLUE"
+        prefix_color="$ANSI_COLOR_BLUE"
         ;;
     20)  # info
         prefix_tag="$PREFIX_ERROR_INFO"
-        ansi_color="$ANSI_COLOR_YELLOW"
+        prefix_color="$ANSI_COLOR_YELLOW"
         ;;
     30)  # warning
         prefix_tag="$PREFIX_ERROR_WARNING"
-        ansi_color="$ANSI_COLOR_YELLOW"
+        prefix_color="$ANSI_COLOR_YELLOW"
         ;;
     40)  # error
         prefix_tag="$PREFIX_ERROR_ERROR"
-        ansi_color="$ANSI_COLOR_RED"
+        prefix_color="$ANSI_COLOR_RED"
         ;;
     50)  # critical
         prefix_tag="$PREFIX_ERROR_CRITICAL"
-        ansi_color="$ANSI_COLOR_RED"
+        prefix_color="$ANSI_COLOR_RED"
         ;;
     esac
 
     # create prefix part w/ coloring
-    local target_fd=$((ENABLE_SPLIT_OUTPUT_STREAM && level >= 40 ?\
-            2 : 1))
-    if (( "${ENABLE_ANSI_COLOR}" )) && [[ -t "${target_fd}" ]]; then
-        prefix="${ansi_color}${prefix_tag}${ANSI_RESET}"
+    if (( use_color )); then
+        prefix="${prefix_color}${prefix_tag}${ANSI_RESET}"
     else
         prefix="${prefix_tag}"
     fi
@@ -117,16 +119,23 @@ _print_log_message() {
 
     local date_time_format=""
     if ((d_flag && t_flag)); then
-        date_time_format="[${DATE_FORMAT} ${TIME_FORMAT}]"
+        date_time_format="${DATE_FORMAT} ${TIME_FORMAT} "
     elif ((d_flag)); then
-        date_time_format="[${DATE_FORMAT}]"
+        date_time_format="${DATE_FORMAT} "
     elif ((t_flag)); then
-        date_time_format="[${TIME_FORMAT}]"
+        date_time_format="${TIME_FORMAT} "
     fi
 
+    # create date/time part w/ coloring
+    if (( use_color )); then
+        date_time_format="${ANSI_COLOR_GREY}${date_time_format}${ANSI_RESET}"
+    fi
+
+    # populate format w/ current time
     if [[ -n ${date_time_format} ]]; then
         printf -v timestamp "%(${date_time_format})T" -1
     fi
+
 
     # create source part  ------------------------------------------------------
     local source=""
@@ -379,7 +388,7 @@ _search_am_generate_printout() {
 
         if [[ -n ${lines} ]]; then
             # Fixme use padding
-            printf "%s\n%s" "${file}" "${lines}" >>"${tmp_printout}"
+            printf "%s\n%s" "${file}" "${lines}" >> "${tmp_printout}"
         fi
 
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
