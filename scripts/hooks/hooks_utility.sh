@@ -10,7 +10,7 @@ set -euo pipefail
 # version: v1.0.1-alpha
 ################################################################################
 
-# Todo use grey out color for time
+# TODO use grey out color for time
 # todo auto generate better commit/merge message
 # Todo line padding print
 # todo merge into dev, make sure CHANGELOG is edited
