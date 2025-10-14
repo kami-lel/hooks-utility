@@ -39,7 +39,7 @@ ANSI_RESET='\e[0m'
 
 
 # log style message  ###########################################################
-# Fixme change functions to pipe friendly, take stdin
+# FIXME change functions to pipe friendly, take stdin
 
 PREFIX_ERROR_DEBUG="DEBUG"
 PREFIX_ERROR_INFO="INFO "
@@ -254,7 +254,7 @@ hooks_utility_critical() {
 
 
 # padding print  ###############################################################
-# Fixme change functions to pipe friendly, take stdin
+# FIXME change functions to pipe friendly, take stdin
 
 # number of spaces surround the message text
 PADDING_MARGIN=2
@@ -405,7 +405,7 @@ hooks_utility_padding_centered() {
 
 
 # AM check  ####################################################################
-# Fixme change functions to pipe friendly, take stdin
+# FIXME change functions to pipe friendly, take stdin
 
 DEV_BRANCH_NAME='dev'
 MAIN_BRANCH_NAME='main'
