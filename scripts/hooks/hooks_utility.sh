@@ -316,36 +316,24 @@ hooks_utility_am_check() {
     hooks_utility_debug "merge_type=${merge_type}" "${AM_CHECK_NAME}"
 
     # search AM in incoming content  ===========================================
-    # TODO use merge type to perform search
+    local temp_opt=$(maketemp)
 
-    # TODO cleanup 2 temp files
-}
-
-_search_am_generate_printout() {
-    local git_diff_content="$1"
-    local -i type="$2"
-    local outfile="$3"
+    case "${merge_type}" in
+    1)
+        _search_am_generate_printout 1 "${temp_opt}"
+        ;;
+    2)
+        _search_am_generate_printout 1 "${temp_opt}"
+        _search_am_generate_printout 2 "${temp_opt}"
+        ;;
+    esac
 
     # TODO
 }
 
-# AM checks when merging from feature branch to dev branch
-_test_feature_merge_dev() {
-    _assert_no_primary_am
-}
+_search_am_generate_printout() {
+    local -i type="$1"
+    local outfile="$2"
 
-# AM checks when merging from dev branch to main branch
-_test_dev_merge_main() {
-    _assert_no_primary_am
-    _assert_no_secondary_am
-}
-
-# assert no TODO,BUG,FIXME,HACK occurs
-_assert_no_primary_am() {
-    hooks_utility_debug "assert no TODO"  # TODO
-}
-
-# assert no Todo,Bug,Fixme,Hack occurs
-_assert_no_secondary_am() {
-    hooks_utility_debug "assert no Todo"  # TODO
+    # TODO
 }
