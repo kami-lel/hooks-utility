@@ -52,7 +52,7 @@ _print_log_message() {
     # parsing rest args & options  ---------------------------------------------
 
     # parse options first
-    local d_flag t_flag
+    local d_flag="" t_flag=""
     OPTIND=1
     while getopts ":dt" opt; do
         case "$opt" in
@@ -244,30 +244,40 @@ MERGE_AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:merge AM check"
 hooks_utility_merge_am_check() {
     hooks_utility_debug "start" "${MERGE_AM_CHECK_NAME}"
 
+    # find out .git directory
+    local git_dir
+    git_dir=$(git rev-parse --git-dir)
 
-    # get source_branch
-    # i.e. branch which merge from
-    local source_branch=
-    # TODO
+    if [[ -f "${git_dir}/MERGE_HEAD" ]]; then
+        # get source_branch
+        # i.e. branch which merge from
+        local source_branch=
+        # TODO
 
-    # get target_branch  -------------------------------------------------------
-    # i.e. branch which merge into
-    local target_branch=
-    # TODO
+        # get target_branch  -------------------------------------------------------
+        # i.e. branch which merge into
+        local target_branch=
+        # TODO
 
-    if [[ ${target_branch} == DEV_BRANCH_NAME ]]; then
-        # from feature branches -> dev branch
-        _test_feature_merge_dev
-        return "$?"
+        if [[ ${target_branch} == DEV_BRANCH_NAME ]]; then
+            # from feature branches -> dev branch
+            _test_feature_merge_dev
+            return "$?"
 
-    elif [[ ${source_branch} == DEV_BRANCH_NAME && \
-            ${target_branch} == MAIN_BRANCH_NAME ]]; then
-        # from dev branch -> main branch
-        _test_dev_merge_main
-        return "$?"
+        elif [[ ${source_branch} == DEV_BRANCH_NAME && \
+                ${target_branch} == MAIN_BRANCH_NAME ]]; then
+            # from dev branch -> main branch
+            _test_dev_merge_main
+            return "$?"
+        else
+            hooks_utility_info "skipped, irrelevant merge" \
+                    "${MERGE_AM_CHECK_COMPONENT_NAME}"
+            return 0
+        fi
+
     else
-        hooks_utility_info "skip check, not a critical merge" \
-                "${MERGE_AM_CHECK_COMPONENT_NAME}"
+        hooks_utility_info \
+                "skipped, not a merge commit" "${MERGE_AM_CHECK_NAME}"
         return 0
     fi
 }
