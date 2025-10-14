@@ -8,6 +8,9 @@
 # version: v1.0.1-alpha
 ################################################################################
 
+# Todo use grey out color for time
+# todo auto generate better commit/merge message
+
 
 # configurations  ##############################################################
 
