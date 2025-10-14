@@ -11,7 +11,6 @@ set -euo pipefail
 ################################################################################
 
 # todo auto generate better commit/merge message
-# TODO line padding print
 # todo merge into dev, make sure CHANGELOG is edited
 
 
@@ -19,7 +18,7 @@ set -euo pipefail
 
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
-LOGGING_LEVEL=10
+LOGGING_LEVEL=20
 # use ANSI color codes when print to terminal
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
@@ -260,22 +259,44 @@ PADDING_MARGIN=2
 
 PADDING_PRINT_NAME="${HOOKS_UTILITY_NAME}:padding print"
 
-# TODO
+
+# print space character as margin b/t padding & message to stdout
+_print_padding_margin() {
+    printf '%*s' "${PADDING_MARGIN}" ''
+}
+
+# print padding of given count to stdout
+_print_padding_by_count() {
+    local padding="$1"
+    local -i cnt="$2" use_color="$3"
+
+    # generating padding by cnt
+    result=$( printf '%*s' "${cnt}" '' | tr ' ' "${padding}" )
+
+    if (( use_color )); then
+        result="${ANSI_COLOR_GREY}${result}${ANSI_RESET}"
+    fi
+
+    printf '%b' "${result}"
+}
+
+
 _print_with_padding() {
     local -i type="$1"
     local padding="$2" message="$3"
 
     local -i message_len
     message_len=$(printf '%s' "${message}" | wc -m)
-    hooks_utility_debug "message_len=${message_len}" "${PADDING_PRINT_NAME}"
+    hooks_utility_debug "type=${type} message_len=${message_len}" \
+            "${PADDING_PRINT_NAME}"
 
     # calculate left/right padding count  --------------------------------------
     local -i short_cnt long_cnt
     case "${type}" in
         0|1)
-            # left just
-            short_cnt=0
+            # left & right just
             long_cnt=$((PADDING_TERMINAL_WIDTH - message_len - PADDING_MARGIN))
+            short_cnt=1
             ;;
         2)
             # centered
@@ -286,20 +307,45 @@ _print_with_padding() {
             ;;
     esac
 
-    # assert it is 0+
-    if [[ short_cnt -lt 0 ]]; then
-        short_cnt=0
-    fi
-
     hooks_utility_debug "short_cnt=${short_cnt} long_cnt=${long_cnt}" \
             "${PADDING_PRINT_NAME}"
 
     # generate actual printout  ------------------------------------------------
-    # TODO print
+    # special case: message too long, just print message itself
+    if [[ short_cnt -lt 1 || long_cnt -lt 1 ]]; then
+        printf '%s' "${message}"
+        return 0
+    fi
 
-    # TODO color
+    local use_color=0
+    (( ENABLE_ANSI_COLOR )) && [[ -t 1 ]] && use_color=1
+
+    case "${type}" in
+        0)
+            printf '%s' "${message}";
+            _print_padding_margin;
+            _print_padding_by_count "${padding}" "${long_cnt}" "${use_color}";
+            ;;
+        1)
+            _print_padding_by_count "${padding}" "${long_cnt}" "${use_color}";
+            _print_padding_margin;
+            printf '%s' "${message}";
+            ;;
+        2)
+            _print_padding_by_count "${padding}" "${short_cnt}" "${use_color}";
+            _print_padding_margin;
+            printf '%s' "${message}";
+            _print_padding_margin;
+            _print_padding_by_count "${padding}" "${long_cnt}" "${use_color}";
+            ;;
+    esac
+
+    # print newline ending
+    printf '\n'
 }
 
+
+# TODO doc comment
 hooks_utility_padding_left_just() {
     _print_with_padding 0 "$@"
     return "$?"
