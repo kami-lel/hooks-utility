@@ -316,24 +316,36 @@ hooks_utility_am_check() {
     hooks_utility_debug "merge_type=${merge_type}" "${AM_CHECK_NAME}"
 
     # search AM in incoming content  ===========================================
-    local temp_opt=$(maketemp)
+    local tmp_printout
+    tmp_printout=$(maketemp)
 
     case "${merge_type}" in
-    1)
-        _search_am_generate_printout 1 "${temp_opt}"
+    1)  # feature -> dev
+        _search_am_generate_printout 1 "${tmp_printout}"
         ;;
-    2)
-        _search_am_generate_printout 1 "${temp_opt}"
-        _search_am_generate_printout 2 "${temp_opt}"
+    2)  # dev -> main
+        _search_am_generate_printout 1 "${tmp_printout}"
+        _search_am_generate_printout 2 "${tmp_printout}"
         ;;
     esac
 
-    # TODO
+    if [[ -s "${tmp_printout}" ]]; then
+        local printout_content
+        printout_content=$(cat "${tmp_printout}")
+        hooks_utility_error "found undesired AM(s) in incoming content:\n\
+                ${printout_content}" \
+                "${AM_CHECK_NAME}"
+        return 1
+    else
+        hooks_utility_info "passed" "${AM_CHECK_NAME}"
+        return 0
+    fi
 }
 
 _search_am_generate_printout() {
-    local -i type="$1"
-    local outfile="$2"
+    local -i am_class="$1"  # 1:primary AM, 2:secondary AM
+    local tmp_printout="$2"
 
-    # TODO
+    # HACK
+    cat "hi type=${am_class}" > "${tmp_printout}"
 }
