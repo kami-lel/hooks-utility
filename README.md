@@ -75,26 +75,20 @@ DEBUG:  Debug Message Content
 
 ### merging annotation marker (AM) check
 
-TODO write simple docs
-
-Annotation markers:
-
-- `TODO`s, `BUG`s, `FIXME`s, `HACK`s:
-- `Todo`s, ...:
-- `todo`s, ...:
+Todo write simple docs
 
 ```mermaid
-flowchart TD        
+flowchart TD
     feature[Feature Branches] --> a
     a{"asserts no
-    TODOs"} -->|merge| dev
+    primary AM"} -->|merge| dev
     a -->|failure| feature
     dev["**dev**" Branch ] --> b & c
     b{"asserts no
-    TODOs"} -->|merge| main
+    primary AM"} -->|merge| main
     b -->|failure| dev
     c{"asserts no
-    Todos"} -->|merge| main
+    secondary AM"} -->|merge| main
     c -->|failure| dev
     main["**main**" Branch ]
 ```
