@@ -355,6 +355,9 @@ _search_am_generate_printout() {
         2) pattern="${SECONDARY_AM_PATTERN}" ;;
     esac
 
+    # HACK
+    printf "%s================\n" "${pattern}" >>"${tmp_printout}"
+
     # iterate each added & modified files
     while IFS= read -r -d '' file; do
         local lines
@@ -364,8 +367,7 @@ _search_am_generate_printout() {
                 | grep -E "${pattern}")
 
         # FIXME better format
-        printf "%s:\n%s" "${file}" "${lines}" >>"${tmp_printout}"
-
+        printf "%s\n" "${lines}" >>"${tmp_printout}"
 
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 
