@@ -14,6 +14,8 @@ set -euo pipefail
 # todo merge into dev, make sure CHANGELOG is edited
 
 
+# todo read configurations from env?
+
 # configurations  ##############################################################
 
 # filtering log messages:
