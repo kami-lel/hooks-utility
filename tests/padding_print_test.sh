@@ -48,7 +48,38 @@ echo \
 "test coloring  ===============================================================\
 =="
 
-# TODO
+tmp=$(mktemp)
+title='Title Name'
+
+echo \
+"default behavior to terminal  ------------------------------------------------\
+--"
+
+echo "${title}" | hooks_utility_padding_left_just '#'
+
+echo \
+"default behavior to file  ----------------------------------------------------\
+--"
+
+echo "${title}" | hooks_utility_padding_right_just '#' 1> "${tmp}"
+cat "${tmp}"
+
+echo \
+"use -c  ----------------------------------------------------------------------\
+--"
+
+echo "${title}" | hooks_utility_padding_centered -c '#'
+echo "${title}" | hooks_utility_padding_centered -c '#' 1> "${tmp}"
+cat "${tmp}"
+
+echo \
+"use -C  ----------------------------------------------------------------------\
+--"
+
+echo "${title}" | hooks_utility_padding_centered -C '#'
+echo "${title}" | hooks_utility_padding_centered -C '#' 1> "${tmp}"
+cat "${tmp}"
+
 
 echo \
 "test -N  =====================================================================\
@@ -56,4 +87,4 @@ echo \
 
 printf "BEFORE"
 echo "Title" | hooks_utility_padding_centered -N '-'
-printf "AFTER"
+printf "AFTER\n"

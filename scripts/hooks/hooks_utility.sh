@@ -293,7 +293,7 @@ _parse_adding_padding() {
 
     # consider configurations
     local use_color=0
-    (( ENABLE_ANSI_COLOR )) && [[ -t stdout ]] && use_color=1
+    (( ENABLE_ANSI_COLOR )) && [[ -t 1 ]] && use_color=1
 
     # parse inputs  ------------------------------------------------------------
     local message
@@ -346,9 +346,6 @@ _parse_adding_padding() {
         hooks_utility_debug "message too long"
         printf '%s\n' "${message}"
     else
-
-        local use_color=0
-        (( ENABLE_ANSI_COLOR )) && [[ -t 1 ]] && use_color=1
 
         # generate actual printout
         case "${type}" in
