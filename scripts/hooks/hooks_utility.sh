@@ -440,7 +440,7 @@ hooks_utility_padding_centered() {
 
 
 # AM check  ####################################################################
-# FIXME change functions to pipe friendly, take stdin
+# Fixme change functions to pipe friendly, take stdin
 
 DEV_BRANCH_NAME='dev'
 MAIN_BRANCH_NAME='main'
