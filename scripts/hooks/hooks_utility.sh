@@ -437,9 +437,26 @@ _parse_adding_padding() {
 }
 
 
-# merge check  #################################################################
+# AM check  ####################################################################
+
+hooks_utility_am_check() {
+    echo "start" | hooks_utility_debug "${AM_CHECK_NAME}"
+
+}
+
+# constants  ===================================================================
+AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:AM check"
+
+
+# check changelog update  ######################################################
 # Todo merge into dev, make sure CHANGELOG is edited
+
+# check version update  ########################################################
 # Todo merge into main (i.e. release,)  make sure version is updated
+
+
+
+# merge check  #################################################################
 
 DEV_BRANCH_NAME='dev'
 MAIN_BRANCH_NAME='main'
@@ -467,8 +484,7 @@ SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
 # RETURN:
 #   0   success: pass or skip checks
 #   1   failure: undesired AM detected
-hooks_utility_am_check() {
-    echo "start" | hooks_utility_debug "${MERGE_CHECK_NAME}"
+hooks_utility_am_check_old() {
 
     local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
 
