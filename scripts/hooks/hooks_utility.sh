@@ -258,7 +258,6 @@ hooks_utility_critical() {
 
 
 # padding print  ###############################################################
-# FIXME change functions to pipe friendly, take stdin
 
 # number of spaces surround the message text
 PADDING_MARGIN=2
@@ -383,26 +382,29 @@ _parse_adding_padding() {
 
 # API padding print functions  =================================================
 
-# TODO update doc comment
 # hooks_utility_padding_left_just()
 #
-# print the MESSAGE with its right space filled with PADDING
+# print the message from stdin with its right space filled with PADDING
 #
 # USAGE:
-#   hooks_utility_padding_left_just PADDING MESSAGE
+#   hooks_utility_padding_left_just [-c|-C] [-N] PADDING
 #
 # ARGUMENT:
 #   PADDING     single symbol padding, e.g. '='
-#   MESSAGE     main message content to be printed
+#
+# OPTION:
+#   -c      always use ANSI coloring
+#   -C      never use ANSI coloring
+#   -N      no add newline at the end
 #
 # OUTPUT:
-#   print the MESSAGE with padding to stdout
+#   print the message with padding to stdout
 #
 # RETURN:
 #   0       success
 #
 # EXAMPLE:
-#   hooks_utility_padding_left_just '*' "Book Title"
+#   echo "Book Title" | hooks_utility_padding_left_just '*'
 hooks_utility_padding_left_just() {
     _parse_adding_padding 0 "$@"
     return "$?"
@@ -411,10 +413,10 @@ hooks_utility_padding_left_just() {
 
 # hooks_utility_padding_right_just()
 #
-# print the MESSAGE with its left space filled with PADDING
+# print the message from stdin with its left space filled with PADDING
 #
 # USAGE:
-#   hooks_utility_padding_right_just PADDING MESSAGE
+#   hooks_utility_padding_right_just [-c|-C] [-N] PADDING
 #
 # other aspects are same as hooks_utility_padding_left_just()
 hooks_utility_padding_right_just() {
@@ -425,10 +427,10 @@ hooks_utility_padding_right_just() {
 
 # hooks_utility_padding_centered()
 #
-# print the MESSAGE with its left and right space filled with PADDING
+# print the message from stdin with its left and right space filled with PADDING
 #
 # USAGE:
-#   hooks_utility_padding_centered PADDING MESSAGE
+#   hooks_utility_padding_centered [-c|-C] [-N] PADDING
 #
 # other aspects are same as hooks_utility_padding_left_just()
 hooks_utility_padding_centered() {
