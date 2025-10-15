@@ -263,13 +263,14 @@ hooks_utility_critical() {
 PADDING_MARGIN=2
 PADDING_PRINT_NAME="${HOOKS_UTILITY_NAME}:padding print"
 
-# print space character as margin b/t padding & message to stdout
+# print space character,  as margin b/t padding & message to stdout
 _print_padding_margin() {
     printf '%*s' "${PADDING_MARGIN}" ''
 }
 
-# print padding of given count to stdout
-_print_padding_by_count() {
+
+# print padding of the given count, to stdout
+_print_padding_of_count() {
     local padding="$1"
     local -i cnt="$2" use_color="$3"
 
@@ -284,11 +285,14 @@ _print_padding_by_count() {
 }
 
 
-_print_with_padding() {
+# main logic for padding print
+_parse_adding_padding() {
+    # parse inputs
     local -i type="$1"
-    local padding="$2" message="$3"
+    local padding="$2" message
+    message=$(cat --)  # read from stdin
 
-    local -i message_len
+    local -i message_len  # calculate length of message
     message_len=$(printf '%s' "${message}" | wc -m)
     hooks_utility_debug "type=${type} message_len=${message_len}" \
             "${PADDING_PRINT_NAME}"
@@ -328,22 +332,23 @@ _print_with_padding() {
         0)
             printf '%s' "${message}";
             _print_padding_margin;
-            _print_padding_by_count "${padding}" "${long_cnt}" "${use_color}";
+            _print_padding_of_count "${padding}" "${long_cnt}" "${use_color}";
             ;;
         1)
-            _print_padding_by_count "${padding}" "${long_cnt}" "${use_color}";
+            _print_padding_of_count "${padding}" "${long_cnt}" "${use_color}";
             _print_padding_margin;
             printf '%s' "${message}";
             ;;
         2)
-            _print_padding_by_count "${padding}" "${short_cnt}" "${use_color}";
+            _print_padding_of_count "${padding}" "${short_cnt}" "${use_color}";
             _print_padding_margin;
             printf '%s' "${message}";
             _print_padding_margin;
-            _print_padding_by_count "${padding}" "${long_cnt}" "${use_color}";
+            _print_padding_of_count "${padding}" "${long_cnt}" "${use_color}";
             ;;
     esac
 
+    # TODO make optional
     # print newline ending
     printf '\n'
     return 0
@@ -373,7 +378,7 @@ _print_with_padding() {
 # EXAMPLE:
 #   hooks_utility_padding_left_just '*' "Book Title"
 hooks_utility_padding_left_just() {
-    _print_with_padding 0 "$@"
+    _parse_adding_padding 0 "$@"
     return "$?"
 }
 
@@ -387,7 +392,7 @@ hooks_utility_padding_left_just() {
 #
 # other aspects are same as hooks_utility_padding_left_just()
 hooks_utility_padding_right_just() {
-    _print_with_padding 1 "$@"
+    _parse_adding_padding 1 "$@"
     return "$?"
 }
 
@@ -401,7 +406,7 @@ hooks_utility_padding_right_just() {
 #
 # other aspects are same as hooks_utility_padding_left_just()
 hooks_utility_padding_centered() {
-    _print_with_padding 2 "$@"
+    _parse_adding_padding 2 "$@"
     return "$?"
 }
 
