@@ -15,6 +15,7 @@ set -euo pipefail
 
 
 # todo read configurations from env?
+# FIXME refactor, move constants in each components lower
 
 # configurations  ##############################################################
 
