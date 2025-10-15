@@ -7,8 +7,8 @@ echo \
 "tests: log style message, basic tests  #######################################\
 ##"
 
-hooks_utility_debug "Some Debugging Message Content"
-hooks_utility_info "Content of Informational Message"
-hooks_utility_warning "Warning!"
-hooks_utility_error "Some Error Message"
-hooks_utility_critical "Giving Critical Error Message"
+echo "Some Debugging Message Content" | hooks_utility_debug
+echo "Content of Informational Message" | hooks_utility_info
+echo "Warning!" | hooks_utility_warning
+echo "Some Error Message" | hooks_utility_error
+echo "Giving Critical Error Message" | hooks_utility_critical

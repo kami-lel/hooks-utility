@@ -18,8 +18,8 @@ set -euo pipefail
 
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
-LOGGING_LEVEL=10
-# use ANSI color codes when print to terminal
+LOGGING_LEVEL=20
+# use ANSI color codes when print to terminal by default
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
 ENABLE_SPLIT_OUTPUT_STREAM=1
@@ -39,8 +39,6 @@ ANSI_RESET='\e[0m'
 
 
 # log style message  ###########################################################
-# Fixme change functions to pipe friendly, take stdin
-
 PREFIX_ERROR_DEBUG="DEBUG"
 PREFIX_ERROR_INFO="INFO "
 PREFIX_ERROR_WARNING="WARN "
@@ -51,38 +49,42 @@ PREFIX_ERROR_CRITICAL="CRIT "
 DATE_FORMAT="%Y-%m-%d"
 TIME_FORMAT="%H:%M:%S"
 
-# create standardized log messages
-_print_log_message() {
-    # filtering
-    local -i level="$1"; shift
 
-    if [[ level -lt LOGGING_LEVEL ]]; then
+_print_log_message() {
+    # filtering by log level
+    local -i level="$1"
+    shift
+
+    if [[ level -lt LOGGING_LEVEL  ]]; then
         # this message is filtered out
         return 0
     fi
 
-    # parsing rest args & options  ---------------------------------------------
+    # consider configurations
+    local target_fd=1 use_color=0
+    (( ENABLE_SPLIT_OUTPUT_STREAM )) && [[ level -ge 40 ]]  && target_fd=2
+    (( ENABLE_ANSI_COLOR )) && [[ -t "$target_fd" ]] && use_color=1
 
-    # parse options first
-    local d_flag="" t_flag=""
+    # parse inputs  ------------------------------------------------------------
+    local message
+    message=$(cat -)  # read from stdin
+
+    # parse options
+    local -i d_flag=0 t_flag=0
     OPTIND=1
-    while getopts ":dt" opt; do
+    while getopts ":dtcC" opt; do
         case "$opt" in
             d) d_flag=1 ;;
             t) t_flag=1 ;;
+            c) use_color=1 ;;
+            C) use_color=0 ;;
             \?) ;;  # ignore invalid options
         esac
     done
     shift $((OPTIND - 1))
 
     # parse args
-    local message="$1"
-    local source_arg="${2-}"
-
-    # consider configurations  -------------------------------------------------
-    local target_fd=1 use_color=0
-    (( ENABLE_SPLIT_OUTPUT_STREAM )) && [[ level -ge 40 ]]  && target_fd=2
-    (( ENABLE_ANSI_COLOR )) && [[ -t "$target_fd" ]] && use_color=1
+    local source_arg="${1-}"
 
     # decide prefix tag & color based on level  --------------------------------
     local prefix prefix_color
@@ -156,33 +158,35 @@ _print_log_message() {
     fi
 }
 
+
 # API log style message functions  =============================================
 
 # hooks_utility_debug()
 #
-# print a MESSAGE in log style message, prefixed with "DEBUG"
+# print message from stdin in log style message, prefixed with "DEBUG"
 #
 # USAGE:
-#   hooks_utility_debug [-d] [-t] MESSAGE [SOURCE]
+#   hooks_utility_debug [-d] [-t] [-c|-C] [SOURCE]
 #
 # ARGUMENT:
-#   MESSAGE     main message content to be printed
 #   SOURCE      indicate reason/source of the message, as part of the message
 #
 # OPTION:
-#   -d      contains current date in the printed message
-#   -t      contains current time in the printed message
+#   -d      contains current date
+#   -t      contains current time
+#   -c      always use ANSI coloring
+#   -C      never use ANSI coloring
 #
 # OUTPUT:
-#   print the given MESSAGE, in log style formatting, to stdout;
+#   print the formatted message to stdout;
 #   utilizing ANSI coloring if stdout is a console
 #
 # RETURN:
 #   0       success
 #
 # EXAMPLE:
-#   hooks_utility_debug "some debug information"
-#   hooks_utility_debug -dt "some debug information" "Main Component"
+#   echo "some debug information" | hooks_utility_debug
+#   echo "some debug information" | hooks_utility_debug -dt  "Main Component"
 hooks_utility_debug() {
     _print_log_message 10 "$@"
     return "$?"
@@ -191,10 +195,10 @@ hooks_utility_debug() {
 
 # hooks_utility_info()
 #
-# print a MESSAGE in log style message, prefixed with "INFO"
+# print message from stdin in log style message, prefixed with "INFO"
 #
 # USAGE:
-#   hooks_utility_info [-d] [-t] MESSAGE [SOURCE]
+#   hooks_utility_info [-d] [-t] [-c|-C] [SOURCE]
 #
 # other aspects are same as hooks_utility_debug()
 hooks_utility_info() {
@@ -205,10 +209,10 @@ hooks_utility_info() {
 
 # hooks_utility_warning()
 #
-# print a MESSAGE in log style message, prefixed with "WARN"
+# print message from stdin in log style message, prefixed with "WARN"
 #
 # USAGE:
-#   hooks_utility_warning [-d] [-t] MESSAGE [SOURCE]
+#   hooks_utility_warning [-d] [-t] [-c|-C] [SOURCE]
 #
 # other aspects are same as hooks_utility_debug()
 hooks_utility_warning() {
@@ -219,14 +223,14 @@ hooks_utility_warning() {
 
 # hooks_utility_error()
 #
-# print a MESSAGE in log style message, prefixed with "ERROR"
+# print message from stdin in log style message, prefixed with "ERROR"
 #
 # USAGE:
-#   hooks_utility_error [-d] [-t] MESSAGE [SOURCE]
+#   hooks_utility_error [-d] [-t] [-c|-C] [SOURCE]
 #
 # OUTPUT:
-#   print the given MESSAGE, in log style formatting,
-#   to stdout/stderr depending on configuration ENABLE_SPLIT_OUTPUT_STREAM,
+#   print the formatted message to stdout/stderr
+#   depending on configuration ENABLE_SPLIT_OUTPUT_STREAM;
 #   utilizing ANSI coloring if stdout/stderr is a console
 #
 # other aspects are same as hooks_utility_debug()
@@ -238,10 +242,10 @@ hooks_utility_error() {
 
 # hooks_utility_critical()
 #
-# print a MESSAGE in log style message, prefixed with "CRIT"
+# print message from stdin in log style message, prefixed with "CRIT"
 #
 # USAGE:
-#   hooks_utility_critical [-d] [-t] MESSAGE [SOURCE]
+#   hooks_utility_critical [-d] [-t] [-c|-C] [SOURCE]
 #
 # OUTPUT:
 #   same as hooks_utility_error()
@@ -254,21 +258,19 @@ hooks_utility_critical() {
 
 
 # padding print  ###############################################################
-# Fixme change functions to pipe friendly, take stdin
 
 # number of spaces surround the message text
 PADDING_MARGIN=2
-
 PADDING_PRINT_NAME="${HOOKS_UTILITY_NAME}:padding print"
 
-
-# print space character as margin b/t padding & message to stdout
+# print space character,  as margin b/t padding & message to stdout
 _print_padding_margin() {
     printf '%*s' "${PADDING_MARGIN}" ''
 }
 
-# print padding of given count to stdout
-_print_padding_by_count() {
+
+# print padding of the given count, to stdout
+_print_padding_of_count() {
     local padding="$1"
     local -i cnt="$2" use_color="$3"
 
@@ -283,11 +285,36 @@ _print_padding_by_count() {
 }
 
 
-_print_with_padding() {
+# main logic for padding print
+_parse_adding_padding() {
     local -i type="$1"
-    local padding="$2" message="$3"
+    shift
 
-    local -i message_len
+    # consider configurations
+    local use_color=0
+    (( ENABLE_ANSI_COLOR )) && [[ -t 1 ]] && use_color=1
+
+    # parse inputs  ------------------------------------------------------------
+    local message
+    message=$(cat --)  # read from stdin
+
+    local -i nn_flag=0
+    # parse options
+    OPTIND=1
+    while getopts ":cCN" opt; do
+        case "$opt" in
+            c) use_color=1 ;;
+            C) use_color=0 ;;
+            N) nn_flag=1 ;;
+            \?) ;;  # ignore invalid options
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    # parse args
+    local padding="$1"
+
+    local -i message_len  # calculate length of message
     message_len=$(printf '%s' "${message}" | wc -m)
     hooks_utility_debug "type=${type} message_len=${message_len}" \
             "${PADDING_PRINT_NAME}"
@@ -312,39 +339,43 @@ _print_with_padding() {
     hooks_utility_debug "short_cnt=${short_cnt} long_cnt=${long_cnt}" \
             "${PADDING_PRINT_NAME}"
 
-    # generate actual printout  ------------------------------------------------
+    # print out  ---------------------------------------------------------------
     # special case: message too long, just print message itself
     if [[ short_cnt -lt 1 || long_cnt -lt 1 ]]; then
         hooks_utility_debug "message too long"
         printf '%s\n' "${message}"
-        return 0
+    else
+
+        # generate actual printout
+        case "${type}" in
+            0)
+                printf '%s' "${message}";
+                _print_padding_margin;
+                _print_padding_of_count \
+                        "${padding}" "${long_cnt}" "${use_color}";
+                ;;
+            1)
+                _print_padding_of_count \
+                        "${padding}" "${long_cnt}" "${use_color}";
+                _print_padding_margin;
+                printf '%s' "${message}";
+                ;;
+            2)
+                _print_padding_of_count \
+                        "${padding}" "${short_cnt}" "${use_color}";
+                _print_padding_margin;
+                printf '%s' "${message}";
+                _print_padding_margin;
+                _print_padding_of_count \
+                        "${padding}" "${long_cnt}" "${use_color}";
+                ;;
+        esac
     fi
 
-    local use_color=0
-    (( ENABLE_ANSI_COLOR )) && [[ -t 1 ]] && use_color=1
+    if ! (( nn_flag )); then
+        printf '\n'
+    fi
 
-    case "${type}" in
-        0)
-            printf '%s' "${message}";
-            _print_padding_margin;
-            _print_padding_by_count "${padding}" "${long_cnt}" "${use_color}";
-            ;;
-        1)
-            _print_padding_by_count "${padding}" "${long_cnt}" "${use_color}";
-            _print_padding_margin;
-            printf '%s' "${message}";
-            ;;
-        2)
-            _print_padding_by_count "${padding}" "${short_cnt}" "${use_color}";
-            _print_padding_margin;
-            printf '%s' "${message}";
-            _print_padding_margin;
-            _print_padding_by_count "${padding}" "${long_cnt}" "${use_color}";
-            ;;
-    esac
-
-    # print newline ending
-    printf '\n'
     return 0
 }
 
@@ -353,53 +384,57 @@ _print_with_padding() {
 
 # hooks_utility_padding_left_just()
 #
-# print the MESSAGE with its right space filled with PADDING
+# print the message from stdin with its right space filled with PADDING
 #
 # USAGE:
-#   hooks_utility_padding_left_just PADDING MESSAGE
+#   hooks_utility_padding_left_just [-c|-C] [-N] PADDING
 #
 # ARGUMENT:
 #   PADDING     single symbol padding, e.g. '='
-#   MESSAGE     main message content to be printed
+#
+# OPTION:
+#   -c      always use ANSI coloring
+#   -C      never use ANSI coloring
+#   -N      no add newline at the end
 #
 # OUTPUT:
-#   print the MESSAGE with padding to stdout
+#   print the message with padding to stdout
 #
 # RETURN:
 #   0       success
 #
 # EXAMPLE:
-#   hooks_utility_padding_left_just '*' "Book Title"
+#   echo "Book Title" | hooks_utility_padding_left_just '*'
 hooks_utility_padding_left_just() {
-    _print_with_padding 0 "$@"
+    _parse_adding_padding 0 "$@"
     return "$?"
 }
 
 
 # hooks_utility_padding_right_just()
 #
-# print the MESSAGE with its left space filled with PADDING
+# print the message from stdin with its left space filled with PADDING
 #
 # USAGE:
-#   hooks_utility_padding_right_just PADDING MESSAGE
+#   hooks_utility_padding_right_just [-c|-C] [-N] PADDING
 #
 # other aspects are same as hooks_utility_padding_left_just()
 hooks_utility_padding_right_just() {
-    _print_with_padding 1 "$@"
+    _parse_adding_padding 1 "$@"
     return "$?"
 }
 
 
 # hooks_utility_padding_centered()
 #
-# print the MESSAGE with its left and right space filled with PADDING
+# print the message from stdin with its left and right space filled with PADDING
 #
 # USAGE:
-#   hooks_utility_padding_centered PADDING MESSAGE
+#   hooks_utility_padding_centered [-c|-C] [-N] PADDING
 #
 # other aspects are same as hooks_utility_padding_left_just()
 hooks_utility_padding_centered() {
-    _print_with_padding 2 "$@"
+    _parse_adding_padding 2 "$@"
     return "$?"
 }
 
