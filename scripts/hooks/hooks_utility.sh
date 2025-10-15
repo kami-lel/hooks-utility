@@ -39,6 +39,7 @@ ANSI_RESET='\e[0m'
 
 
 # log style message  ###########################################################
+
 PREFIX_ERROR_DEBUG="DEBUG"
 PREFIX_ERROR_INFO="INFO "
 PREFIX_ERROR_WARNING="WARN "
@@ -49,7 +50,104 @@ PREFIX_ERROR_CRITICAL="CRIT "
 DATE_FORMAT="%Y-%m-%d"
 TIME_FORMAT="%H:%M:%S"
 
+# API functions  ===============================================================
 
+# hooks_utility_debug()
+#
+# print message from stdin in log style message, prefixed with "DEBUG"
+#
+# USAGE:
+#   hooks_utility_debug [-d] [-t] [-c|-C] [SOURCE]
+#
+# ARGUMENT:
+#   SOURCE      indicate reason/source of the message, as part of the message
+#
+# OPTION:
+#   -d      contains current date
+#   -t      contains current time
+#   -c      always use ANSI coloring
+#   -C      never use ANSI coloring
+#
+# OUTPUT:
+#   print the formatted message to stdout;
+#   utilizing ANSI coloring if stdout is a console
+#
+# RETURN:
+#   0       success
+#
+# EXAMPLE:
+#   echo "some debug information" | hooks_utility_debug
+#   echo "some debug information" | hooks_utility_debug -dt  "Main Component"
+hooks_utility_debug() {
+    _print_log_message 10 "$@"
+    return "$?"
+}
+
+
+# hooks_utility_info()
+#
+# print message from stdin in log style message, prefixed with "INFO"
+#
+# USAGE:
+#   hooks_utility_info [-d] [-t] [-c|-C] [SOURCE]
+#
+# other aspects are same as hooks_utility_debug()
+hooks_utility_info() {
+    _print_log_message 20 "$@"
+    return "$?"
+}
+
+
+# hooks_utility_warning()
+#
+# print message from stdin in log style message, prefixed with "WARN"
+#
+# USAGE:
+#   hooks_utility_warning [-d] [-t] [-c|-C] [SOURCE]
+#
+# other aspects are same as hooks_utility_debug()
+hooks_utility_warning() {
+    _print_log_message 30 "$@"
+    return "$?"
+}
+
+
+# hooks_utility_error()
+#
+# print message from stdin in log style message, prefixed with "ERROR"
+#
+# USAGE:
+#   hooks_utility_error [-d] [-t] [-c|-C] [SOURCE]
+#
+# OUTPUT:
+#   print the formatted message to stdout/stderr
+#   depending on configuration ENABLE_SPLIT_OUTPUT_STREAM;
+#   utilizing ANSI coloring if stdout/stderr is a console
+#
+# other aspects are same as hooks_utility_debug()
+hooks_utility_error() {
+    _print_log_message 40 "$@"
+    return "$?"
+}
+
+
+# hooks_utility_critical()
+#
+# print message from stdin in log style message, prefixed with "CRIT"
+#
+# USAGE:
+#   hooks_utility_critical [-d] [-t] [-c|-C] [SOURCE]
+#
+# OUTPUT:
+#   same as hooks_utility_error()
+#
+# other aspects are same as hooks_utility_debug()
+hooks_utility_critical() {
+    _print_log_message 50 "$@"
+    return "$?"
+}
+
+# helper functions  ============================================================
 _print_log_message() {
     # filtering by log level
     local -i level="$1"
@@ -159,110 +257,70 @@ _print_log_message() {
 }
 
 
-# API log style message functions  =============================================
+# padding print  ###############################################################
 
-# hooks_utility_debug()
+PADDING_MARGIN=2  # number of spaces surround the message text
+PADDING_PRINT_NAME="${HOOKS_UTILITY_NAME}:padding print"
+
+# API functions  ===============================================================
+
+# hooks_utility_padding_left_just()
 #
-# print message from stdin in log style message, prefixed with "DEBUG"
+# print the message from stdin with its right space filled with PADDING
 #
 # USAGE:
-#   hooks_utility_debug [-d] [-t] [-c|-C] [SOURCE]
+#   hooks_utility_padding_left_just [-c|-C] [-N] PADDING
 #
 # ARGUMENT:
-#   SOURCE      indicate reason/source of the message, as part of the message
+#   PADDING     single symbol padding, e.g. '='
 #
 # OPTION:
-#   -d      contains current date
-#   -t      contains current time
 #   -c      always use ANSI coloring
 #   -C      never use ANSI coloring
+#   -N      no add newline at the end
 #
 # OUTPUT:
-#   print the formatted message to stdout;
-#   utilizing ANSI coloring if stdout is a console
+#   print the message with padding to stdout
 #
 # RETURN:
 #   0       success
 #
 # EXAMPLE:
-#   echo "some debug information" | hooks_utility_debug
-#   echo "some debug information" | hooks_utility_debug -dt  "Main Component"
-hooks_utility_debug() {
-    _print_log_message 10 "$@"
+#   echo "Book Title" | hooks_utility_padding_left_just '*'
+hooks_utility_padding_left_just() {
+    _parse_adding_padding 0 "$@"
     return "$?"
 }
 
 
-# hooks_utility_info()
+# hooks_utility_padding_right_just()
 #
-# print message from stdin in log style message, prefixed with "INFO"
+# print the message from stdin with its left space filled with PADDING
 #
 # USAGE:
-#   hooks_utility_info [-d] [-t] [-c|-C] [SOURCE]
+#   hooks_utility_padding_right_just [-c|-C] [-N] PADDING
 #
-# other aspects are same as hooks_utility_debug()
-hooks_utility_info() {
-    _print_log_message 20 "$@"
+# other aspects are same as hooks_utility_padding_left_just()
+hooks_utility_padding_right_just() {
+    _parse_adding_padding 1 "$@"
     return "$?"
 }
 
 
-# hooks_utility_warning()
+# hooks_utility_padding_centered()
 #
-# print message from stdin in log style message, prefixed with "WARN"
+# print the message from stdin with its left and right space filled with PADDING
 #
 # USAGE:
-#   hooks_utility_warning [-d] [-t] [-c|-C] [SOURCE]
+#   hooks_utility_padding_centered [-c|-C] [-N] PADDING
 #
-# other aspects are same as hooks_utility_debug()
-hooks_utility_warning() {
-    _print_log_message 30 "$@"
+# other aspects are same as hooks_utility_padding_left_just()
+hooks_utility_padding_centered() {
+    _parse_adding_padding 2 "$@"
     return "$?"
 }
 
-
-# hooks_utility_error()
-#
-# print message from stdin in log style message, prefixed with "ERROR"
-#
-# USAGE:
-#   hooks_utility_error [-d] [-t] [-c|-C] [SOURCE]
-#
-# OUTPUT:
-#   print the formatted message to stdout/stderr
-#   depending on configuration ENABLE_SPLIT_OUTPUT_STREAM;
-#   utilizing ANSI coloring if stdout/stderr is a console
-#
-# other aspects are same as hooks_utility_debug()
-hooks_utility_error() {
-    _print_log_message 40 "$@"
-    return "$?"
-}
-
-
-# hooks_utility_critical()
-#
-# print message from stdin in log style message, prefixed with "CRIT"
-#
-# USAGE:
-#   hooks_utility_critical [-d] [-t] [-c|-C] [SOURCE]
-#
-# OUTPUT:
-#   same as hooks_utility_error()
-#
-# other aspects are same as hooks_utility_debug()
-hooks_utility_critical() {
-    _print_log_message 50 "$@"
-    return "$?"
-}
-
-
-# padding print  ###############################################################
-
-# number of spaces surround the message text
-PADDING_MARGIN=2
-PADDING_PRINT_NAME="${HOOKS_UTILITY_NAME}:padding print"
-
+# helper functions  ============================================================
 # print space character,  as margin b/t padding & message to stdout
 _print_padding_margin() {
     printf '%*s' "${PADDING_MARGIN}" ''
@@ -380,65 +438,6 @@ _parse_adding_padding() {
 }
 
 
-# API padding print functions  =================================================
-
-# hooks_utility_padding_left_just()
-#
-# print the message from stdin with its right space filled with PADDING
-#
-# USAGE:
-#   hooks_utility_padding_left_just [-c|-C] [-N] PADDING
-#
-# ARGUMENT:
-#   PADDING     single symbol padding, e.g. '='
-#
-# OPTION:
-#   -c      always use ANSI coloring
-#   -C      never use ANSI coloring
-#   -N      no add newline at the end
-#
-# OUTPUT:
-#   print the message with padding to stdout
-#
-# RETURN:
-#   0       success
-#
-# EXAMPLE:
-#   echo "Book Title" | hooks_utility_padding_left_just '*'
-hooks_utility_padding_left_just() {
-    _parse_adding_padding 0 "$@"
-    return "$?"
-}
-
-
-# hooks_utility_padding_right_just()
-#
-# print the message from stdin with its left space filled with PADDING
-#
-# USAGE:
-#   hooks_utility_padding_right_just [-c|-C] [-N] PADDING
-#
-# other aspects are same as hooks_utility_padding_left_just()
-hooks_utility_padding_right_just() {
-    _parse_adding_padding 1 "$@"
-    return "$?"
-}
-
-
-# hooks_utility_padding_centered()
-#
-# print the message from stdin with its left and right space filled with PADDING
-#
-# USAGE:
-#   hooks_utility_padding_centered [-c|-C] [-N] PADDING
-#
-# other aspects are same as hooks_utility_padding_left_just()
-hooks_utility_padding_centered() {
-    _parse_adding_padding 2 "$@"
-    return "$?"
-}
-
-
 # AM check  ####################################################################
 # Fixme change functions to pipe friendly, take stdin
 
@@ -447,6 +446,8 @@ MAIN_BRANCH_NAME='main'
 AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:AM check"
 PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
 SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
+
+# API functions  ===============================================================
 
 # hooks_utility_am_check()
 #
@@ -544,6 +545,7 @@ ${printout_content}" \
 }
 
 
+# helper functions  ============================================================
 _search_am_generate_printout() {
     local -i am_class="$1"  # 1:primary AM, 2:secondary AM
     local tmp_printout="$2"
