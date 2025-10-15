@@ -11,7 +11,6 @@ set -euo pipefail
 ################################################################################
 
 # todo auto generate better commit/merge message
-# todo merge into dev, make sure CHANGELOG is edited
 
 
 # configurations  ##############################################################
@@ -438,8 +437,10 @@ _parse_adding_padding() {
 }
 
 
-# AM check  ####################################################################
-# Fixme change functions to pipe friendly, take stdin
+# merge check  #################################################################
+# FIXME pipify
+# Todo merge into dev, make sure CHANGELOG is edited
+# Todo merge into main (i.e. release,)  make sure version is updated
 
 DEV_BRANCH_NAME='dev'
 MAIN_BRANCH_NAME='main'
