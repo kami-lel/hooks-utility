@@ -373,8 +373,8 @@ _parse_adding_padding() {
 
     local -i message_len  # calculate length of message
     message_len=$(printf '%s' "${message}" | wc -m)
-    hooks_utility_debug "type=${type} message_len=${message_len}" \
-            "${PADDING_PRINT_NAME}"
+    printf 'type=%s message_len=%s\n' "${type}" "${message_len}" | \
+            hooks_utility_debug "${PADDING_PRINT_NAME}"
 
     # calculate left/right padding count  --------------------------------------
     local -i short_cnt long_cnt
@@ -393,13 +393,13 @@ _parse_adding_padding() {
             ;;
     esac
 
-    hooks_utility_debug "short_cnt=${short_cnt} long_cnt=${long_cnt}" \
-            "${PADDING_PRINT_NAME}"
+    printf "short_cnt=%s long_cnt=%s\n" "${short_cnt}" "${long_cnt}" | \
+            hooks_utility_debug "${PADDING_PRINT_NAME}"
 
     # print out  ---------------------------------------------------------------
     # special case: message too long, just print message itself
     if [[ short_cnt -lt 1 || long_cnt -lt 1 ]]; then
-        hooks_utility_debug "message too long"
+        echo "message too long" | hooks_utility_debug "${PADDING_PRINT_NAME}"
         printf '%s\n' "${message}"
     else
 
@@ -438,13 +438,12 @@ _parse_adding_padding() {
 
 
 # merge check  #################################################################
-# FIXME pipify
 # Todo merge into dev, make sure CHANGELOG is edited
 # Todo merge into main (i.e. release,)  make sure version is updated
 
 DEV_BRANCH_NAME='dev'
 MAIN_BRANCH_NAME='main'
-AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:AM check"
+MERGE_CHECK_NAME="${HOOKS_UTILITY_NAME}:merge check"
 PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
 SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
 
@@ -469,18 +468,18 @@ SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
 #   0   success: pass or skip checks
 #   1   failure: undesired AM detected
 hooks_utility_am_check() {
-    hooks_utility_debug "start" "${AM_CHECK_NAME}"
+    echo "start" | hooks_utility_debug "${MERGE_CHECK_NAME}"
 
     local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
 
     # skip non-merge commit
     if ! [[ -f "${merge_head_dir}" ]]; then
-        hooks_utility_info \
-                "skipped, not a merge commit" "${AM_CHECK_NAME}"
+        echo "skipped, not a merge commit" | \
+                hooks_utility_info "${MERGE_CHECK_NAME}"
         return 0
     elif [[ $(wc -l < "${merge_head_dir}") -ne 1 ]]; then
-        hooks_utility_info \
-                "skipped, octopus merge" "${AM_CHECK_NAME}"
+        echo "skipped, octopus merge" | \
+                hooks_utility_info "${MERGE_CHECK_NAME}"
         return 0
     fi
 
@@ -497,9 +496,9 @@ hooks_utility_am_check() {
     local target_branch
     target_branch=$(git rev-parse --abbrev-ref HEAD)
 
-    hooks_utility_debug \
-            "source_branch=${source_branch}; target_branch=${target_branch}" \
-            "${AM_CHECK_NAME}"
+    printf 'source_branch=%s; target_branch=%s\n' \
+            "${source_branch}" "${target_branch}" | \
+            hooks_utility_debug "${MERGE_CHECK_NAME}"
 
     # decide merge type  -------------------------------------------------------
     if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" && \
@@ -511,12 +510,13 @@ hooks_utility_am_check() {
         merge_type=2  # from dev branch -> main branch
 
     else
-        hooks_utility_info "skipped, irrelevant merge" \
-                "${AM_CHECK_NAME}"
+        echo "skipped, irrelevant merge" | \
+                hooks_utility_info  "${MERGE_CHECK_NAME}"
         return 0
     fi
 
-    hooks_utility_debug "merge_type=${merge_type}" "${AM_CHECK_NAME}"
+    printf 'merge_type=%s' "${merge_type}\n" | \
+            hooks_utility_debug "${MERGE_CHECK_NAME}"
 
     # search AM in incoming content  ===========================================
     local tmp_printout
@@ -535,12 +535,12 @@ hooks_utility_am_check() {
     if [[ -s "${tmp_printout}" ]]; then
         local printout_content
         printout_content=$(cat "${tmp_printout}")
-        hooks_utility_error "found undesired AM(s) in incoming content:\n\
-${printout_content}" \
-                "${AM_CHECK_NAME}"
+        printf 'found undesired AM(s) in incoming content:\n%s' \
+                "${printout_content}" | \
+                hooks_utility_error "${MERGE_CHECK_NAME}"
         return 1
     else
-        hooks_utility_info "passed" "${AM_CHECK_NAME}"
+        echo "passed" | hooks_utility_info "${MERGE_CHECK_NAME}"
         return 0
     fi
 }
@@ -573,5 +573,4 @@ _search_am_generate_printout() {
         fi
 
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
-
 }
