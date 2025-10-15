@@ -439,33 +439,7 @@ _parse_adding_padding() {
 
 # AM check  ####################################################################
 
-hooks_utility_am_check() {
-    echo "start" | hooks_utility_debug "${AM_CHECK_NAME}"
-
-}
-
-# constants  ===================================================================
-AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:AM check"
-
-
-# check changelog update  ######################################################
-# Todo merge into dev, make sure CHANGELOG is edited
-
-# check version update  ########################################################
-# Todo merge into main (i.e. release,)  make sure version is updated
-
-
-
-# merge check  #################################################################
-
-DEV_BRANCH_NAME='dev'
-MAIN_BRANCH_NAME='main'
-MERGE_CHECK_NAME="${HOOKS_UTILITY_NAME}:merge check"
-PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
-SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
-
-# API functions  ===============================================================
-
+# FIXME
 # hooks_utility_am_check()
 #
 # assert there is NO annotation markers (AM) merging into protected branches,
@@ -484,56 +458,30 @@ SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
 # RETURN:
 #   0   success: pass or skip checks
 #   1   failure: undesired AM detected
-hooks_utility_am_check_old() {
+hooks_utility_am_check() {
+    echo "start" | hooks_utility_debug "${AM_CHECK_NAME}"
 
-    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
-
-    # skip non-merge commit
-    if ! [[ -f "${merge_head_dir}" ]]; then
-        echo "skipped, not a merge commit" | \
-                hooks_utility_debug "${MERGE_CHECK_NAME}"
-        return 0
-    elif [[ $(wc -l < "${merge_head_dir}") -ne 1 ]]; then
-        echo "skipped, octopus merge" | \
-                hooks_utility_debug "${MERGE_CHECK_NAME}"
+    # skip non merging commit, or an octopus merge
+    if [[ $( get_commit_type ) != 'merge_commit' ]]; then
+        echo "skipped, not a merge commit of 2 branches" | \
+                hooks_utility_debug "${AM_CHECK_NAME}"
         return 0
     fi
 
+    # find merge type  ---------------------------------------------------------
+    local merge_type
+    merge_type=$( get_merge_type )
 
-    # find merge type  =========================================================
-    local -i merge_type
-
-    # find source_branch, i.e. branch which merge from
-    local source_sha source_branch
-    source_sha=$(cat "${merge_head_dir}")
-    source_branch=$(git name-rev --name-only "${source_sha}")
-
-    # find target_branch, i.e. branch which merge into
-    local target_branch
-    target_branch=$(git rev-parse --abbrev-ref HEAD)
-
-    printf 'source_branch=%s; target_branch=%s\n' \
-            "${source_branch}" "${target_branch}" | \
-            hooks_utility_debug "${MERGE_CHECK_NAME}"
-
-    # decide merge type  -------------------------------------------------------
-    if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" && \
-            "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
-        merge_type=1  # from feature branches -> dev branch
-
-    elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" && \
-            "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
-        merge_type=2  # from dev branch -> main branch
-
-    else
-        echo "skipped, irrelevant merge" | \
-                hooks_utility_debug "${MERGE_CHECK_NAME}"
+    if ! [[ -n merge_type ]]; then
+        echo "skipped, trivial merge" | \
+                hooks_utility_debug "${AM_CHECK_NAME}"
         return 0
     fi
 
     printf 'merge_type=%s' "${merge_type}\n" | \
             hooks_utility_debug "${MERGE_CHECK_NAME}"
 
+    # TODO improve
     # search AM in incoming content  ===========================================
     local tmp_printout
     tmp_printout=$(mktemp)
@@ -561,8 +509,87 @@ hooks_utility_am_check_old() {
     fi
 }
 
+# constants  ===================================================================
+AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:AM check"
+
+DEV_BRANCH_NAME='dev'
+MAIN_BRANCH_NAME='main'
+
+PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
+SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
 
 # helper functions  ============================================================
+# TODO combine these 2 functions
+
+# get_commit_type()
+#
+# at stage of pre-commit, decide type of the commit
+#
+# OUTPUT:
+#   commit type printed to stdout:
+#   
+#   - 'commit': normal non-merging commit
+#   - 'merge_commit': merge commit of 2 branches
+#   - 'octopus_merge_commit'
+#
+# EXAMPLE:
+#   if [[ $( get_commit_type ) == "merge_commit" ]]
+get_commit_type() {
+    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
+
+    if ! [[ -f "${merge_head_dir}" ]]; then
+        printf 'commit'
+    elif [[ $(wc -l < "${merge_head_dir}") -ne 1 ]]; then
+        printf 'octopus_merge_commit'
+    else
+        printf 'merge_commit'
+    fi
+
+    return 0
+}
+
+
+# get_merge_type()
+#
+# at stage of pre-commit, decide essence/nature of the merge
+#
+# OUTPUT:
+#   merge type printed to stdout:
+# 
+#   - 'finish_feature': any branch (except main) -> dev branch
+#   - 'release': dev branch -> main branch
+#   - '': trivial merge
+#
+# EXAMPLE:
+#   if [[ $( get_merge_type ) == "release" ]]
+get_merge_type() {
+    # find source_branch, i.e. branch which merge from
+    local source_sha source_branch
+    source_sha=$(cat "${merge_head_dir}")
+    source_branch=$(git name-rev --name-only "${source_sha}")
+
+    # find target_branch, i.e. branch which merge into
+    local target_branch
+    target_branch=$(git rev-parse --abbrev-ref HEAD)
+
+    printf 'source_branch=%s; target_branch=%s\n' \
+            "${source_branch}" "${target_branch}" | \
+            hooks_utility_debug "${MERGE_CHECK_NAME}"
+
+    # decide merge type
+    if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" && \
+            "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
+        printf "finish_feature"
+
+    elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" && \
+            "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
+        printf "release"
+    fi
+
+    return 0
+}
+
+
 _search_am_generate_printout() {
     local -i am_class="$1"  # 1:primary AM, 2:secondary AM
     local tmp_printout="$2"
@@ -590,3 +617,17 @@ _search_am_generate_printout() {
 
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 }
+
+
+
+# check changelog update  ######################################################
+# Todo merge into dev, make sure CHANGELOG is edited
+
+# check version update  ########################################################
+# Todo merge into main (i.e. release,)  make sure version is updated
+
+
+
+# merge check  #################################################################
+
+# API functions  ===============================================================
