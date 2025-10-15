@@ -18,7 +18,7 @@ set -euo pipefail
 
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
-LOGGING_LEVEL=10
+LOGGING_LEVEL=20
 # use ANSI color codes when print to terminal by default
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
@@ -52,7 +52,8 @@ TIME_FORMAT="%H:%M:%S"
 
 _print_log_message() {
     # filtering by log level
-    local -i level="$1"; shift
+    local -i level="$1"
+    shift
 
     if [[ level -lt LOGGING_LEVEL  ]]; then
         # this message is filtered out
@@ -287,10 +288,32 @@ _print_padding_of_count() {
 
 # main logic for padding print
 _parse_adding_padding() {
-    # parse inputs
     local -i type="$1"
-    local padding="$2" message
+    shift
+
+    # consider configurations
+    local use_color=0
+    (( ENABLE_ANSI_COLOR )) && [[ -t stdout ]] && use_color=1
+
+    # parse inputs  ------------------------------------------------------------
+    local message
     message=$(cat --)  # read from stdin
+
+    local -i nn_flag=0
+    # parse options
+    OPTIND=1
+    while getopts ":cCN" opt; do
+        case "$opt" in
+            c) use_color=1 ;;
+            C) use_color=0 ;;
+            N) nn_flag=1 ;;
+            \?) ;;  # ignore invalid options
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    # parse args
+    local padding="$1"
 
     local -i message_len  # calculate length of message
     message_len=$(printf '%s' "${message}" | wc -m)
@@ -317,40 +340,46 @@ _parse_adding_padding() {
     hooks_utility_debug "short_cnt=${short_cnt} long_cnt=${long_cnt}" \
             "${PADDING_PRINT_NAME}"
 
-    # generate actual printout  ------------------------------------------------
+    # print out  ---------------------------------------------------------------
     # special case: message too long, just print message itself
     if [[ short_cnt -lt 1 || long_cnt -lt 1 ]]; then
         hooks_utility_debug "message too long"
         printf '%s\n' "${message}"
-        return 0
+    else
+
+        local use_color=0
+        (( ENABLE_ANSI_COLOR )) && [[ -t 1 ]] && use_color=1
+
+        # generate actual printout
+        case "${type}" in
+            0)
+                printf '%s' "${message}";
+                _print_padding_margin;
+                _print_padding_of_count \
+                        "${padding}" "${long_cnt}" "${use_color}";
+                ;;
+            1)
+                _print_padding_of_count \
+                        "${padding}" "${long_cnt}" "${use_color}";
+                _print_padding_margin;
+                printf '%s' "${message}";
+                ;;
+            2)
+                _print_padding_of_count \
+                        "${padding}" "${short_cnt}" "${use_color}";
+                _print_padding_margin;
+                printf '%s' "${message}";
+                _print_padding_margin;
+                _print_padding_of_count \
+                        "${padding}" "${long_cnt}" "${use_color}";
+                ;;
+        esac
     fi
 
-    local use_color=0
-    (( ENABLE_ANSI_COLOR )) && [[ -t 1 ]] && use_color=1
+    if ! (( nn_flag )); then
+        printf '\n'
+    fi
 
-    case "${type}" in
-        0)
-            printf '%s' "${message}";
-            _print_padding_margin;
-            _print_padding_of_count "${padding}" "${long_cnt}" "${use_color}";
-            ;;
-        1)
-            _print_padding_of_count "${padding}" "${long_cnt}" "${use_color}";
-            _print_padding_margin;
-            printf '%s' "${message}";
-            ;;
-        2)
-            _print_padding_of_count "${padding}" "${short_cnt}" "${use_color}";
-            _print_padding_margin;
-            printf '%s' "${message}";
-            _print_padding_margin;
-            _print_padding_of_count "${padding}" "${long_cnt}" "${use_color}";
-            ;;
-    esac
-
-    # TODO make optional
-    # print newline ending
-    printf '\n'
     return 0
 }
 
