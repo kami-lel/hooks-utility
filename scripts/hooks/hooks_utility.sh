@@ -17,7 +17,7 @@ set -euo pipefail
 
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
-LOGGING_LEVEL=20
+LOGGING_LEVEL=10
 # use ANSI color codes when print to terminal by default
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
@@ -48,6 +48,7 @@ PREFIX_ERROR_CRITICAL="CRIT "
 
 DATE_FORMAT="%Y-%m-%d"
 TIME_FORMAT="%H:%M:%S"
+
 
 # API functions  ===============================================================
 
@@ -145,6 +146,7 @@ hooks_utility_critical() {
     _print_log_message 50 "$@"
     return "$?"
 }
+
 
 # helper functions  ============================================================
 _print_log_message() {
@@ -625,9 +627,3 @@ _search_am_generate_printout() {
 
 # check version update  ########################################################
 # Todo merge into main (i.e. release,)  make sure version is updated
-
-
-
-# merge check  #################################################################
-
-# API functions  ===============================================================
