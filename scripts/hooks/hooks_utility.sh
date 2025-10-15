@@ -475,11 +475,11 @@ hooks_utility_am_check() {
     # skip non-merge commit
     if ! [[ -f "${merge_head_dir}" ]]; then
         echo "skipped, not a merge commit" | \
-                hooks_utility_info "${MERGE_CHECK_NAME}"
+                hooks_utility_debug "${MERGE_CHECK_NAME}"
         return 0
     elif [[ $(wc -l < "${merge_head_dir}") -ne 1 ]]; then
         echo "skipped, octopus merge" | \
-                hooks_utility_info "${MERGE_CHECK_NAME}"
+                hooks_utility_debug "${MERGE_CHECK_NAME}"
         return 0
     fi
 
@@ -511,7 +511,7 @@ hooks_utility_am_check() {
 
     else
         echo "skipped, irrelevant merge" | \
-                hooks_utility_info  "${MERGE_CHECK_NAME}"
+                hooks_utility_debug "${MERGE_CHECK_NAME}"
         return 0
     fi
 
