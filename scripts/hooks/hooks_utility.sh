@@ -7,7 +7,7 @@ set -euo pipefail
 # a collections of utility functions for git hooks
 #
 # author:  kamiLeL
-# version: v1.0.1-alpha
+# version: v1.1.0
 ################################################################################
 
 # configurations
