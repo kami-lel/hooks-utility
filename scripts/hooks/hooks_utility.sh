@@ -10,11 +10,7 @@ set -euo pipefail
 # version: v1.0.1-alpha
 ################################################################################
 
-# todo auto generate better commit/merge message
-# todo read configurations from env?
-
-
-# configurations  ##############################################################
+# configurations
 
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
@@ -511,7 +507,7 @@ TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
 
 # get_commit_type_at_pre_commit()
 #
-# at stage of pre-commit, decide type of the commit
+# in pre-commit, decide type of the commit
 #
 # OUTPUT:
 #   commit type printed to stdout:
@@ -589,7 +585,6 @@ _search_am_from_git_diff_cached() {
         if [[ -n ${lines} ]]; then 
             # print file name
             printf '%s' "${filename}" | hooks_utility_padding_left_just -c '-'
-            # fixme print lines, with format of line number & coloring AM
         fi
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 }
@@ -600,7 +595,7 @@ _search_am_from_git_diff_cached() {
 
 # hooks_utility_ensure_file_changed()
 #
-# at stage of pre-commit, ensure some file is edited
+# in pre-commit, ensure some file is edited
 #
 # USAGE:
 #   hooks_utility_ensure_file_edit FILE COMMIT_TYPE
@@ -656,8 +651,4 @@ hooks_utility_ensure_file_changed() {
 
 # constants  ===================================================================
 ENSURE_FILE_CHANGED_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:EFC"
-
-
-# check version update  ########################################################
-# todo merge into main (i.e. release,)  make sure version is updated
 
