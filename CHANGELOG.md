@@ -18,9 +18,6 @@
 
 ### Added
 ### Changed
-
-- change to *finish* script in example `pre-commit`
-
 ### Deprecated
 ### Removed
 ### Fixed
@@ -41,11 +38,12 @@
 
 ### Added
 
-- start log message in example `pre-commit`
+- finish log message in example `pre-commit`
 
 ### Fixed
 
 - return constant `LOGGING_LEVEL` to `20`
+- AM check, file fail to print multiple lines
 
 
 
