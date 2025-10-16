@@ -635,6 +635,8 @@ get_commit_type_at_pre_commit() {
     local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
 
     if ! [[ -f "${merge_head_dir}" ]]; then
+        # regular commit  ------------------------------------------------------
+        # include other non-merge commit types
         return 0  # print nothing
     elif [[ $(wc -l < "${merge_head_dir}") -ne 1 ]]; then
         # binary merge  --------------------------------------------------------
@@ -661,6 +663,7 @@ get_commit_type_at_pre_commit() {
         fi
 
     else
+        # octopus merge  -------------------------------------------------------
         printf 'merge-octopus'
     fi
 
