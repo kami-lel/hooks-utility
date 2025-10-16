@@ -18,7 +18,7 @@ set -euo pipefail
 
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
-LOGGING_LEVEL=20
+LOGGING_LEVEL=10
 # use ANSI color codes when print to terminal by default
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
@@ -479,7 +479,7 @@ hooks_utility_am_check() {
             result+=$(_search_am_from_git_diff_cached 2)
             ;;
         *)
-            echo "skipped, trivial commit type" | |
+            echo "skipped, trivial commit type" | \
                 hooks_utility_debug "${AM_CHECK_NAME}"
             return 0
     esac
@@ -508,74 +508,6 @@ TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
 
 
 # helper functions  ============================================================
-# FIXME deprecation
-# get_commit_type() 
-#
-# at stage of pre-commit, decide type of the commit
-#
-# OUTPUT:
-#   commit type printed to stdout:
-#   
-#   - 'commit': normal non-merging commit
-#   - 'merge_commit': binary merge commit (of 2 branches)
-#   - 'octopus_merge_commit'
-#
-# EXAMPLE:
-#   if [[ $( get_commit_type ) == "merge_commit" ]]
-get_commit_type() {
-    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
-
-    if ! [[ -f "${merge_head_dir}" ]]; then
-        printf 'commit'
-    elif [[ $(wc -l < "${merge_head_dir}") -ne 1 ]]; then
-        printf 'octopus_merge_commit'
-    else
-        printf 'merge_commit'
-    fi
-
-    return 0
-}
-
-
-# FIXME deprecation
-# get_merge_type()
-#
-# at stage of pre-commit, decide essence/nature of the merge
-#
-# OUTPUT:
-#   merge type printed to stdout:
-# 
-#   - 'finish_feature': any branch (except main) -> dev branch
-#   - 'release': dev branch -> main branch
-#   - '': trivial merge
-#
-# EXAMPLE:
-#   if [[ $( get_merge_type ) == "release" ]]
-get_merge_type() {
-    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
-
-    # find source_branch, i.e. branch which merge from
-    local source_sha source_branch
-    source_sha=$(cat "${merge_head_dir}")
-    source_branch=$(git name-rev --name-only "${source_sha}")
-
-    # find target_branch, i.e. branch which merge into
-    local target_branch
-    target_branch=$(git rev-parse --abbrev-ref HEAD)
-
-    # decide merge type
-    if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" && \
-            "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
-        printf "finish_feature"
-
-    elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" && \
-            "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
-        printf "release"
-    fi
-
-    return 0
-}
-
 
 # perform git diff --cached, find all AMs, print to stdout
 _search_am_from_git_diff_cached() {
@@ -637,8 +569,12 @@ get_commit_type_at_pre_commit() {
     if ! [[ -f "${merge_head_dir}" ]]; then
         # regular commit  ------------------------------------------------------
         # include other non-merge commit types
-        return 0  # print nothing
+        printf ''
     elif [[ $(wc -l < "${merge_head_dir}") -ne 1 ]]; then
+        # octopus merge  -------------------------------------------------------
+        printf 'merge-octopus'
+        
+    else
         # binary merge  --------------------------------------------------------
 
         # find source_branch, i.e. branch which merge from
@@ -661,10 +597,6 @@ get_commit_type_at_pre_commit() {
         else
             printf 'merge-binary'
         fi
-
-    else
-        # octopus merge  -------------------------------------------------------
-        printf 'merge-octopus'
     fi
 
     return 0
