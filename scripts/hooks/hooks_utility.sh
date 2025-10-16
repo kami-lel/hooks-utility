@@ -28,8 +28,7 @@ PADDING_TERMINAL_WIDTH=80
 
 
 # constants  ###################################################################
-
-HOOKS_UTILITY_NAME="hooks_utility"
+HOOKS_UTILITY_NAME="HU"
 
 ANSI_COLOR_BLUE='\e[0;34m'
 ANSI_COLOR_YELLOW='\e[0;33m'
@@ -509,44 +508,7 @@ TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
 
 # helper functions  ============================================================
 
-# perform git diff --cached, find all AMs, print to stdout
-_search_am_from_git_diff_cached() {
-    local -i am_class="$1"  # 1:primary AM, 2:secondary, 3: tertiary
-
-    # decide which pattern to use
-    local pattern
-    case "${am_class}" in
-        1) pattern="${PRIMARY_AM_PATTERN}";;
-        2) pattern="${SECONDARY_AM_PATTERN}";;
-        3) pattern="${TERTIARY_AM_PATTERN}";;
-    esac
-
-    # iterate each added & modified files
-    while IFS= read -r -d '' filename; do
-        local lines
-        lines=$(git diff --cached --unified=0 --no-color -- "${filename}" \
-                | grep '^+[^+]'\
-                | cut -c2-\
-                | grep -E "${pattern}" || true)
-        
-        if [[ -n ${lines} ]]; then 
-            # print file name
-            printf '%s' "${filename}" | hooks_utility_padding_left_just -c '-'
-            # fixme print lines, with format of line number & coloring AM
-        fi
-    done < <(git diff --cached --name-only -z --diff-filter=ACMR)
-}
-
-
-# ensure file change  ##########################################################
-# TODO
-
-
-# check version update  ########################################################
-# todo merge into main (i.e. release,)  make sure version is updated
-
-
-# get_commit_type_at_pre_commit()  #############################################
+# get_commit_type_at_pre_commit()
 #
 # at stage of pre-commit, decide type of the commit
 #
@@ -601,3 +563,79 @@ get_commit_type_at_pre_commit() {
 
     return 0
 }
+
+
+# perform git diff --cached, find all AMs, print to stdout
+_search_am_from_git_diff_cached() {
+    local -i am_class="$1"  # 1:primary AM, 2:secondary, 3: tertiary
+
+    # decide which pattern to use
+    local pattern
+    case "${am_class}" in
+        1) pattern="${PRIMARY_AM_PATTERN}";;
+        2) pattern="${SECONDARY_AM_PATTERN}";;
+        3) pattern="${TERTIARY_AM_PATTERN}";;
+    esac
+
+    # iterate each added & modified files
+    while IFS= read -r -d '' filename; do
+        local lines
+        lines=$(git diff --cached --unified=0 --no-color -- "${filename}" \
+                | grep '^+[^+]'\
+                | cut -c2-\
+                | grep -E "${pattern}" || true)
+        
+        if [[ -n ${lines} ]]; then 
+            # print file name
+            printf '%s' "${filename}" | hooks_utility_padding_left_just -c '-'
+            # fixme print lines, with format of line number & coloring AM
+        fi
+    done < <(git diff --cached --name-only -z --diff-filter=ACMR)
+}
+
+
+# hooks_utility_ensure_file_edit()  ############################################
+#
+# at stage of pre-commit, ensure some file is edited
+#
+# USAGE:
+#   hooks_utility_ensure_file_edit FILE COMMIT_TYPE
+#
+# ARGUMENT:
+#   FILE            file which is required to be changed,
+#                   relative path to repo root
+#   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
+#
+# RETURN:
+#   0       success, FILE is edited; or skip b/c irrelevant COMMIT_TYPE
+#   1       failure, FILE hasn't been edited
+#
+# EXAMPLE:
+#   hooks_utility_ensure_file_edit 'CHANGELOG.md' 'merge-binary-finish_feature'
+hooks_utility_ensure_file_edit() {
+    local filename, commit_type_arg
+    filename="$1"
+    commit_type_arg="$2"
+
+    local commit_type
+    commit_type=$( get_commit_type_at_pre_commit )
+    printf 'commit_type=%s' "${commit_type}" | \
+            hooks_utility_debug "${ENSURE_FILE_EDIT_NAME}"
+
+    if [[ "${commit_type}" == "${commit_type_arg}*" ]]; then
+        # proceed ensuring check  ----------------------------------------------
+        # TODO
+    else
+        printf 'skipped, irrelevant commit type' | \
+                hooks_utility_debug "${ENSURE_FILE_EDIT_NAME}"
+        return 0
+    fi
+}
+
+# constants  ===================================================================
+ENSURE_FILE_EDIT_NAME="${HOOKS_UTILITY_NAME}:ensure file edit"
+
+
+# check version update  ########################################################
+# todo merge into main (i.e. release,)  make sure version is updated
+
