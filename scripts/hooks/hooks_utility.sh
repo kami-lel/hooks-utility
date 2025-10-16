@@ -441,7 +441,6 @@ _parse_adding_padding() {
 
 # AM check  ####################################################################
 
-# FIXME
 # hooks_utility_am_check()
 #
 # assert there is NO annotation markers (AM) merging into protected branches,
@@ -470,7 +469,7 @@ hooks_utility_am_check() {
         return 0
     fi
 
-    # find merge type  ---------------------------------------------------------
+    # find merge type, skip trivial merges
     local merge_type
     merge_type=$( get_merge_type )
 
@@ -483,26 +482,13 @@ hooks_utility_am_check() {
     printf 'merge_type=%s' "${merge_type}\n" | \
             hooks_utility_debug "${MERGE_CHECK_NAME}"
 
-    # TODO improve
-    # search AM in incoming content  ===========================================
-    local tmp_printout
-    tmp_printout=$(mktemp)
+    # search AM in incoming content  -------------------------------------------
+    local result=""
 
-    case "${merge_type}" in
-        1)  # feature -> dev
-            _search_am_generate_printout 1 "${tmp_printout}"
-            ;;
-        2)  # dev -> main
-            _search_am_generate_printout 1 "${tmp_printout}"
-            _search_am_generate_printout 2 "${tmp_printout}"
-            ;;
-    esac
+    # TODO populate result
 
-    if [[ -s "${tmp_printout}" ]]; then
-        local printout_content
-        printout_content=$(cat "${tmp_printout}")
-        printf 'found undesired AM(s) in incoming content:\n%s' \
-                "${printout_content}" | \
+    if [[ -n "${result}" ]]; then
+        printf 'found undesired AM(s) in incoming branch:\n%s' "${result}" | \
                 hooks_utility_error "${MERGE_CHECK_NAME}"
         return 1
     else
@@ -519,10 +505,10 @@ MAIN_BRANCH_NAME='main'
 
 PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
 SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
+TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
+
 
 # helper functions  ============================================================
-# TODO combine these 2 functions
-
 # get_commit_type()
 #
 # at stage of pre-commit, decide type of the commit
@@ -592,34 +578,34 @@ get_merge_type() {
 }
 
 
-_search_am_generate_printout() {
-    local -i am_class="$1"  # 1:primary AM, 2:secondary AM
-    local tmp_printout="$2"
 
+# perform git diff --cached, find all AMs, print to stdout
+_search_am_from_git_diff_cached() {
+    local -i am_class="$1"  # 1:primary AM, 2:secondary, 3: tertiary
+
+    # decide which pattern to use
     local pattern
     case "${am_class}" in
-        1)
-            pattern="${PRIMARY_AM_PATTERN}"
-             ;;
-        2)
-            pattern="${SECONDARY_AM_PATTERN}"
+        1) pattern="${PRIMARY_AM_PATTERN}";;
+        2) pattern="${SECONDARY_AM_PATTERN}";;
+        3) pattern="${TERTIARY_AM_PATTERN}";;
     esac
 
     # iterate each added & modified files
-    while IFS= read -r -d '' file; do
+    while IFS= read -r -d '' filename; do
         local lines
-        lines=$(git diff --cached --unified=0 --no-color -- "${file}" \
+        lines=$(git diff --cached --unified=0 --no-color -- "${filename}" \
                 | grep '^+[^+]'\
                 | cut -c2-\
                 | grep -E "${pattern}" || true)
-
-        if [[ -n ${lines} ]]; then
-            printf "%s\n%s" "${file}" "${lines}" >> "${tmp_printout}"
+        
+        if [[ -n ${lines} ]]; then 
+            # print file name
+            printf '%s' "${filename}" | hooks_utility_padding_left_just -c '-'
+            printf "\n%s" "${lines}"
         fi
-
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 }
-
 
 
 # check changelog update  ######################################################
