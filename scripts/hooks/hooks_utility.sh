@@ -519,6 +519,7 @@ SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
 TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
 
 
+# FIXME make a single function
 # helper functions  ============================================================
 # get_commit_type()
 #
@@ -616,8 +617,9 @@ _search_am_from_git_diff_cached() {
 }
 
 
-# check changelog update  ######################################################
-# Todo merge into dev, make sure CHANGELOG is edited
+# ensure file change  ##########################################################
+# TODO
+
 
 # check version update  ########################################################
 # todo merge into main (i.e. release,)  make sure version is updated
