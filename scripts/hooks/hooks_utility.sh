@@ -11,7 +11,6 @@ set -euo pipefail
 ################################################################################
 
 # todo auto generate better commit/merge message
-# todo merge into dev, make sure CHANGELOG is edited
 
 
 # todo read configurations from env?
@@ -52,6 +51,7 @@ PREFIX_ERROR_CRITICAL="CRIT "
 
 DATE_FORMAT="%Y-%m-%d"
 TIME_FORMAT="%H:%M:%S"
+
 
 # API functions  ===============================================================
 
@@ -149,6 +149,7 @@ hooks_utility_critical() {
     _print_log_message 50 "$@"
     return "$?"
 }
+
 
 # helper functions  ============================================================
 _print_log_message() {
@@ -377,8 +378,8 @@ _parse_adding_padding() {
 
     local -i message_len  # calculate length of message
     message_len=$(printf '%s' "${message}" | wc -m)
-    hooks_utility_debug "type=${type} message_len=${message_len}" \
-            "${PADDING_PRINT_NAME}"
+    printf 'type=%s message_len=%s\n' "${type}" "${message_len}" | \
+            hooks_utility_debug "${PADDING_PRINT_NAME}"
 
     # calculate left/right padding count  --------------------------------------
     local -i short_cnt long_cnt
@@ -397,13 +398,13 @@ _parse_adding_padding() {
             ;;
     esac
 
-    hooks_utility_debug "short_cnt=${short_cnt} long_cnt=${long_cnt}" \
-            "${PADDING_PRINT_NAME}"
+    printf "short_cnt=%s long_cnt=%s\n" "${short_cnt}" "${long_cnt}" | \
+            hooks_utility_debug "${PADDING_PRINT_NAME}"
 
     # print out  ---------------------------------------------------------------
     # special case: message too long, just print message itself
     if [[ short_cnt -lt 1 || long_cnt -lt 1 ]]; then
-        hooks_utility_debug "message too long"
+        echo "message too long" | hooks_utility_debug "${PADDING_PRINT_NAME}"
         printf '%s\n' "${message}"
     else
 
@@ -442,15 +443,6 @@ _parse_adding_padding() {
 
 
 # AM check  ####################################################################
-# Fixme change functions to pipe friendly, take stdin
-
-DEV_BRANCH_NAME='dev'
-MAIN_BRANCH_NAME='main'
-AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:AM check"
-PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
-SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
-
-# API functions  ===============================================================
 
 # hooks_utility_am_check()
 #
@@ -471,24 +463,107 @@ SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
 #   0   success: pass or skip checks
 #   1   failure: undesired AM detected
 hooks_utility_am_check() {
-    hooks_utility_debug "start" "${AM_CHECK_NAME}"
+    echo "start" | hooks_utility_debug "${AM_CHECK_NAME}"
 
-    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
-
-    # skip non-merge commit
-    if ! [[ -f "${merge_head_dir}" ]]; then
-        hooks_utility_info \
-                "skipped, not a merge commit" "${AM_CHECK_NAME}"
-        return 0
-    elif [[ $(wc -l < "${merge_head_dir}") -ne 1 ]]; then
-        hooks_utility_info \
-                "skipped, octopus merge" "${AM_CHECK_NAME}"
+    # skip non merging commit, or an octopus merge
+    if [[ $( get_commit_type ) != 'merge_commit' ]]; then
+        echo "skipped, not a binary merge commit" | \
+                hooks_utility_debug "${AM_CHECK_NAME}"
         return 0
     fi
 
+    # find merge type, skip trivial merges
+    local merge_type
+    merge_type=$( get_merge_type )
 
-    # find merge type  =========================================================
-    local -i merge_type
+    if ! [[ -n merge_type ]]; then
+        echo "skipped, trivial merge" | \
+                hooks_utility_debug "${AM_CHECK_NAME}"
+        return 0
+    fi
+
+    printf 'merge_type=%s' "${merge_type}" | \
+            hooks_utility_debug "${AM_CHECK_NAME}"
+
+    # search AM in incoming content  -------------------------------------------
+    local result=""
+
+    # populate result
+    case "${merge_type}" in
+        finish_feature) 
+            result+=$(_search_am_from_git_diff_cached 1)
+            ;;
+        release)
+            result+=$(_search_am_from_git_diff_cached 1)
+            result+=$(_search_am_from_git_diff_cached 2)
+            ;;
+    esac
+
+    if [[ -n "${result}" ]]; then
+        printf 'undesired AM(s) in incoming branch:\n%s' "${result}" | \
+                hooks_utility_error "${AM_CHECK_NAME}"
+        return 1
+    else
+        echo "passed" | hooks_utility_info "${AM_CHECK_NAME}"
+        return 0
+    fi
+}
+
+# constants  ===================================================================
+AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:AM check"
+
+DEV_BRANCH_NAME='dev'
+MAIN_BRANCH_NAME='main'
+
+PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
+SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
+TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
+
+
+# helper functions  ============================================================
+# get_commit_type()
+#
+# at stage of pre-commit, decide type of the commit
+#
+# OUTPUT:
+#   commit type printed to stdout:
+#   
+#   - 'commit': normal non-merging commit
+#   - 'merge_commit': binary merge commit (of 2 branches)
+#   - 'octopus_merge_commit'
+#
+# EXAMPLE:
+#   if [[ $( get_commit_type ) == "merge_commit" ]]
+get_commit_type() {
+    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
+
+    if ! [[ -f "${merge_head_dir}" ]]; then
+        printf 'commit'
+    elif [[ $(wc -l < "${merge_head_dir}") -ne 1 ]]; then
+        printf 'octopus_merge_commit'
+    else
+        printf 'merge_commit'
+    fi
+
+    return 0
+}
+
+
+# get_merge_type()
+#
+# at stage of pre-commit, decide essence/nature of the merge
+#
+# OUTPUT:
+#   merge type printed to stdout:
+# 
+#   - 'finish_feature': any branch (except main) -> dev branch
+#   - 'release': dev branch -> main branch
+#   - '': trivial merge
+#
+# EXAMPLE:
+#   if [[ $( get_merge_type ) == "release" ]]
+get_merge_type() {
+    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
 
     # find source_branch, i.e. branch which merge from
     local source_sha source_branch
@@ -499,81 +574,51 @@ hooks_utility_am_check() {
     local target_branch
     target_branch=$(git rev-parse --abbrev-ref HEAD)
 
-    hooks_utility_debug \
-            "source_branch=${source_branch}; target_branch=${target_branch}" \
-            "${AM_CHECK_NAME}"
-
-    # decide merge type  -------------------------------------------------------
+    # decide merge type
     if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" && \
             "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
-        merge_type=1  # from feature branches -> dev branch
+        printf "finish_feature"
 
     elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" && \
             "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
-        merge_type=2  # from dev branch -> main branch
-
-    else
-        hooks_utility_info "skipped, irrelevant merge" \
-                "${AM_CHECK_NAME}"
-        return 0
+        printf "release"
     fi
 
-    hooks_utility_debug "merge_type=${merge_type}" "${AM_CHECK_NAME}"
-
-    # search AM in incoming content  ===========================================
-    local tmp_printout
-    tmp_printout=$(mktemp)
-
-    case "${merge_type}" in
-        1)  # feature -> dev
-            _search_am_generate_printout 1 "${tmp_printout}"
-            ;;
-        2)  # dev -> main
-            _search_am_generate_printout 1 "${tmp_printout}"
-            _search_am_generate_printout 2 "${tmp_printout}"
-            ;;
-    esac
-
-    if [[ -s "${tmp_printout}" ]]; then
-        local printout_content
-        printout_content=$(cat "${tmp_printout}")
-        hooks_utility_error "found undesired AM(s) in incoming content:\n\
-${printout_content}" \
-                "${AM_CHECK_NAME}"
-        return 1
-    else
-        hooks_utility_info "passed" "${AM_CHECK_NAME}"
-        return 0
-    fi
+    return 0
 }
 
 
-# helper functions  ============================================================
-_search_am_generate_printout() {
-    local -i am_class="$1"  # 1:primary AM, 2:secondary AM
-    local tmp_printout="$2"
+# perform git diff --cached, find all AMs, print to stdout
+_search_am_from_git_diff_cached() {
+    local -i am_class="$1"  # 1:primary AM, 2:secondary, 3: tertiary
 
+    # decide which pattern to use
     local pattern
     case "${am_class}" in
-        1)
-            pattern="${PRIMARY_AM_PATTERN}"
-             ;;
-        2)
-            pattern="${SECONDARY_AM_PATTERN}"
+        1) pattern="${PRIMARY_AM_PATTERN}";;
+        2) pattern="${SECONDARY_AM_PATTERN}";;
+        3) pattern="${TERTIARY_AM_PATTERN}";;
     esac
 
     # iterate each added & modified files
-    while IFS= read -r -d '' file; do
+    while IFS= read -r -d '' filename; do
         local lines
-        lines=$(git diff --cached --unified=0 --no-color -- "${file}" \
+        lines=$(git diff --cached --unified=0 --no-color -- "${filename}" \
                 | grep '^+[^+]'\
                 | cut -c2-\
                 | grep -E "${pattern}" || true)
-
-        if [[ -n ${lines} ]]; then
-            printf "%s\n%s" "${file}" "${lines}" >> "${tmp_printout}"
+        
+        if [[ -n ${lines} ]]; then 
+            # print file name
+            printf '%s' "${filename}" | hooks_utility_padding_left_just -c '-'
+            # fixme print lines, with format of line number & coloring AM
         fi
-
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
-
 }
+
+
+# check changelog update  ######################################################
+# Todo merge into dev, make sure CHANGELOG is edited
+
+# check version update  ########################################################
+# todo merge into main (i.e. release,)  make sure version is updated
