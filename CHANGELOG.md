@@ -27,6 +27,8 @@ example `pre-commit`:
 ### Removed
 ### Fixed
 
+- return constant `LOGGING_LEVEL` to `20`
+
 
 
 
