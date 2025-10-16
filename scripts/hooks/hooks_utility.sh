@@ -17,7 +17,7 @@ set -euo pipefail
 
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
-LOGGING_LEVEL=10
+LOGGING_LEVEL=20
 # use ANSI color codes when print to terminal by default
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
@@ -464,7 +464,7 @@ hooks_utility_am_check() {
 
     # skip non merging commit, or an octopus merge
     if [[ $( get_commit_type ) != 'merge_commit' ]]; then
-        echo "skipped, not a merge commit of 2 branches" | \
+        echo "skipped, not a binary merge commit" | \
                 hooks_utility_debug "${AM_CHECK_NAME}"
         return 0
     fi
@@ -479,20 +479,29 @@ hooks_utility_am_check() {
         return 0
     fi
 
-    printf 'merge_type=%s' "${merge_type}\n" | \
-            hooks_utility_debug "${MERGE_CHECK_NAME}"
+    printf 'merge_type=%s' "${merge_type}" | \
+            hooks_utility_debug "${AM_CHECK_NAME}"
 
     # search AM in incoming content  -------------------------------------------
     local result=""
 
-    # TODO populate result
+    # populate result
+    case "${merge_type}" in
+        finish_feature) 
+            result+=$(_search_am_from_git_diff_cached 1)
+            ;;
+        release)
+            result+=$(_search_am_from_git_diff_cached 1)
+            result+=$(_search_am_from_git_diff_cached 2)
+            ;;
+    esac
 
     if [[ -n "${result}" ]]; then
-        printf 'found undesired AM(s) in incoming branch:\n%s' "${result}" | \
-                hooks_utility_error "${MERGE_CHECK_NAME}"
+        printf 'undesired AM(s) in incoming branch:\n%s' "${result}" | \
+                hooks_utility_error "${AM_CHECK_NAME}"
         return 1
     else
-        echo "passed" | hooks_utility_info "${MERGE_CHECK_NAME}"
+        echo "passed" | hooks_utility_info "${AM_CHECK_NAME}"
         return 0
     fi
 }
@@ -517,7 +526,7 @@ TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
 #   commit type printed to stdout:
 #   
 #   - 'commit': normal non-merging commit
-#   - 'merge_commit': merge commit of 2 branches
+#   - 'merge_commit': binary merge commit (of 2 branches)
 #   - 'octopus_merge_commit'
 #
 # EXAMPLE:
@@ -551,6 +560,8 @@ get_commit_type() {
 # EXAMPLE:
 #   if [[ $( get_merge_type ) == "release" ]]
 get_merge_type() {
+    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
+
     # find source_branch, i.e. branch which merge from
     local source_sha source_branch
     source_sha=$(cat "${merge_head_dir}")
@@ -559,10 +570,6 @@ get_merge_type() {
     # find target_branch, i.e. branch which merge into
     local target_branch
     target_branch=$(git rev-parse --abbrev-ref HEAD)
-
-    printf 'source_branch=%s; target_branch=%s\n' \
-            "${source_branch}" "${target_branch}" | \
-            hooks_utility_debug "${MERGE_CHECK_NAME}"
 
     # decide merge type
     if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" && \
@@ -576,7 +583,6 @@ get_merge_type() {
 
     return 0
 }
-
 
 
 # perform git diff --cached, find all AMs, print to stdout
@@ -602,7 +608,7 @@ _search_am_from_git_diff_cached() {
         if [[ -n ${lines} ]]; then 
             # print file name
             printf '%s' "${filename}" | hooks_utility_padding_left_just -c '-'
-            printf "\n%s" "${lines}"
+            # fixme print lines, with format of line number & coloring AM
         fi
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 }
@@ -612,4 +618,4 @@ _search_am_from_git_diff_cached() {
 # Todo merge into dev, make sure CHANGELOG is edited
 
 # check version update  ########################################################
-# Todo merge into main (i.e. release,)  make sure version is updated
+# todo merge into main (i.e. release,)  make sure version is updated
