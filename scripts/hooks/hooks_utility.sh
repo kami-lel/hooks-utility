@@ -18,7 +18,7 @@ set -euo pipefail
 
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
-LOGGING_LEVEL=20
+LOGGING_LEVEL=10
 # use ANSI color codes when print to terminal by default
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively
@@ -28,8 +28,7 @@ PADDING_TERMINAL_WIDTH=80
 
 
 # constants  ###################################################################
-
-HOOKS_UTILITY_NAME="hooks_utility"
+HOOKS_UTILITY_DISPLAY_NAME="HU"
 
 ANSI_COLOR_BLUE='\e[0;34m'
 ANSI_COLOR_YELLOW='\e[0;33m'
@@ -319,7 +318,7 @@ hooks_utility_padding_centered() {
 
 # constants  ===================================================================
 PADDING_MARGIN=2  # number of spaces surround the message text
-PADDING_PRINT_NAME="${HOOKS_UTILITY_NAME}:padding print"
+PADDING_PRINT_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:padding print"
 
 
 # helper functions  ============================================================
@@ -377,7 +376,7 @@ _parse_adding_padding() {
     local -i message_len  # calculate length of message
     message_len=$(printf '%s' "${message}" | wc -m)
     printf 'type=%s message_len=%s\n' "${type}" "${message_len}" | \
-            hooks_utility_debug "${PADDING_PRINT_NAME}"
+            hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
 
     # calculate left/right padding count  --------------------------------------
     local -i short_cnt long_cnt
@@ -397,12 +396,12 @@ _parse_adding_padding() {
     esac
 
     printf "short_cnt=%s long_cnt=%s\n" "${short_cnt}" "${long_cnt}" | \
-            hooks_utility_debug "${PADDING_PRINT_NAME}"
+            hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
 
     # print out  ---------------------------------------------------------------
     # special case: message too long, just print message itself
     if [[ short_cnt -lt 1 || long_cnt -lt 1 ]]; then
-        echo "message too long" | hooks_utility_debug "${PADDING_PRINT_NAME}"
+        echo "message too long" | hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
         printf '%s\n' "${message}"
     else
 
@@ -441,6 +440,7 @@ _parse_adding_padding() {
 
 
 # AM check  ####################################################################
+# abbr. AMC
 
 # hooks_utility_am_check()
 #
@@ -461,58 +461,46 @@ _parse_adding_padding() {
 #   0   success: pass or skip checks
 #   1   failure: undesired AM detected
 hooks_utility_am_check() {
-    echo "start" | hooks_utility_debug "${AM_CHECK_NAME}"
+    echo "start" | hooks_utility_debug "${AM_CHECK_DISPLAY_NAME}"
 
-    # skip non merging commit, or an octopus merge
-    if [[ $( get_commit_type ) != 'merge_commit' ]]; then
-        echo "skipped, not a binary merge commit" | \
-                hooks_utility_debug "${AM_CHECK_NAME}"
-        return 0
-    fi
+    local commit_type
+    commit_type=$( get_commit_type_at_pre_commit )
+    printf 'commit_type=%s' "${commit_type}" | \
+            hooks_utility_debug "${AM_CHECK_DISPLAY_NAME}"
 
-    # find merge type, skip trivial merges
-    local merge_type
-    merge_type=$( get_merge_type )
-
-    if ! [[ -n merge_type ]]; then
-        echo "skipped, trivial merge" | \
-                hooks_utility_debug "${AM_CHECK_NAME}"
-        return 0
-    fi
-
-    printf 'merge_type=%s' "${merge_type}" | \
-            hooks_utility_debug "${AM_CHECK_NAME}"
-
-    # search AM in incoming content  -------------------------------------------
     local result=""
-
     # populate result
-    case "${merge_type}" in
-        finish_feature) 
+    case "${commit_type}" in
+        merge-binary-finish_feature)
             result+=$(_search_am_from_git_diff_cached 1)
             ;;
-        release)
+        merge-binary-release)
             result+=$(_search_am_from_git_diff_cached 1)
             result+=$(_search_am_from_git_diff_cached 2)
             ;;
+        *)
+            echo "skipped, trivial commit type" | \
+                hooks_utility_debug "${AM_CHECK_DISPLAY_NAME}"
+            return 0
     esac
 
+    # decide whether check is passed
     if [[ -n "${result}" ]]; then
         printf 'undesired AM(s) in incoming branch:\n%s' "${result}" | \
-                hooks_utility_error "${AM_CHECK_NAME}"
+                hooks_utility_error "${AM_CHECK_DISPLAY_NAME}"
         return 1
     else
-        echo "passed" | hooks_utility_info "${AM_CHECK_NAME}"
+        echo "passed AM check" | hooks_utility_info "${AM_CHECK_DISPLAY_NAME}"
         return 0
     fi
 }
 
 
 # constants  ===================================================================
-AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:AM check"
+AM_CHECK_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:AMC"
 
-DEV_BRANCH_NAME='dev'
-MAIN_BRANCH_NAME='main'
+DEV_BRANCH_DISPLAY_NAME='dev'
+MAIN_BRANCH_DISPLAY_NAME='main'
 
 PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
 SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
@@ -520,67 +508,58 @@ TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
 
 
 # helper functions  ============================================================
-# get_commit_type()
+
+# get_commit_type_at_pre_commit()
 #
 # at stage of pre-commit, decide type of the commit
 #
 # OUTPUT:
 #   commit type printed to stdout:
-#   
-#   - 'commit': normal non-merging commit
-#   - 'merge_commit': binary merge commit (of 2 branches)
-#   - 'octopus_merge_commit'
+#
+#   - '': regular commit, and other non-merge commit
+#   - 'merge-binary': binary merge commit of 2 branches
+#
+#       - 'merge-binary-finish_feature': any branch (except main) -> dev branch
+#       - 'merge-binary-release': dev branch -> main branch
+#
+#   - 'merge-octopus': octopus merge commit of 3+ branches
 #
 # EXAMPLE:
-#   if [[ $( get_commit_type ) == "merge_commit" ]]
-get_commit_type() {
+#   if [[ $( get_commit_type ) == "merge-binary" ]]
+get_commit_type_at_pre_commit() {
     local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
 
     if ! [[ -f "${merge_head_dir}" ]]; then
-        printf 'commit'
+        # regular commit  ------------------------------------------------------
+        # include other non-merge commit types
+        printf ''
     elif [[ $(wc -l < "${merge_head_dir}") -ne 1 ]]; then
-        printf 'octopus_merge_commit'
+        # octopus merge  -------------------------------------------------------
+        printf 'merge-octopus'
+        
     else
-        printf 'merge_commit'
-    fi
+        # binary merge  --------------------------------------------------------
 
-    return 0
-}
+        # find source_branch, i.e. branch which merge from
+        local source_sha source_branch
+        source_sha=$(cat "${merge_head_dir}")
+        source_branch=$(git name-rev --name-only "${source_sha}")
 
+        # find target_branch, i.e. branch which merge into
+        local target_branch
+        target_branch=$(git rev-parse --abbrev-ref HEAD)
 
-# get_merge_type()
-#
-# at stage of pre-commit, decide essence/nature of the merge
-#
-# OUTPUT:
-#   merge type printed to stdout:
-# 
-#   - 'finish_feature': any branch (except main) -> dev branch
-#   - 'release': dev branch -> main branch
-#   - '': trivial merge
-#
-# EXAMPLE:
-#   if [[ $( get_merge_type ) == "release" ]]
-get_merge_type() {
-    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
+        # decide merge type
+        if [[ "${source_branch}" != "${MAIN_BRANCH_DISPLAY_NAME}" && \
+                "${target_branch}" == "${DEV_BRANCH_DISPLAY_NAME}" ]]; then
+            printf 'merge-binary-finish_feature'
 
-    # find source_branch, i.e. branch which merge from
-    local source_sha source_branch
-    source_sha=$(cat "${merge_head_dir}")
-    source_branch=$(git name-rev --name-only "${source_sha}")
-
-    # find target_branch, i.e. branch which merge into
-    local target_branch
-    target_branch=$(git rev-parse --abbrev-ref HEAD)
-
-    # decide merge type
-    if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" && \
-            "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
-        printf "finish_feature"
-
-    elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" && \
-            "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
-        printf "release"
+        elif [[ "${source_branch}" == "${DEV_BRANCH_DISPLAY_NAME}" && \
+                "${target_branch}" == "${MAIN_BRANCH_DISPLAY_NAME}" ]]; then
+            printf 'merge-binary-release'
+        else
+            printf 'merge-binary'
+        fi
     fi
 
     return 0
@@ -616,8 +595,69 @@ _search_am_from_git_diff_cached() {
 }
 
 
-# check changelog update  ######################################################
-# Todo merge into dev, make sure CHANGELOG is edited
+# ensure file changed  #########################################################
+# abbr. EFC
+
+# hooks_utility_ensure_file_changed()
+#
+# at stage of pre-commit, ensure some file is edited
+#
+# USAGE:
+#   hooks_utility_ensure_file_edit FILE COMMIT_TYPE
+#
+# ARGUMENT:
+#   FILE            file which is required to be changed,
+#                   relative path to repo root
+#   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
+#
+# RETURN:
+#   0       success, FILE is edited; or skip b/c irrelevant COMMIT_TYPE
+#   1       failure, FILE hasn't been edited
+#
+# EXAMPLE:
+#   hooks_utility_ensure_file_edit 'CHANGELOG.md' 'merge-binary-finish_feature'
+hooks_utility_ensure_file_changed() {
+    local filename commit_type_arg
+    filename="$1"
+    commit_type_arg="$2"
+
+    commit_type=$( get_commit_type_at_pre_commit )
+    printf '\nfilename=%s\ncommit_type_arg=%s\ncommit_type=%s' \
+            "${filename}" "${commit_type_arg}" "${commit_type}" | \
+            hooks_utility_debug "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+
+    if [[ "${commit_type}" != ${commit_type_arg}* ]]; then
+        printf 'skipped, irrelevant commit type' | \
+                hooks_utility_debug "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+        return 0
+    fi
+
+    local when_phrase=''
+    if [[ -n "${commit_type_arg}" ]]; then
+        when_phrase=" when ${commit_type_arg}"
+    fi
+
+    # proceed ensuring  ----------------------------------------------------
+    while IFS= read -r -d '' changed_file; do
+        # search if filename is present in modified file list
+        if [[ "${changed_file}" == "${filename}" ]]; then
+            printf 'ensured file changed%s: %s' \
+                    "${when_phrase}" "${filename}" | \
+                    hooks_utility_info "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+            return 0
+        fi
+    done < <(git diff --cached --name-only --diff-filter=M)
+
+    # fail to find filename in changed file list
+    printf 'must change this file%s: %s' "${when_phrase}" "${filename}" | \
+            hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+    return 1
+}
+
+# constants  ===================================================================
+ENSURE_FILE_CHANGED_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:EFC"
+
 
 # check version update  ########################################################
 # todo merge into main (i.e. release,)  make sure version is updated
+
