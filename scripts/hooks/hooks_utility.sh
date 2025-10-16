@@ -463,40 +463,28 @@ _parse_adding_padding() {
 hooks_utility_am_check() {
     echo "start" | hooks_utility_debug "${AM_CHECK_NAME}"
 
-    # skip non merging commit, or an octopus merge
-    if [[ $( get_commit_type ) != 'merge_commit' ]]; then
-        echo "skipped, not a binary merge commit" | \
-                hooks_utility_debug "${AM_CHECK_NAME}"
-        return 0
-    fi
-
-    # find merge type, skip trivial merges
-    local merge_type
-    merge_type=$( get_merge_type )
-
-    if ! [[ -n merge_type ]]; then
-        echo "skipped, trivial merge" | \
-                hooks_utility_debug "${AM_CHECK_NAME}"
-        return 0
-    fi
-
-    printf 'merge_type=%s' "${merge_type}" | \
+    local commit_type
+    commit_type=$( get_commit_type_at_pre_commit )
+    printf 'commit_type=%s' "${commit_type}" | \
             hooks_utility_debug "${AM_CHECK_NAME}"
 
-    # search AM in incoming content  -------------------------------------------
     local result=""
-
     # populate result
-    case "${merge_type}" in
-        finish_feature) 
+    case "${commit_type}" in
+        merge-binary-finish_feature)
             result+=$(_search_am_from_git_diff_cached 1)
             ;;
-        release)
+        merge-binary-release)
             result+=$(_search_am_from_git_diff_cached 1)
             result+=$(_search_am_from_git_diff_cached 2)
             ;;
+        *)
+            echo "skipped, trivial commit type" | |
+                hooks_utility_debug "${AM_CHECK_NAME}"
+            return 0
     esac
 
+    # decide whether check is passed
     if [[ -n "${result}" ]]; then
         printf 'undesired AM(s) in incoming branch:\n%s' "${result}" | \
                 hooks_utility_error "${AM_CHECK_NAME}"
@@ -626,9 +614,7 @@ _search_am_from_git_diff_cached() {
 # todo merge into main (i.e. release,)  make sure version is updated
 
 
-# get commit type  #############################################################
-
-# get_commit_type_at_pre_commit()
+# get_commit_type_at_pre_commit()  #############################################
 #
 # at stage of pre-commit, decide type of the commit
 #
