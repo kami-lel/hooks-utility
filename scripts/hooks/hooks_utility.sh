@@ -519,9 +519,9 @@ SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
 TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
 
 
-# FIXME make a single function
 # helper functions  ============================================================
-# get_commit_type()
+# FIXME deprecation
+# get_commit_type() 
 #
 # at stage of pre-commit, decide type of the commit
 #
@@ -549,6 +549,7 @@ get_commit_type() {
 }
 
 
+# FIXME deprecation
 # get_merge_type()
 #
 # at stage of pre-commit, decide essence/nature of the merge
@@ -623,3 +624,59 @@ _search_am_from_git_diff_cached() {
 
 # check version update  ########################################################
 # todo merge into main (i.e. release,)  make sure version is updated
+
+
+# get commit type  #############################################################
+
+# get_commit_type_at_pre_commit()
+#
+# at stage of pre-commit, decide type of the commit
+#
+# OUTPUT:
+#   commit type printed to stdout:
+#
+#   - '': regular commit, and other non-merge commit
+#   - 'merge-binary': binary merge commit of 2 branches
+#
+#       - 'merge-binary-finish_feature': any branch (except main) -> dev branch
+#       - 'merge-binary-release': dev branch -> main branch
+#
+#   - 'merge-octopus': octopus merge commit of 3+ branches
+#
+# EXAMPLE:
+#   if [[ $( get_commit_type ) == "merge-binary" ]]
+get_commit_type_at_pre_commit() {
+    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
+
+    if ! [[ -f "${merge_head_dir}" ]]; then
+        return 0  # print nothing
+    elif [[ $(wc -l < "${merge_head_dir}") -ne 1 ]]; then
+        # binary merge  --------------------------------------------------------
+
+        # find source_branch, i.e. branch which merge from
+        local source_sha source_branch
+        source_sha=$(cat "${merge_head_dir}")
+        source_branch=$(git name-rev --name-only "${source_sha}")
+
+        # find target_branch, i.e. branch which merge into
+        local target_branch
+        target_branch=$(git rev-parse --abbrev-ref HEAD)
+
+        # decide merge type
+        if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" && \
+                "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
+            printf 'merge-binary-finish_feature'
+
+        elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" && \
+                "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
+            printf 'merge-binary-release'
+        else
+            printf 'merge-binary'
+        fi
+
+    else
+        printf 'merge-octopus'
+    fi
+
+    return 0
+}
