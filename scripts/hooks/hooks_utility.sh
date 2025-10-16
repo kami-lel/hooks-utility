@@ -11,10 +11,8 @@ set -euo pipefail
 ################################################################################
 
 # todo auto generate better commit/merge message
-
-
 # todo read configurations from env?
-# FIXME refactor, move constants in each components lower
+
 
 # configurations  ##############################################################
 
@@ -41,19 +39,6 @@ ANSI_RESET='\e[0m'
 
 
 # log style message  ###########################################################
-
-PREFIX_ERROR_DEBUG="DEBUG"
-PREFIX_ERROR_INFO="INFO "
-PREFIX_ERROR_WARNING="WARN "
-PREFIX_ERROR_ERROR="ERROR"
-PREFIX_ERROR_CRITICAL="CRIT "
-# note: all of length 5
-
-DATE_FORMAT="%Y-%m-%d"
-TIME_FORMAT="%H:%M:%S"
-
-
-# API functions  ===============================================================
 
 # hooks_utility_debug()
 #
@@ -149,6 +134,18 @@ hooks_utility_critical() {
     _print_log_message 50 "$@"
     return "$?"
 }
+
+
+# constants  ===================================================================
+# note: all of length 5
+PREFIX_ERROR_DEBUG="DEBUG"
+PREFIX_ERROR_INFO="INFO "
+PREFIX_ERROR_WARNING="WARN "
+PREFIX_ERROR_ERROR="ERROR"
+PREFIX_ERROR_CRITICAL="CRIT "
+
+DATE_FORMAT="%Y-%m-%d"
+TIME_FORMAT="%H:%M:%S"
 
 
 # helper functions  ============================================================
@@ -263,11 +260,6 @@ _print_log_message() {
 
 # padding print  ###############################################################
 
-PADDING_MARGIN=2  # number of spaces surround the message text
-PADDING_PRINT_NAME="${HOOKS_UTILITY_NAME}:padding print"
-
-# API functions  ===============================================================
-
 # hooks_utility_padding_left_just()
 #
 # print the message from stdin with its right space filled with PADDING
@@ -323,6 +315,12 @@ hooks_utility_padding_centered() {
     _parse_adding_padding 2 "$@"
     return "$?"
 }
+
+
+# constants  ===================================================================
+PADDING_MARGIN=2  # number of spaces surround the message text
+PADDING_PRINT_NAME="${HOOKS_UTILITY_NAME}:padding print"
+
 
 # helper functions  ============================================================
 # print space character,  as margin b/t padding & message to stdout
@@ -508,6 +506,7 @@ hooks_utility_am_check() {
         return 0
     fi
 }
+
 
 # constants  ===================================================================
 AM_CHECK_NAME="${HOOKS_UTILITY_NAME}:AM check"
