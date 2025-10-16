@@ -7,14 +7,14 @@ set -euo pipefail
 # a collections of utility functions for git hooks
 #
 # author:  kamiLeL
-# version: v1.1.0
+# version: v1.1.1
 ################################################################################
 
 # configurations
 
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
-LOGGING_LEVEL=10
+LOGGING_LEVEL=20
 # use ANSI color codes when print to terminal by default
 ENABLE_ANSI_COLOR=1
 # messages, depending on their types, are sent to stdout & stderr respectively

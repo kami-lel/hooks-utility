@@ -34,6 +34,28 @@
 
 
 
+## [1.1.1] - 2025-10-16
+
+### Added
+
+- start log message in example `pre-commit`
+
+### Fixed
+
+- return constant `LOGGING_LEVEL` to `20`
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## [1.1.0] - 2025-10-16
 
 ### Added
@@ -83,7 +105,8 @@
 
 
 
-[unreleased]: https://github.com/kami-lel/kami-log-py/compare/v1.1.0...dev
+[unreleased]: https://github.com/kami-lel/kami-log-py/compare/v1.1.1...dev
+[1.1.1]: https://github.com/kami-lel/kami-log-py/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/kami-lel/kami-log-py/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/kami-lel/kami-log-py/releases/tag/v1.0.0
 
