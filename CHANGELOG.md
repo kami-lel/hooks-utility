@@ -18,6 +18,9 @@
 
 ### Added
 ### Changed
+
+- change to *finish* script in example `pre-commit`
+
 ### Deprecated
 ### Removed
 ### Fixed
