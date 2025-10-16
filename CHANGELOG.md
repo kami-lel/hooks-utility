@@ -17,6 +17,11 @@
 ## [Unreleased]
 
 ### Added
+
+example `pre-commit`:
+
+- add a info log message indicate start of pre-commit
+
 ### Changed
 ### Deprecated
 ### Removed
