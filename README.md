@@ -4,10 +4,11 @@ a collections of utility functions for **git hooks**
 
 <!-- todo auto generate better commit/merge message -->
 <!-- todo read configurations from env? -->
-<!-- fixme in _search_am_from_git_diff_cached
+<!-- Fixme in _search_am_from_git_diff_cached
 print lines, with format of line number & coloring AM -->
 <!-- todo merge into main (i.e. release,)  make sure version is updated -->
 <!-- todo utilize git submodule -->
+<!-- Todo on efc, also make ensure file unchanged  -->
 
 
 
