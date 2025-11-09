@@ -24,7 +24,7 @@ PADDING_TERMINAL_WIDTH=80
 
 
 # constants  ###################################################################
-HOOKS_UTILITY_DISPLAY_NAME="HU"
+HOOKS_UTILITY_DISPLAY_NAME="hooks_utility"
 
 ANSI_COLOR_BLUE='\e[0;34m'
 ANSI_COLOR_YELLOW='\e[0;33m'
