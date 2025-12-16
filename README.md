@@ -6,9 +6,8 @@ a collections of utility functions for **git hooks**
 <!-- Todo read configurations from env? -->
 <!-- fixme in _search_am_from_git_diff_cached
 print lines, with format of line number & coloring AM -->
-<!-- Todo merge into main (i.e. release,)  make sure version is updated -->
-<!-- Todo on efc, also make ensure file unchanged  -->
-<!-- Todo version update detection: i.e. detect particular line is updated -->
+<!-- TODO merge into main (i.e. release,)  make sure version is updated, 
+i.e. detect particular line is updated -->
 
 
 
