@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO update the example
+
 set -euo pipefail
 
 # shellcheck source=/dev/null
