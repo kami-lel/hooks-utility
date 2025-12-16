@@ -18,6 +18,9 @@
 
 ### Added
 ### Changed
+
+- change project structure to use it as **git submodule**
+
 ### Deprecated
 ### Removed
 ### Fixed
