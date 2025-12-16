@@ -1,11 +1,9 @@
 #!/bin/bash
 
-# TODO update the example
-
 set -euo pipefail
 
 # shellcheck source=/dev/null
-source "$(dirname "${BASH_SOURCE[0]}")/hooks_utility.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/scripts/hooks-utility/hooks_utility.sh"
 
 # test AM not merged into protected branches
 hooks_utility_am_check
@@ -14,6 +12,10 @@ hooks_utility_am_check
 hooks_utility_ensure_file_changed "CHANGELOG.md" "merge-binary-finish_feature"
 hooks_utility_ensure_file_changed "CHANGELOG.md" "merge-binary-release"
 
+# Todo write example for version change
+
+
+# print message via log-style message
 printf 'finish pre-commit' | hooks_utility_info
 
 exit 0
