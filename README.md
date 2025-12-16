@@ -9,6 +9,7 @@ print lines, with format of line number & coloring AM -->
 <!-- Todo merge into main (i.e. release,)  make sure version is updated -->
 <!-- TODO utilize git submodule -->
 <!-- Todo on efc, also make ensure file unchanged  -->
+<!-- Todo version update detection: i.e. detect particular line is updated -->
 
 
 
