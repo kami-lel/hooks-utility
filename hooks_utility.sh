@@ -34,7 +34,7 @@ MAIN_BRANCH_NAME="${MAIN_BRANCH_NAME:-main}"
 DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
 
 # constants  ###################################################################
-HOOKS_UTILITY_DISPLAY_NAME="hooks utility"
+HOOKS_UTILITY_DISPLAY_NAME="HU"
 
 ANSI_COLOR_BLUE='\e[0;34m'
 ANSI_COLOR_YELLOW='\e[0;33m'
