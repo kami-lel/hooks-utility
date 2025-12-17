@@ -34,7 +34,7 @@ MAIN_BRANCH_NAME="${MAIN_BRANCH_NAME:-main}"
 DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
 
 # constants  ###################################################################
-HOOKS_UTILITY_DISPLAY_NAME="hooks utility"
+HOOKS_UTILITY_DISPLAY_NAME="HU"
 
 ANSI_COLOR_BLUE='\e[0;34m'
 ANSI_COLOR_YELLOW='\e[0;33m'
@@ -577,31 +577,36 @@ _search_am_from_git_diff_cached() {
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 }
 
-# ensure file changed  #########################################################
-# abbr. EFC
-
-# hooks_utility_ensure_file_changed()
+# ensure file modification  ####################################################
 #
-# in pre-commit, ensure some file is edited
+# abbr. EFM
+
+# hooks_utility_ensure_file_modification()
+#
+# in pre-commit, ensure certain file(s) must be modified
 #
 # USAGE:
-#   hooks_utility_ensure_file_edit FILE COMMIT_TYPE
+#   hooks_utility_ensure_file_modification FILE COMMIT_TYPE MESSAGE
 #
 # ARGUMENT:
 #   FILE            file which is required to be changed,
 #                   relative path to repo root
 #   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
+#   MESSAGE         reason of failing this test
 #
 # RETURN:
 #   0       success, FILE is edited; or skip b/c irrelevant COMMIT_TYPE
 #   1       failure, FILE hasn't been edited
 #
 # EXAMPLE:
-#   hooks_utility_ensure_file_edit 'CHANGELOG.md' 'merge-binary-finish_feature'
-hooks_utility_ensure_file_changed() {
+#   hooks_utility_ensure_file_modification 'CHANGELOG.md' \
+#           'merge-binary-finish_feature' \
+#           'must record CHANGELOG when finish a feature branch' \
+hooks_utility_ensure_file_modification() {
     local filename commit_type_arg
     filename="$1"
     commit_type_arg="$2"
+    message="$3"
 
     commit_type=$(get_commit_type_at_pre_commit)
     printf '\nfilename=%s\ncommit_type_arg=%s\ncommit_type=%s' \
@@ -631,8 +636,13 @@ hooks_utility_ensure_file_changed() {
     done < <(git diff --cached --name-only --diff-filter=M)
 
     # fail to find filename in changed file list
-    printf 'must change this file%s: %s' "${when_phrase}" "${filename}" |
+    printf '%s%s: %s' "${filename}" "${when_phrase}" "${message}" |
         hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+    return 1
+}
+
+hooks_utility_ensure_line_modification() {
+    # TODO
     return 1
 }
 

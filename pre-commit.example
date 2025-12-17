@@ -11,11 +11,15 @@ printf "start pre-commit" | hooks_utility_debug
 hooks_utility_protect_branch
 
 # make sure CHANGELOG.md is edited
-# Fixme update EFC example
-hooks_utility_ensure_file_changed "CHANGELOG.md" "merge-binary-finish_feature"
-hooks_utility_ensure_file_changed "CHANGELOG.md" "merge-binary-release"
+hooks_utility_ensure_file_modification 'CHANGELOG.md' \
+    'merge-binary-finish_feature' \
+    'must record CHANGELOG when finish a feature branch'
 
-# Todo write example for version change
+hooks_utility_ensure_file_modification "CHANGELOG.md" \
+    "merge-binary-release" \
+    "must record CHANGELOG when publish a new release"
+
+# TODO example for ensure file change for README and CHANGELOG and Version
 
 printf 'DONE pre-commit' | hooks_utility_info
 

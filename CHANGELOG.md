@@ -21,6 +21,7 @@
 
 - change project structure to use it as **git submodule**
 - rename functionality to **branch protection** from *annotational marker check*
+- rename functionality to **ensure file modification** from *ensure file change*
 
 ### Deprecated
 ### Removed
