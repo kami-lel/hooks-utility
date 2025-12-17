@@ -4,11 +4,11 @@ a collections of utility functions for **git hooks**
 
 <!-- todo auto generate better commit/merge message -->
 <!-- Todo read configurations from env? -->
-<!-- Fixme in _search_am_from_git_diff_cached
+<!-- fixme in _search_am_from_git_diff_cached
 print lines, with format of line number & coloring AM -->
-<!-- Todo merge into main (i.e. release,)  make sure version is updated -->
-<!-- Todo on efc, also make ensure file unchanged  -->
-<!-- Todo version update detection: i.e. detect particular line is updated -->
+<!-- TODO example for ensure file change for README and CHANGELOG -->
+<!-- TODO merge into main (i.e. release,)  make sure version is updated, 
+i.e. detect particular line is updated -->
 
 
 
@@ -19,9 +19,56 @@ print lines, with format of line number & coloring AM -->
 
 
 
-## Installation
 
-Use `hooks_utility.sh` by place it alongside git hooks scripts.
+
+## Usage as Git Submodule
+
+Include the entire project as a Git Submodule of your working project:
+
+```bash
+git submodule add git@github.com:kami-lel/hooks-utility.git scripts/hooks_utility
+```
+
+(run at your working project root)
+
+This would add *hooks utility* as a submodule at `./scripts/hooks_utility/`
+
+----
+
+Resulted project structure:
+
+```
+.
+└── scripts
+    └── hooks_utility
+        ├── hooks_utility.sh
+        ├── README.md
+        └── ...
+```
+
+Resulted content of `.gitmodules`:
+
+```
+[submodule "scripts/hooks_utility"]
+	path = scripts/hooks_utility
+	url = git@github.com:kami-lel/hooks-utility.git
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Usage as File
+
+Use `hooks_utility.sh` file (which contains all functionality) by place it alongside git hooks scripts.
 
 Typical folder structure:
 
@@ -63,8 +110,8 @@ Print log style message (i.e. prefixed with `DEBUG`, `ERROR`, ...)
 to `stdout` or `stderr`, using these 5 functions, e.g.:
 
 ```bash
-echo "Debug Message Content" | hooks_utility_debug 
-echo "Warning Message Content"  | hooks_utility_warning -dt  "MainScript"
+echo "Debug Message Content" | hooks_utility_debug
+echo "Warning Message Content"  | hooks_utility_warning -dt "MainScript"
 ```
 
 Outputs:
