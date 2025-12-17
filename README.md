@@ -21,7 +21,7 @@ i.e. detect particular line is updated -->
 
 
 
-## Usage as Git Submodules
+## Usage as Git Submodule
 
 Include the entire project as a Git Submodule of your working project:
 
@@ -110,8 +110,8 @@ Print log style message (i.e. prefixed with `DEBUG`, `ERROR`, ...)
 to `stdout` or `stderr`, using these 5 functions, e.g.:
 
 ```bash
-echo "Debug Message Content" | hooks_utility_debug 
-echo "Warning Message Content"  | hooks_utility_warning -dt  "MainScript"
+echo "Debug Message Content" | hooks_utility_debug
+echo "Warning Message Content"  | hooks_utility_warning -dt "MainScript"
 ```
 
 Outputs:
