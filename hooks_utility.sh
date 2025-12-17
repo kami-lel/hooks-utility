@@ -392,7 +392,8 @@ _parse_adding_padding() {
     # print out  ---------------------------------------------------------------
     # special case: message too long, just print message itself
     if [[ short_cnt -lt 1 || long_cnt -lt 1 ]]; then
-        echo "message too long" | hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
+        echo "message too long" |
+            hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
         printf '%s\n' "${message}"
     else
 
