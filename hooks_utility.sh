@@ -581,8 +581,6 @@ _search_am_from_git_diff_cached() {
 #
 # abbr. EFM
 
-# TODO display name for reason of check
-
 # hooks_utility_ensure_file_modification()
 #
 # in pre-commit, ensure certain file(s) must be modified
@@ -603,11 +601,12 @@ _search_am_from_git_diff_cached() {
 # EXAMPLE:
 #   hooks_utility_ensure_file_modification 'CHANGELOG.md' \
 #           'merge-binary-finish_feature' \
-#           'must record CHANGELOG when finish a feature branch ' \
+#           'must record CHANGELOG when finish a feature branch' \
 hooks_utility_ensure_file_modification() {
     local filename commit_type_arg
     filename="$1"
     commit_type_arg="$2"
+    message="$3"
 
     commit_type=$(get_commit_type_at_pre_commit)
     printf '\nfilename=%s\ncommit_type_arg=%s\ncommit_type=%s' \
@@ -637,7 +636,7 @@ hooks_utility_ensure_file_modification() {
     done < <(git diff --cached --name-only --diff-filter=M)
 
     # fail to find filename in changed file list
-    printf 'must change this file%s: %s' "${when_phrase}" "${filename}" |
+    printf '%s%s: %s' "${filename}" "${when_phrase}" "${message}" |
         hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
     return 1
 }
