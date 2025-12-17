@@ -19,7 +19,7 @@ hooks_utility_ensure_file_modification "CHANGELOG.md" \
     "merge-binary-release" \
     "must record CHANGELOG when publish a new release"
 
-# TODO example for ensure file change for README and CHANGELOG and Version
+# TODO example for ensure file change for Version file
 
 printf 'DONE pre-commit' | hooks_utility_info
 

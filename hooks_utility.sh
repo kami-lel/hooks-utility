@@ -647,4 +647,4 @@ hooks_utility_ensure_line_modification() {
 }
 
 # constants  ===================================================================
-ENSURE_FILE_CHANGED_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:EFC"
+ENSURE_FILE_CHANGED_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:EFM"
