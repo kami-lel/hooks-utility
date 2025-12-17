@@ -577,10 +577,11 @@ _search_am_from_git_diff_cached() {
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 }
 
+# ensure file modification  ####################################################
 # ensure file changed  #########################################################
-# abbr. EFC
+# abbr. EFM
 
-# hooks_utility_ensure_file_changed()
+# hooks_utility_ensure_file_modification()
 #
 # in pre-commit, ensure some file is edited
 #
@@ -598,7 +599,7 @@ _search_am_from_git_diff_cached() {
 #
 # EXAMPLE:
 #   hooks_utility_ensure_file_edit 'CHANGELOG.md' 'merge-binary-finish_feature'
-hooks_utility_ensure_file_changed() {
+hooks_utility_ensure_file_modification() {
     local filename commit_type_arg
     filename="$1"
     commit_type_arg="$2"
