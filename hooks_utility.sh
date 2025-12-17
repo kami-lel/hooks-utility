@@ -581,7 +581,6 @@ _search_am_from_git_diff_cached() {
 #
 # abbr. EFM
 
-# TODO line specific modification detection
 # TODO display name for reason of check
 
 # hooks_utility_ensure_file_modification()
@@ -589,19 +588,22 @@ _search_am_from_git_diff_cached() {
 # in pre-commit, ensure certain file(s) must be modified
 #
 # USAGE:
-#   hooks_utility_ensure_file_modification FILE COMMIT_TYPE
+#   hooks_utility_ensure_file_modification FILE COMMIT_TYPE MESSAGE
 #
 # ARGUMENT:
 #   FILE            file which is required to be changed,
 #                   relative path to repo root
 #   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
+#   MESSAGE         reason of failing this test
 #
 # RETURN:
 #   0       success, FILE is edited; or skip b/c irrelevant COMMIT_TYPE
 #   1       failure, FILE hasn't been edited
 #
 # EXAMPLE:
-#   hooks_utility_ensure_file_modification 'CHANGELOG.md' 'merge-binary-finish_feature'
+#   hooks_utility_ensure_file_modification 'CHANGELOG.md' \
+#           'merge-binary-finish_feature' \
+#           'must record CHANGELOG when finish a feature branch ' \
 hooks_utility_ensure_file_modification() {
     local filename commit_type_arg
     filename="$1"
@@ -637,6 +639,11 @@ hooks_utility_ensure_file_modification() {
     # fail to find filename in changed file list
     printf 'must change this file%s: %s' "${when_phrase}" "${filename}" |
         hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+    return 1
+}
+
+hooks_utility_ensure_line_modification() {
+    # TODO
     return 1
 }
 
