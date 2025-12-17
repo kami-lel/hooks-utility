@@ -11,6 +11,7 @@ set -euo pipefail
 ################################################################################
 
 # configurations
+# Fixme allow use env var to set them
 
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
@@ -495,6 +496,7 @@ $(_search_am_from_git_diff_cached 2)"
 # constants  ===================================================================
 AM_CHECK_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:AMC"
 
+# Fixme make configurable
 DEV_BRANCH_DISPLAY_NAME='dev'
 MAIN_BRANCH_DISPLAY_NAME='main'
 
@@ -532,7 +534,7 @@ get_commit_type_at_pre_commit() {
     elif [[ $(wc -l < "${merge_head_dir}") -ne 1 ]]; then
         # octopus merge  -------------------------------------------------------
         printf 'merge-octopus'
-        
+
     else
         # binary merge  --------------------------------------------------------
 
