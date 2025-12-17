@@ -3,7 +3,6 @@
 a collections of utility functions for **git hooks**
 
 <!-- todo auto generate better commit/merge message -->
-<!-- Todo read configurations from env? -->
 <!-- fixme in _search_am_from_git_diff_cached
 print lines, with format of line number & coloring AM -->
 <!-- TODO example for ensure file change for README and CHANGELOG -->
@@ -192,3 +191,4 @@ hooks_utility_ensure_file_edit 'CHANGELOG.md' 'merge-binary-finish_feature'
 
 Ensure `CHANGELOG.md` is modified when finishing a feature branch
 and merge into `dev` branch.
+

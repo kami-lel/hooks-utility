@@ -11,17 +11,21 @@ set -euo pipefail
 ################################################################################
 
 # configurations
-# Fixme allow use env var to set them
+# Todo write documentation
 
 # filtering log messages:
 # 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
-LOGGING_LEVEL=20
+LOGGING_LEVEL="${LOGGING_LEVEL:-20}"
 # use ANSI color codes when print to terminal by default
-ENABLE_ANSI_COLOR=1
+ENABLE_ANSI_COLOR="${ENABLE_ANSI_COLOR:-1}"
 # messages, depending on their types, are sent to stdout & stderr respectively
-ENABLE_SPLIT_OUTPUT_STREAM=1
+ENABLE_SPLIT_OUTPUT_STREAM="${ENABLE_SPLIT_OUTPUT_STREAM:-1}"
 # width of the imagined terminal
-PADDING_TERMINAL_WIDTH=80
+PADDING_TERMINAL_WIDTH="${PADDING_TERMINAL_WIDTH:-80}"
+
+DEV_BRANCH_DISPLAY_NAME="${DEV_BRANCH_DISPLAY_NAME:-dev}"
+MAIN_BRANCH_DISPLAY_NAME="${MAIN_BRANCH_DISPLAY_NAME}:-main}"
+
 
 
 # constants  ###################################################################
@@ -496,10 +500,6 @@ $(_search_am_from_git_diff_cached 2)"
 # constants  ===================================================================
 AM_CHECK_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:AMC"
 
-# Fixme make configurable
-DEV_BRANCH_DISPLAY_NAME='dev'
-MAIN_BRANCH_DISPLAY_NAME='main'
-
 PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
 SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
 TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
@@ -583,8 +583,8 @@ _search_am_from_git_diff_cached() {
                 | grep '^+[^+]'\
                 | cut -c2-\
                 | grep -E "${pattern}" || true)
-        
-        if [[ -n ${lines} ]]; then 
+
+        if [[ -n ${lines} ]]; then
             # print file name
             printf '%s' "${filename}" | hooks_utility_padding_left_just -c '-'
         fi
