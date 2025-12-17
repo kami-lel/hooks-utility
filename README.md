@@ -75,8 +75,8 @@ Typical folder structure:
 ```
 .
 └── scripts
+    ├── hooks_utility.sh
     └── hooks
-        ├── hooks_utility.sh
         ├── pre-merge-commit
         └── ...
 ```
@@ -85,7 +85,7 @@ And in the git hook scripts (e.g. `pre-merge-commit` above,)
 **source** the `hooks_utility.sh`:
 
 ```bash
-source "$(dirname "${BASH_SOURCE[0]}")/hooks_utility.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility.sh"
 ```
 
 
