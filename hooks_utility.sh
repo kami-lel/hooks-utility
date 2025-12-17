@@ -10,33 +10,37 @@ set -euo pipefail
 # version: v1.1.1
 ################################################################################
 
-# configurations
-# Todo write documentation
+# configurations  ##############################################################
 
-# filtering log messages:
-# 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
-LOGGING_LEVEL="${LOGGING_LEVEL:-20}"
-# use ANSI color codes when print to terminal by default
+# use ANSI color code when print to terminal
 ENABLE_ANSI_COLOR="${ENABLE_ANSI_COLOR:-1}"
-# messages, depending on their types, are sent to stdout & stderr respectively
-ENABLE_SPLIT_OUTPUT_STREAM="${ENABLE_SPLIT_OUTPUT_STREAM:-1}"
-# width of the imagined terminal
+# 1=enable, 0=disable
+
+# max width (number of columns) of terminal
 PADDING_TERMINAL_WIDTH="${PADDING_TERMINAL_WIDTH:-80}"
 
-DEV_BRANCH_DISPLAY_NAME="${DEV_BRANCH_DISPLAY_NAME:-dev}"
-MAIN_BRANCH_DISPLAY_NAME="${MAIN_BRANCH_DISPLAY_NAME:-main}"
+# log style message config  ----------------------------------------------------
+# filtering level
+LOGGING_LEVEL="${LOGGING_LEVEL:-20}"
+# 10:debug & above, 20:information, 30:warning, 40:error, 50:critical
 
+# sent messages to stdout/stderr depending on message level
+ENABLE_SPLIT_OUTPUT_STREAM="${ENABLE_SPLIT_OUTPUT_STREAM:-1}"
+# 1=message of level >= 30 is sent to stderr, while rest is sent to stdout
+# 0=all messages are sent to stdout
 
+# branch protection config  ----------------------------------------------------
+MAIN_BRANCH_NAME="${MAIN_BRANCH_NAME:-main}"
+DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
 
 # constants  ###################################################################
-HOOKS_UTILITY_DISPLAY_NAME="hooks_utility"
+HOOKS_UTILITY_DISPLAY_NAME="hooks utility"
 
 ANSI_COLOR_BLUE='\e[0;34m'
 ANSI_COLOR_YELLOW='\e[0;33m'
 ANSI_COLOR_RED='\e[0;31m'
 ANSI_COLOR_GREY='\e[0;90m'
 ANSI_RESET='\e[0m'
-
 
 # log style message  ###########################################################
 
@@ -71,7 +75,6 @@ hooks_utility_debug() {
     return "$?"
 }
 
-
 # hooks_utility_info()
 #
 # print message from stdin in log style message, prefixed with "INFO"
@@ -85,7 +88,6 @@ hooks_utility_info() {
     return "$?"
 }
 
-
 # hooks_utility_warning()
 #
 # print message from stdin in log style message, prefixed with "WARN"
@@ -98,7 +100,6 @@ hooks_utility_warning() {
     _print_log_message 30 "$@"
     return "$?"
 }
-
 
 # hooks_utility_error()
 #
@@ -118,7 +119,6 @@ hooks_utility_error() {
     return "$?"
 }
 
-
 # hooks_utility_critical()
 #
 # print message from stdin in log style message, prefixed with "CRIT"
@@ -135,7 +135,6 @@ hooks_utility_critical() {
     return "$?"
 }
 
-
 # constants  ===================================================================
 # note: all of length 5
 PREFIX_ERROR_DEBUG="DEBUG"
@@ -147,37 +146,36 @@ PREFIX_ERROR_CRITICAL="CRIT "
 DATE_FORMAT="%Y-%m-%d"
 TIME_FORMAT="%H:%M:%S"
 
-
 # helper functions  ============================================================
 _print_log_message() {
     # filtering by log level
     local -i level="$1"
     shift
 
-    if [[ level -lt LOGGING_LEVEL  ]]; then
+    if [[ level -lt LOGGING_LEVEL ]]; then
         # this message is filtered out
         return 0
     fi
 
     # consider configurations
     local target_fd=1 use_color=0
-    (( ENABLE_SPLIT_OUTPUT_STREAM )) && [[ level -ge 40 ]]  && target_fd=2
-    (( ENABLE_ANSI_COLOR )) && [[ -t "$target_fd" ]] && use_color=1
+    ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge 40 ]] && target_fd=2
+    ((ENABLE_ANSI_COLOR)) && [[ -t "$target_fd" ]] && use_color=1
 
     # parse inputs  ------------------------------------------------------------
     local message
-    message=$(cat -)  # read from stdin
+    message=$(cat -) # read from stdin
 
     # parse options
     local -i d_flag=0 t_flag=0
     OPTIND=1
     while getopts ":dtcC" opt; do
         case "$opt" in
-            d) d_flag=1 ;;
-            t) t_flag=1 ;;
-            c) use_color=1 ;;
-            C) use_color=0 ;;
-            \?) ;;  # ignore invalid options
+        d) d_flag=1 ;;
+        t) t_flag=1 ;;
+        c) use_color=1 ;;
+        C) use_color=0 ;;
+        \?) ;; # ignore invalid options
         esac
     done
     shift $((OPTIND - 1))
@@ -188,30 +186,30 @@ _print_log_message() {
     # decide prefix tag & color based on level  --------------------------------
     local prefix prefix_color
     case "$level" in
-    10)  # debug
+    10) # debug
         prefix_tag="$PREFIX_ERROR_DEBUG"
         prefix_color="$ANSI_COLOR_BLUE"
         ;;
-    20)  # info
+    20) # info
         prefix_tag="$PREFIX_ERROR_INFO"
         prefix_color="$ANSI_COLOR_YELLOW"
         ;;
-    30)  # warning
+    30) # warning
         prefix_tag="$PREFIX_ERROR_WARNING"
         prefix_color="$ANSI_COLOR_YELLOW"
         ;;
-    40)  # error
+    40) # error
         prefix_tag="$PREFIX_ERROR_ERROR"
         prefix_color="$ANSI_COLOR_RED"
         ;;
-    50)  # critical
+    50) # critical
         prefix_tag="$PREFIX_ERROR_CRITICAL"
         prefix_color="$ANSI_COLOR_RED"
         ;;
     esac
 
     # create prefix part w/ coloring
-    if (( use_color )); then
+    if ((use_color)); then
         prefix="${prefix_color}${prefix_tag}${ANSI_RESET}"
     else
         prefix="${prefix_tag}"
@@ -230,7 +228,7 @@ _print_log_message() {
     fi
 
     # create date/time part w/ coloring
-    if (( use_color )); then
+    if ((use_color)); then
         date_time_format="${ANSI_COLOR_GREY}${date_time_format}${ANSI_RESET}"
     fi
 
@@ -238,7 +236,6 @@ _print_log_message() {
     if [[ -n ${date_time_format} ]]; then
         printf -v timestamp "%(${date_time_format})T" -1
     fi
-
 
     # create source part  ------------------------------------------------------
     local source=""
@@ -256,7 +253,6 @@ _print_log_message() {
         printf "%b\n" "$content" >&2
     fi
 }
-
 
 # padding print  ###############################################################
 
@@ -288,7 +284,6 @@ hooks_utility_padding_left_just() {
     return "$?"
 }
 
-
 # hooks_utility_padding_right_just()
 #
 # print the message from stdin with its left space filled with PADDING
@@ -301,7 +296,6 @@ hooks_utility_padding_right_just() {
     _parse_adding_padding 1 "$@"
     return "$?"
 }
-
 
 # hooks_utility_padding_centered()
 #
@@ -316,11 +310,9 @@ hooks_utility_padding_centered() {
     return "$?"
 }
 
-
 # constants  ===================================================================
-PADDING_MARGIN=2  # number of spaces surround the message text
+PADDING_MARGIN=2 # number of spaces surround the message text
 PADDING_PRINT_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:padding print"
-
 
 # helper functions  ============================================================
 # print space character,  as margin b/t padding & message to stdout
@@ -328,22 +320,20 @@ _print_padding_margin() {
     printf '%*s' "${PADDING_MARGIN}" ''
 }
 
-
 # print padding of the given count, to stdout
 _print_padding_of_count() {
     local padding="$1"
     local -i cnt="$2" use_color="$3"
 
     # generating padding by cnt
-    result=$( printf '%*s' "${cnt}" '' | tr ' ' "${padding}" )
+    result=$(printf '%*s' "${cnt}" '' | tr ' ' "${padding}")
 
-    if (( use_color )); then
+    if ((use_color)); then
         result="${ANSI_COLOR_GREY}${result}${ANSI_RESET}"
     fi
 
     printf '%b' "${result}"
 }
-
 
 # main logic for padding print
 _parse_adding_padding() {
@@ -352,21 +342,21 @@ _parse_adding_padding() {
 
     # consider configurations
     local use_color=0
-    (( ENABLE_ANSI_COLOR )) && [[ -t 1 ]] && use_color=1
+    ((ENABLE_ANSI_COLOR)) && [[ -t 1 ]] && use_color=1
 
     # parse inputs  ------------------------------------------------------------
     local message
-    message=$(cat --)  # read from stdin
+    message=$(cat --) # read from stdin
 
     local -i nn_flag=0
     # parse options
     OPTIND=1
     while getopts ":cCN" opt; do
         case "$opt" in
-            c) use_color=1 ;;
-            C) use_color=0 ;;
-            N) nn_flag=1 ;;
-            \?) ;;  # ignore invalid options
+        c) use_color=1 ;;
+        C) use_color=0 ;;
+        N) nn_flag=1 ;;
+        \?) ;; # ignore invalid options
         esac
     done
     shift $((OPTIND - 1))
@@ -374,30 +364,30 @@ _parse_adding_padding() {
     # parse args
     local padding="$1"
 
-    local -i message_len  # calculate length of message
+    local -i message_len # calculate length of message
     message_len=$(printf '%s' "${message}" | wc -m)
-    printf 'type=%s message_len=%s\n' "${type}" "${message_len}" | \
-            hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
+    printf 'type=%s message_len=%s\n' "${type}" "${message_len}" |
+        hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
 
     # calculate left/right padding count  --------------------------------------
     local -i short_cnt long_cnt
     case "${type}" in
-        0|1)
-            # left & right just
-            long_cnt=$((PADDING_TERMINAL_WIDTH - message_len - PADDING_MARGIN))
-            short_cnt=1
-            ;;
-        2)
-            # centered
-            local remained=$((PADDING_TERMINAL_WIDTH \
-                    - message_len - 2 * PADDING_MARGIN))
-            short_cnt=$((remained / 2))
-            long_cnt=$((remained - short_cnt))
-            ;;
+    0 | 1)
+        # left & right just
+        long_cnt=$((PADDING_TERMINAL_WIDTH - message_len - PADDING_MARGIN))
+        short_cnt=1
+        ;;
+    2)
+        # centered
+        local remained=$((PADDING_TERMINAL_WIDTH - \
+            message_len - 2 * PADDING_MARGIN))
+        short_cnt=$((remained / 2))
+        long_cnt=$((remained - short_cnt))
+        ;;
     esac
 
-    printf "short_cnt=%s long_cnt=%s\n" "${short_cnt}" "${long_cnt}" | \
-            hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
+    printf "short_cnt=%s long_cnt=%s\n" "${short_cnt}" "${long_cnt}" |
+        hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
 
     # print out  ---------------------------------------------------------------
     # special case: message too long, just print message itself
@@ -408,42 +398,41 @@ _parse_adding_padding() {
 
         # generate actual printout
         case "${type}" in
-            0)
-                printf '%s' "${message}";
-                _print_padding_margin;
-                _print_padding_of_count \
-                        "${padding}" "${long_cnt}" "${use_color}";
-                ;;
-            1)
-                _print_padding_of_count \
-                        "${padding}" "${long_cnt}" "${use_color}";
-                _print_padding_margin;
-                printf '%s' "${message}";
-                ;;
-            2)
-                _print_padding_of_count \
-                        "${padding}" "${short_cnt}" "${use_color}";
-                _print_padding_margin;
-                printf '%s' "${message}";
-                _print_padding_margin;
-                _print_padding_of_count \
-                        "${padding}" "${long_cnt}" "${use_color}";
-                ;;
+        0)
+            printf '%s' "${message}"
+            _print_padding_margin
+            _print_padding_of_count \
+                "${padding}" "${long_cnt}" "${use_color}"
+            ;;
+        1)
+            _print_padding_of_count \
+                "${padding}" "${long_cnt}" "${use_color}"
+            _print_padding_margin
+            printf '%s' "${message}"
+            ;;
+        2)
+            _print_padding_of_count \
+                "${padding}" "${short_cnt}" "${use_color}"
+            _print_padding_margin
+            printf '%s' "${message}"
+            _print_padding_margin
+            _print_padding_of_count \
+                "${padding}" "${long_cnt}" "${use_color}"
+            ;;
         esac
     fi
 
-    if ! (( nn_flag )); then
+    if ! ((nn_flag)); then
         printf '\n'
     fi
 
     return 0
 }
 
+# branch protection  ###########################################################
+# abbr. BP
 
-# AM check  ####################################################################
-# abbr. AMC
-
-# hooks_utility_am_check()
+# hooks_utility_protect_branch()
 #
 # assert there is NO annotation markers (AM) merging into protected branches,
 # (i.e. 'dev' and 'main' branches.)
@@ -456,54 +445,53 @@ _parse_adding_padding() {
 #   is merging into main branch
 #
 # USAGE:
-#   hooks_utility_am_check
+#   hooks_utility_protect_branch
 #
 # RETURN:
 #   0   success: pass or skip checks
 #   1   failure: undesired AM detected
-hooks_utility_am_check() {
-    echo "start" | hooks_utility_debug "${AM_CHECK_DISPLAY_NAME}"
+hooks_utility_protect_branch() {
+    echo "start" | hooks_utility_debug "${BP_DISPLAY_NAME}"
 
     local commit_type
-    commit_type=$( get_commit_type_at_pre_commit )
-    printf 'commit_type=%s' "${commit_type}" | \
-            hooks_utility_debug "${AM_CHECK_DISPLAY_NAME}"
+    commit_type=$(get_commit_type_at_pre_commit)
+    printf 'commit_type=%s' "${commit_type}" |
+        hooks_utility_debug "${BP_DISPLAY_NAME}"
 
     local result=""
     # populate result
     case "${commit_type}" in
-        merge-binary-finish_feature)
-            result=$(_search_am_from_git_diff_cached 1)
-            ;;
-        merge-binary-release)
-            result="$(_search_am_from_git_diff_cached 1)\n\
+    merge-binary-finish_feature)
+        result=$(_search_am_from_git_diff_cached 1)
+        ;;
+    merge-binary-release)
+        result="$(_search_am_from_git_diff_cached 1)\n\
 $(_search_am_from_git_diff_cached 2)"
-            ;;
-        *)
-            echo "skipped, trivial commit type" | \
-                hooks_utility_debug "${AM_CHECK_DISPLAY_NAME}"
-            return 0
+        ;;
+    *)
+        echo "skipped, trivial commit type" |
+            hooks_utility_debug "${BP_DISPLAY_NAME}"
+        return 0
+        ;;
     esac
 
     # decide whether check is passed
     if [[ -n "${result}" ]]; then
-        printf 'undesired AM(s) in incoming branch:\n%s' "${result}" | \
-                hooks_utility_error "${AM_CHECK_DISPLAY_NAME}"
+        printf 'undesired AM(s) in incoming branch:\n%s' "${result}" |
+            hooks_utility_error "${BP_DISPLAY_NAME}"
         return 1
     else
-        echo "passed AM check" | hooks_utility_info "${AM_CHECK_DISPLAY_NAME}"
+        echo "passed AM check" | hooks_utility_info "${BP_DISPLAY_NAME}"
         return 0
     fi
 }
 
-
 # constants  ===================================================================
-AM_CHECK_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:AMC"
+BP_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:BP"
 
 PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
 SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
 TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
-
 
 # helper functions  ============================================================
 
@@ -531,7 +519,7 @@ get_commit_type_at_pre_commit() {
         # regular commit  ------------------------------------------------------
         # include other non-merge commit types
         printf ''
-    elif [[ $(wc -l < "${merge_head_dir}") -ne 1 ]]; then
+    elif [[ $(wc -l <"${merge_head_dir}") -ne 1 ]]; then
         # octopus merge  -------------------------------------------------------
         printf 'merge-octopus'
 
@@ -548,12 +536,12 @@ get_commit_type_at_pre_commit() {
         target_branch=$(git rev-parse --abbrev-ref HEAD)
 
         # decide merge type
-        if [[ "${source_branch}" != "${MAIN_BRANCH_DISPLAY_NAME}" && \
-                "${target_branch}" == "${DEV_BRANCH_DISPLAY_NAME}" ]]; then
+        if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" &&
+            "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
             printf 'merge-binary-finish_feature'
 
-        elif [[ "${source_branch}" == "${DEV_BRANCH_DISPLAY_NAME}" && \
-                "${target_branch}" == "${MAIN_BRANCH_DISPLAY_NAME}" ]]; then
+        elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" &&
+            "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
             printf 'merge-binary-release'
         else
             printf 'merge-binary'
@@ -563,26 +551,24 @@ get_commit_type_at_pre_commit() {
     return 0
 }
 
-
 # perform git diff --cached, find all AMs, print to stdout
 _search_am_from_git_diff_cached() {
-    local -i am_class="$1"  # 1:primary AM, 2:secondary, 3: tertiary
+    local -i am_class="$1" # 1:primary AM, 2:secondary, 3: tertiary
 
     # decide which pattern to use
     local pattern
     case "${am_class}" in
-        1) pattern="${PRIMARY_AM_PATTERN}";;
-        2) pattern="${SECONDARY_AM_PATTERN}";;
-        3) pattern="${TERTIARY_AM_PATTERN}";;
+    1) pattern="${PRIMARY_AM_PATTERN}" ;;
+    2) pattern="${SECONDARY_AM_PATTERN}" ;;
+    3) pattern="${TERTIARY_AM_PATTERN}" ;;
     esac
 
     # iterate each added & modified files
     while IFS= read -r -d '' filename; do
         local lines
-        lines=$(git diff --cached --unified=0 --no-color -- "${filename}" \
-                | grep '^+[^+]'\
-                | cut -c2-\
-                | grep -E "${pattern}" || true)
+        lines=$(git diff --cached --unified=0 --no-color -- "${filename}" |
+            grep '^+[^+]' |
+            cut -c2- | grep -E "${pattern}" || true)
 
         if [[ -n ${lines} ]]; then
             # print file name
@@ -590,7 +576,6 @@ _search_am_from_git_diff_cached() {
         fi
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 }
-
 
 # ensure file changed  #########################################################
 # abbr. EFC
@@ -618,14 +603,14 @@ hooks_utility_ensure_file_changed() {
     filename="$1"
     commit_type_arg="$2"
 
-    commit_type=$( get_commit_type_at_pre_commit )
+    commit_type=$(get_commit_type_at_pre_commit)
     printf '\nfilename=%s\ncommit_type_arg=%s\ncommit_type=%s' \
-            "${filename}" "${commit_type_arg}" "${commit_type}" | \
-            hooks_utility_debug "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+        "${filename}" "${commit_type_arg}" "${commit_type}" |
+        hooks_utility_debug "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
 
     if [[ "${commit_type}" != ${commit_type_arg}* ]]; then
-        printf 'skipped, irrelevant commit type' | \
-                hooks_utility_debug "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+        printf 'skipped, irrelevant commit type' |
+            hooks_utility_debug "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
         return 0
     fi
 
@@ -639,18 +624,17 @@ hooks_utility_ensure_file_changed() {
         # search if filename is present in modified file list
         if [[ "${changed_file}" == "${filename}" ]]; then
             printf 'ensured file changed%s: %s' \
-                    "${when_phrase}" "${filename}" | \
-                    hooks_utility_info "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+                "${when_phrase}" "${filename}" |
+                hooks_utility_info "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
             return 0
         fi
     done < <(git diff --cached --name-only --diff-filter=M)
 
     # fail to find filename in changed file list
-    printf 'must change this file%s: %s' "${when_phrase}" "${filename}" | \
-            hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+    printf 'must change this file%s: %s' "${when_phrase}" "${filename}" |
+        hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
     return 1
 }
 
 # constants  ===================================================================
 ENSURE_FILE_CHANGED_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:EFC"
-
