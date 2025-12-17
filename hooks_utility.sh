@@ -636,7 +636,7 @@ hooks_utility_ensure_file_modification() {
     done < <(git diff --cached --name-only --diff-filter=M)
 
     # fail to find filename in changed file list
-    printf '%s%s: %s' "${filename}" "${when_phrase}" "${message}" |
+    printf 're %s%s: %s' "${filename}" "${when_phrase}" "${message}" |
         hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
     return 1
 }
