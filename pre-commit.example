@@ -14,7 +14,7 @@ hooks_utility_protect_branch
 hooks_utility_ensure_file_modification "CHANGELOG.md" "merge-binary-finish_feature"
 hooks_utility_ensure_file_modification "CHANGELOG.md" "merge-binary-release"
 
-# Todo write example for version change
+# TODO example for ensure file change for README and CHANGELOG and Version
 
 printf 'DONE pre-commit' | hooks_utility_info
 

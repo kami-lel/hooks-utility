@@ -578,7 +578,11 @@ _search_am_from_git_diff_cached() {
 }
 
 # ensure file modification  ####################################################
+#
 # abbr. EFM
+
+# TODO line specific modification detection
+# TODO display name for reason of check
 
 # hooks_utility_ensure_file_modification()
 #
