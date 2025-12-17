@@ -20,7 +20,7 @@
 ### Changed
 
 - change project structure to use it as **git submodule**
-- rename functionality to **branch protection** from *annotational marker check
+- rename functionality to **branch protection** from *annotational marker check*
 
 ### Deprecated
 ### Removed

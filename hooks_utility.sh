@@ -432,7 +432,7 @@ _parse_adding_padding() {
 # branch protection  ###########################################################
 # abbr. BP
 
-# hooks_utility_bp()
+# hooks_utility_protect_branch()
 #
 # assert there is NO annotation markers (AM) merging into protected branches,
 # (i.e. 'dev' and 'main' branches.)
@@ -445,12 +445,12 @@ _parse_adding_padding() {
 #   is merging into main branch
 #
 # USAGE:
-#   hooks_utility_bp
+#   hooks_utility_protect_branchotect_branch
 #
 # RETURN:
 #   0   success: pass or skip checks
 #   1   failure: undesired AM detected
-hooks_utility_bp() {
+hooks_utility_protect_branch() {
     echo "start" | hooks_utility_debug "${BP_DISPLAY_NAME}"
 
     local commit_type

@@ -145,10 +145,6 @@ Book Title  ====================================================================
 
 ### branch protection
 
-<!-- TODO better writing -->
-
-### AM check
-
 Protect some branches from having different levels of annotation markers.
 
 AMs:
@@ -169,7 +165,7 @@ Protected branches:
 E.g., in `pre-commit`:
 
 ```
-hooks_utility_am_check
+hooks_utility_protect_branchotect_branch
 ```
 
 Checks will be performed during merge,
