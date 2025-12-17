@@ -429,11 +429,10 @@ _parse_adding_padding() {
     return 0
 }
 
-# TODO named to branch protection
-# AM check  ####################################################################
-# abbr. AMC
+# branch protection  ###########################################################
+# abbr. BP
 
-# hooks_utility_am_check()
+# hooks_utility_bp()
 #
 # assert there is NO annotation markers (AM) merging into protected branches,
 # (i.e. 'dev' and 'main' branches.)
@@ -446,18 +445,18 @@ _parse_adding_padding() {
 #   is merging into main branch
 #
 # USAGE:
-#   hooks_utility_am_check
+#   hooks_utility_bp
 #
 # RETURN:
 #   0   success: pass or skip checks
 #   1   failure: undesired AM detected
-hooks_utility_am_check() {
-    echo "start" | hooks_utility_debug "${AM_CHECK_DISPLAY_NAME}"
+hooks_utility_bp() {
+    echo "start" | hooks_utility_debug "${BP_DISPLAY_NAME}"
 
     local commit_type
     commit_type=$(get_commit_type_at_pre_commit)
     printf 'commit_type=%s' "${commit_type}" |
-        hooks_utility_debug "${AM_CHECK_DISPLAY_NAME}"
+        hooks_utility_debug "${BP_DISPLAY_NAME}"
 
     local result=""
     # populate result
@@ -471,7 +470,7 @@ $(_search_am_from_git_diff_cached 2)"
         ;;
     *)
         echo "skipped, trivial commit type" |
-            hooks_utility_debug "${AM_CHECK_DISPLAY_NAME}"
+            hooks_utility_debug "${BP_DISPLAY_NAME}"
         return 0
         ;;
     esac
@@ -479,16 +478,16 @@ $(_search_am_from_git_diff_cached 2)"
     # decide whether check is passed
     if [[ -n "${result}" ]]; then
         printf 'undesired AM(s) in incoming branch:\n%s' "${result}" |
-            hooks_utility_error "${AM_CHECK_DISPLAY_NAME}"
+            hooks_utility_error "${BP_DISPLAY_NAME}"
         return 1
     else
-        echo "passed AM check" | hooks_utility_info "${AM_CHECK_DISPLAY_NAME}"
+        echo "passed AM check" | hooks_utility_info "${BP_DISPLAY_NAME}"
         return 0
     fi
 }
 
 # constants  ===================================================================
-AM_CHECK_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:AMC"
+BP_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:BP"
 
 PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
 SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
