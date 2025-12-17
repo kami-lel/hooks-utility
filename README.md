@@ -165,7 +165,7 @@ Protected branches:
 E.g., in `pre-commit`:
 
 ```
-hooks_utility_protect_branchotect_branch
+hooks_utility_protect_branch
 ```
 
 Checks will be performed during merge,
