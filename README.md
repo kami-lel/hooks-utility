@@ -146,7 +146,7 @@ Book Title  ====================================================================
 
 ### branch protection
 
-<!-- TODO better writing -->
+<!-- Todo better writing -->
 
 ### AM check
 
