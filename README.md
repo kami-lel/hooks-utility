@@ -21,17 +21,38 @@ i.e. detect particular line is updated -->
 
 
 
-## Install as Git Submodules
+## Usage as Git Submodules
 
-Include the entire project as a Git Submodule of your working project
+Include the entire project as a Git Submodule of your working project:
 
 ```bash
-git submodule add git@github.com:kami-lel/hooks-utility.git
+git submodule add git@github.com:kami-lel/hooks-utility.git scripts/hooks_utility
 ```
 
 (run at your working project root)
 
-<!-- TODO finish -->
+This would add *hooks utility* as a submodule at `./scripts/hooks_utility/`
+
+----
+
+Resulted project structure:
+
+```
+.
+└── scripts
+    └── hooks_utility
+        ├── hooks_utility.sh
+        ├── README.md
+        └── ...
+```
+
+Resulted content of `.gitmodules`:
+
+```
+[submodule "scripts/hooks_utility"]
+	path = scripts/hooks_utility
+	url = git@github.com:kami-lel/hooks-utility.git
+```
 
 
 
@@ -45,20 +66,9 @@ git submodule add git@github.com:kami-lel/hooks-utility.git
 
 
 
-## Install as Files
+## Usage as File
 
-
-
-
-
-
-
-
-
-
-## Installation
-
-Use `hooks_utility.sh` by place it alongside git hooks scripts.
+Use `hooks_utility.sh` file (which contains all functionality) by place it alongside git hooks scripts.
 
 Typical folder structure:
 
