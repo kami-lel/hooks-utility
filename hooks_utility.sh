@@ -578,15 +578,14 @@ _search_am_from_git_diff_cached() {
 }
 
 # ensure file modification  ####################################################
-# ensure file changed  #########################################################
 # abbr. EFM
 
 # hooks_utility_ensure_file_modification()
 #
-# in pre-commit, ensure some file is edited
+# in pre-commit, ensure certain file(s) must be modified
 #
 # USAGE:
-#   hooks_utility_ensure_file_edit FILE COMMIT_TYPE
+#   hooks_utility_ensure_file_modification FILE COMMIT_TYPE
 #
 # ARGUMENT:
 #   FILE            file which is required to be changed,
@@ -598,7 +597,7 @@ _search_am_from_git_diff_cached() {
 #   1       failure, FILE hasn't been edited
 #
 # EXAMPLE:
-#   hooks_utility_ensure_file_edit 'CHANGELOG.md' 'merge-binary-finish_feature'
+#   hooks_utility_ensure_file_modification 'CHANGELOG.md' 'merge-binary-finish_feature'
 hooks_utility_ensure_file_modification() {
     local filename commit_type_arg
     filename="$1"

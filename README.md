@@ -175,7 +175,7 @@ it will be rejected if incoming branch contains disallowed AM.
 
 
 
-### ensure file changed
+### ensure file modification
 
 In `pre-commit`, ensure some file is edited.
 

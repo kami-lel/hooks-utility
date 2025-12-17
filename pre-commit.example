@@ -11,7 +11,6 @@ printf "start pre-commit" | hooks_utility_debug
 hooks_utility_protect_branch
 
 # make sure CHANGELOG.md is edited
-# Fixme update EFC example
 hooks_utility_ensure_file_modification "CHANGELOG.md" "merge-binary-finish_feature"
 hooks_utility_ensure_file_modification "CHANGELOG.md" "merge-binary-release"
 
