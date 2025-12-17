@@ -18,6 +18,43 @@ i.e. detect particular line is updated -->
 
 
 
+
+
+## Install as Git Submodules
+
+Include the entire project as a Git Submodule of your working project
+
+```bash
+git submodule add git@github.com:kami-lel/hooks-utility.git
+```
+
+(run at your working project root)
+
+<!-- TODO finish -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Install as Files
+
+
+
+
+
+
+
+
+
+
 ## Installation
 
 Use `hooks_utility.sh` by place it alongside git hooks scripts.
