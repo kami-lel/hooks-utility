@@ -445,7 +445,7 @@ _parse_adding_padding() {
 #   is merging into main branch
 #
 # USAGE:
-#   hooks_utility_protect_branchotect_branch
+#   hooks_utility_protect_branch
 #
 # RETURN:
 #   0   success: pass or skip checks
