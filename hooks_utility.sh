@@ -603,7 +603,7 @@ _search_am_from_git_diff_cached() {
 #           'merge-binary-finish_feature' \
 #           'must record CHANGELOG when finish a feature branch' \
 hooks_utility_ensure_file_modification() {
-    local filename commit_type_arg
+    local filename commit_type_arg message
     filename="$1"
     commit_type_arg="$2"
     message="$3"
@@ -641,9 +641,61 @@ hooks_utility_ensure_file_modification() {
     return 1
 }
 
+# hooks_utility_ensure_line_modification()
+#
+# in pre-commit, ensure certain line(s) must be modified
+#
+# USAGE:
+#   hooks_utility_ensure_line_modification FILE START_LINE END_LINE \
+#           COMMIT_TYPE MESSAGE
+#
+# ARGUMENT:
+#   FILE            file which is required to be changed,
+#                   relative path to repo root
+#   START_LINE      line number of start of check range in FILE
+#   END_LINE        line number of end of check range in FILE
+#   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
+#   MESSAGE         reason of failing this test
+#
+# RETURN:
+#   0       success, range in FILE is edited; or skip b/c irrelevant COMMIT_TYPE
+#   1       failure, range in FILE hasn't been edited
+#
+# EXAMPLE:
+#   hooks_utility_ensure_line_modification "code.py" 1 5 \
+#           'merge-binary-finish_feature' \
+#           'must change algorithm per commit' \
 hooks_utility_ensure_line_modification() {
     # TODO
     return 1
+}
+
+# hooks_utility_ensure_version_updated()
+#
+# in pre-commit, ensure file containing version is updated when release
+#
+# USAGE:
+#   hooks_utility_ensure_version_updated FILE LINE
+#
+# ARGUMENT:
+#   FILE            file which is required to be changed,
+#                   relative path to repo root
+#   LINE            line (in FILE) which version should be found
+#
+# RETURN:
+#   0       success
+#   1       failure
+#
+# EXAMPLE:
+#   hooks_utility_ensure_version_updated 'project.ini' 5
+hooks_utility_ensure_version_updated() {
+    local filename line
+    filename="$1"
+    line="$2"
+
+    hooks_utility_ensure_line_modification "${filename}" "${line}" "${line}" \
+        'merge-binary-release' \
+        'must update file containing release Version'
 }
 
 # constants  ===================================================================

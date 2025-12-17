@@ -10,6 +10,7 @@ printf "start pre-commit" | hooks_utility_debug
 # perform branch protection
 hooks_utility_protect_branch
 
+# examples for ensure file modifications  --------------------------------------
 # make sure CHANGELOG.md is edited
 hooks_utility_ensure_file_modification 'CHANGELOG.md' \
     'merge-binary-finish_feature' \
@@ -19,6 +20,7 @@ hooks_utility_ensure_file_modification "CHANGELOG.md" \
     "merge-binary-release" \
     "must record CHANGELOG when publish a new release"
 
+# TODO example for line mods
 # TODO example for ensure file change for Version file
 
 printf 'DONE pre-commit' | hooks_utility_info
