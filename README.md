@@ -98,6 +98,10 @@ source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility.sh"
 
 ## Functionality
 
+### ANSI colorful print
+
+<!-- TODO write doc -->
+
 ### log style message
 
 Print log style message (i.e. prefixed with `DEBUG`, `ERROR`, ...)

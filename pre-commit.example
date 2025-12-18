@@ -23,6 +23,7 @@ hooks_utility_ensure_file_modification "CHANGELOG.md" \
 # Todo example for line mods
 # Todo example for ensure file change for Version file
 
+# FIXME use color module
 printf 'PASS pre-commit' | hooks_utility_info
 
 exit 0

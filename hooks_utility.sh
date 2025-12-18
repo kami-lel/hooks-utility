@@ -42,8 +42,8 @@ ANSI_COLOR_RED='\e[0;31m'
 ANSI_COLOR_GREY='\e[0;90m'
 ANSI_RESET='\e[0m'
 
-# Fixme color as a module
-# Todo common names, such as PASS, FAIL, warn, etc.
+# FIXME color as a module
+# TODO common names, such as PASS, FAIL, warn, etc.
 
 # log style message  ###########################################################
 
@@ -140,6 +140,7 @@ hooks_utility_critical() {
 
 # constants  ===================================================================
 # note: all of length 5
+# TODO use color module
 PREFIX_ERROR_DEBUG="DEBUG"
 PREFIX_ERROR_INFO="INFO "
 PREFIX_ERROR_WARNING="WARN "
