@@ -33,12 +33,94 @@ ENABLE_SPLIT_OUTPUT_STREAM="${ENABLE_SPLIT_OUTPUT_STREAM:-1}"
 MAIN_BRANCH_NAME="${MAIN_BRANCH_NAME:-main}"
 DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
 
-# constants  ###################################################################
+# global constants  ############################################################
 HOOKS_UTILITY_DISPLAY_NAME="HU"
 
-ANSI_COLOR_BLUE='\e[0;34m'
-ANSI_COLOR_YELLOW='\e[0;33m'
+# ANSI colorful print  #########################################################
+
+# hooks_utility_colorful_print()
+#
+# print MESSAGE utilizing ANSI color escape code
+#
+# USAGE:
+#   hooks_utility_colorful_print MESSAGE COLOR
+#
+# ARGUMENT:
+#   MESSAGE     content to be print
+#   COLOR       ANSI color escape code, e.g. '\e[0;31m' for red
+#
+# OUTPUT:
+#   print MESSAGE in COLOR to stdout
+
+hooks_utility_colorful_print() {
+    # TODO
+    return 0
+}
+
+# hooks_utility_print_in_red()
+#
+# print MESSAGE in: red
+# utilizing ANSI color escape code, q.v. hooks_utility_colorful_print()
+#
+# USAGE:
+#   hooks_utility_print_in_red MESSAGE
+#
+# ARGUMENT:
+#   MESSAGE     content to be print
+hooks_utility_print_in_red() {
+    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_RED}"
+    return "$?"
+}
+
+# hooks_utility_print_in_yellow()
+#
+# print MESSAGE in: yellow
+# utilizing ANSI color escape code, q.v. hooks_utility_colorful_print()
+#
+# USAGE:
+#   hooks_utility_print_in_yellow MESSAGE
+#
+# ARGUMENT:
+#   MESSAGE     content to be print
+hooks_utility_print_in_yellow() {
+    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_RED}"
+    return "$?"
+}
+
+# hooks_utility_print_in_blue()
+#
+# print MESSAGE in: blue
+# utilizing ANSI color escape code, q.v. hooks_utility_colorful_print()
+#
+# USAGE:
+#   hooks_utility_print_in_blue MESSAGE
+#
+# ARGUMENT:
+#   MESSAGE     content to be print
+hooks_utility_print_in_blue() {
+    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_BLUE}"
+    return "$?"
+}
+
+# hooks_utility_print_in_grey()
+#
+# print MESSAGE in: grey
+# utilizing ANSI color escape code, q.v. hooks_utility_colorful_print()
+#
+# USAGE:
+#   hooks_utility_print_in_grey MESSAGE
+#
+# ARGUMENT:
+#   MESSAGE     content to be print
+hooks_utility_print_in_grey() {
+    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_GREY}"
+    return "$?"
+}
+
+# constants  ===================================================================
 ANSI_COLOR_RED='\e[0;31m'
+ANSI_COLOR_YELLOW='\e[0;33m'
+ANSI_COLOR_BLUE='\e[0;34m'
 ANSI_COLOR_GREY='\e[0;90m'
 ANSI_RESET='\e[0m'
 
