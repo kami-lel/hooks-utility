@@ -68,13 +68,14 @@ hooks_utility_colorful_print() {
     return 0
 }
 
+# hooks_utility_print_in_black()
 # hooks_utility_print_in_red()
 # hooks_utility_print_in_green()
 # hooks_utility_print_in_yellow()
 # hooks_utility_print_in_blue()
 # hooks_utility_print_in_purple()
 # hooks_utility_print_in_cyan()
-# hooks_utility_print_in_grey()
+# hooks_utility_print_in_white()
 #
 # print MESSAGE in a color utilizing ANSI color escape code,
 # q.v. hooks_utility_colorful_print()
@@ -84,53 +85,53 @@ hooks_utility_colorful_print() {
 #
 # ARGUMENT:
 #   MESSAGE     content to be print
+hooks_utility_print_in_black() {
+    hooks_utility_colorful_print "${ANSI_COLOR_BLACK}"
+}
+
 hooks_utility_print_in_red() {
-    hooks_utility_colorful_print "${ANSI_COLOR_RED}" "${1}"
-    return "$?"
+    hooks_utility_colorful_print "${ANSI_COLOR_RED}"
 }
 
 hooks_utility_print_in_green() {
-    hooks_utility_colorful_print "${ANSI_COLOR_GREEN}" "${1}"
-    return "$?"
+    hooks_utility_colorful_print "${ANSI_COLOR_GREEN}"
 }
 
 hooks_utility_print_in_yellow() {
-    hooks_utility_colorful_print "${ANSI_COLOR_YELLOW}" "${1}"
-    return "$?"
+    hooks_utility_colorful_print "${ANSI_COLOR_YELLOW}"
 }
 
 hooks_utility_print_in_blue() {
-    hooks_utility_colorful_print "${ANSI_COLOR_BLUE}" "${1}"
-    return "$?"
+    hooks_utility_colorful_print "${ANSI_COLOR_BLUE}"
 }
 
 hooks_utility_print_in_purple() {
-    hooks_utility_colorful_print "${ANSI_COLOR_PURPLE}" "${1}"
-    return "$?"
+    hooks_utility_colorful_print "${ANSI_COLOR_PURPLE}"
 }
 
 hooks_utility_print_in_cyan() {
-    hooks_utility_colorful_print "${ANSI_COLOR_CYAN}" "${1}"
-    return "$?"
+    hooks_utility_colorful_print "${ANSI_COLOR_CYAN}"
 }
 
-hooks_utility_print_in_grey() {
-    hooks_utility_colorful_print "${ANSI_COLOR_GREY}" "${1}"
-    return "$?"
+hooks_utility_print_in_white() {
+    hooks_utility_colorful_print "${ANSI_COLOR_WHITE}"
 }
 
 # TODO common names, such as PASS, FAIL, warn, etc.
 
 # constants  ===================================================================
+ANSI_COLOR_BLACK='\e[0;30m'
 ANSI_COLOR_RED='\e[0;31m'
 ANSI_COLOR_GREEN='\e[0;32m'
 ANSI_COLOR_YELLOW='\e[0;33m'
 ANSI_COLOR_BLUE='\e[0;34m'
 ANSI_COLOR_PURPLE='\e[0;35m'
-ANSI_COLOR_CYAN='\e[0;35m'
-ANSI_COLOR_GREY='\e[0;36m'
+ANSI_COLOR_CYAN='\e[0;36m'
+ANSI_COLOR_WHITE='\e[0;37m'
 ANSI_RESET='\e[0m'
 
+# TODO rm
+ANSI_COLOR_GREY='\e[0;36m'
 # log style message  ###########################################################
 
 # hooks_utility_debug()
