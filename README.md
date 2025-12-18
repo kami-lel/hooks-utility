@@ -100,7 +100,29 @@ source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility.sh"
 
 ### ANSI colorful print
 
-<!-- TODO write doc -->
+Utilize **ANSI color escape code** for printing:
+
+Use the generic function:
+
+```bash
+printf '%s' "Content in Red\n" | hooks_utility_colorful_print "\e[0;31m"
+```
+
+Use specific color:
+
+```bash
+printf '%s' "Content in Red\n" | hooks_utility_print_in_red
+```
+
+Print specific *keywords*:
+
+```bash
+hooks_utility_colorful_print_pass
+```
+
+
+
+
 
 ### log style message
 
