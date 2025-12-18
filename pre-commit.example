@@ -21,7 +21,7 @@ hooks_utility_ensure_file_modification "CHANGELOG.md" \
     "must record CHANGELOG when publish a new release"
 
 # Todo example for line mods
-# TODO example for ensure file change for Version file
+# Todo example for ensure file change for Version file
 
 printf 'PASS pre-commit' | hooks_utility_info
 
