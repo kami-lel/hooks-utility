@@ -43,11 +43,11 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 # print MESSAGE utilizing ANSI color escape code
 #
 # USAGE:
-#   hooks_utility_colorful_print MESSAGE COLOR
+#   hooks_utility_colorful_print COLOR MESSAGE
 #
 # ARGUMENT:
-#   MESSAGE     content to be print
 #   COLOR       ANSI color escape code, e.g. '\e[0;31m' for red
+#   MESSAGE     content to be print
 #
 # OUTPUT:
 #   print MESSAGE in COLOR to stdout
@@ -58,12 +58,18 @@ hooks_utility_colorful_print() {
 }
 
 # hooks_utility_print_in_red()
+# hooks_utility_print_in_green()
+# hooks_utility_print_in_yellow()
+# hooks_utility_print_in_purple()
+# hooks_utility_print_in_cyan()
+# hooks_utility_print_in_blue()
+# hooks_utility_print_in_grey()
 #
-# print MESSAGE in: red
-# utilizing ANSI color escape code, q.v. hooks_utility_colorful_print()
+# print MESSAGE in a color utilizing ANSI color escape code,
+# q.v. hooks_utility_colorful_print()
 #
 # USAGE:
-#   hooks_utility_print_in_red MESSAGE
+#   hooks_utility_print_in_* MESSAGE
 #
 # ARGUMENT:
 #   MESSAGE     content to be print
@@ -72,46 +78,31 @@ hooks_utility_print_in_red() {
     return "$?"
 }
 
-# hooks_utility_print_in_yellow()
-#
-# print MESSAGE in: yellow
-# utilizing ANSI color escape code, q.v. hooks_utility_colorful_print()
-#
-# USAGE:
-#   hooks_utility_print_in_yellow MESSAGE
-#
-# ARGUMENT:
-#   MESSAGE     content to be print
-hooks_utility_print_in_yellow() {
-    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_RED}"
+hooks_utility_print_in_green() {
+    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_GREEN}"
     return "$?"
 }
 
-# hooks_utility_print_in_blue()
-#
-# print MESSAGE in: blue
-# utilizing ANSI color escape code, q.v. hooks_utility_colorful_print()
-#
-# USAGE:
-#   hooks_utility_print_in_blue MESSAGE
-#
-# ARGUMENT:
-#   MESSAGE     content to be print
+hooks_utility_print_in_yellow() {
+    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_YELLOW}"
+    return "$?"
+}
+
+hooks_utility_print_in_purple() {
+    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_PURPLE}"
+    return "$?"
+}
+
+hooks_utility_print_in_cyan() {
+    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_CYAN}"
+    return "$?"
+}
+
 hooks_utility_print_in_blue() {
     hooks_utility_colorful_print "${1}" "${ANSI_COLOR_BLUE}"
     return "$?"
 }
 
-# hooks_utility_print_in_grey()
-#
-# print MESSAGE in: grey
-# utilizing ANSI color escape code, q.v. hooks_utility_colorful_print()
-#
-# USAGE:
-#   hooks_utility_print_in_grey MESSAGE
-#
-# ARGUMENT:
-#   MESSAGE     content to be print
 hooks_utility_print_in_grey() {
     hooks_utility_colorful_print "${1}" "${ANSI_COLOR_GREY}"
     return "$?"
@@ -119,6 +110,7 @@ hooks_utility_print_in_grey() {
 
 # constants  ===================================================================
 ANSI_COLOR_RED='\e[0;31m'
+ANSI_COLOR_GREEN='\e[0;32m'
 ANSI_COLOR_YELLOW='\e[0;33m'
 ANSI_COLOR_BLUE='\e[0;34m'
 ANSI_COLOR_GREY='\e[0;90m'
