@@ -60,9 +60,9 @@ hooks_utility_colorful_print() {
 # hooks_utility_print_in_red()
 # hooks_utility_print_in_green()
 # hooks_utility_print_in_yellow()
+# hooks_utility_print_in_blue()
 # hooks_utility_print_in_purple()
 # hooks_utility_print_in_cyan()
-# hooks_utility_print_in_blue()
 # hooks_utility_print_in_grey()
 #
 # print MESSAGE in a color utilizing ANSI color escape code,
@@ -88,6 +88,11 @@ hooks_utility_print_in_yellow() {
     return "$?"
 }
 
+hooks_utility_print_in_blue() {
+    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_BLUE}"
+    return "$?"
+}
+
 hooks_utility_print_in_purple() {
     hooks_utility_colorful_print "${1}" "${ANSI_COLOR_PURPLE}"
     return "$?"
@@ -98,26 +103,22 @@ hooks_utility_print_in_cyan() {
     return "$?"
 }
 
-hooks_utility_print_in_blue() {
-    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_BLUE}"
-    return "$?"
-}
-
 hooks_utility_print_in_grey() {
     hooks_utility_colorful_print "${1}" "${ANSI_COLOR_GREY}"
     return "$?"
 }
+
+# TODO common names, such as PASS, FAIL, warn, etc.
 
 # constants  ===================================================================
 ANSI_COLOR_RED='\e[0;31m'
 ANSI_COLOR_GREEN='\e[0;32m'
 ANSI_COLOR_YELLOW='\e[0;33m'
 ANSI_COLOR_BLUE='\e[0;34m'
-ANSI_COLOR_GREY='\e[0;90m'
+ANSI_COLOR_PURPLE='\e[0;35m'
+ANSI_COLOR_CYAN='\e[0;35m'
+ANSI_COLOR_GREY='\e[0;36m'
 ANSI_RESET='\e[0m'
-
-# FIXME color as a module
-# TODO common names, such as PASS, FAIL, warn, etc.
 
 # log style message  ###########################################################
 
