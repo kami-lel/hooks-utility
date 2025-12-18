@@ -452,7 +452,7 @@ _parse_adding_padding() {
     shift $((OPTIND - 1))
 
     # parse args
-    local padding="$1"
+    local padding="${1}"
 
     local -i message_len # calculate length of message
     message_len=$(printf '%s' "${message}" | wc -m)
