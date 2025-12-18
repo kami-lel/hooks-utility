@@ -74,37 +74,37 @@ hooks_utility_colorful_print() {
 # ARGUMENT:
 #   MESSAGE     content to be print
 hooks_utility_print_in_red() {
-    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_RED}"
+    hooks_utility_colorful_print "${ANSI_COLOR_RED}" "${1}"
     return "$?"
 }
 
 hooks_utility_print_in_green() {
-    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_GREEN}"
+    hooks_utility_colorful_print "${ANSI_COLOR_GREEN}" "${1}"
     return "$?"
 }
 
 hooks_utility_print_in_yellow() {
-    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_YELLOW}"
+    hooks_utility_colorful_print "${ANSI_COLOR_YELLOW}" "${1}"
     return "$?"
 }
 
 hooks_utility_print_in_blue() {
-    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_BLUE}"
+    hooks_utility_colorful_print "${ANSI_COLOR_BLUE}" "${1}"
     return "$?"
 }
 
 hooks_utility_print_in_purple() {
-    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_PURPLE}"
+    hooks_utility_colorful_print "${ANSI_COLOR_PURPLE}" "${1}"
     return "$?"
 }
 
 hooks_utility_print_in_cyan() {
-    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_CYAN}"
+    hooks_utility_colorful_print "${ANSI_COLOR_CYAN}" "${1}"
     return "$?"
 }
 
 hooks_utility_print_in_grey() {
-    hooks_utility_colorful_print "${1}" "${ANSI_COLOR_GREY}"
+    hooks_utility_colorful_print "${ANSI_COLOR_GREY}" "${1}"
     return "$?"
 }
 
