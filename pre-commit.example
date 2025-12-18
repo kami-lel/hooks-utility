@@ -23,6 +23,6 @@ hooks_utility_ensure_file_modification "CHANGELOG.md" \
 # TODO example for line mods
 # TODO example for ensure file change for Version file
 
-printf 'DONE pre-commit' | hooks_utility_info
+printf 'PASS pre-commit' | hooks_utility_info
 
 exit 0

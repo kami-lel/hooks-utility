@@ -482,7 +482,8 @@ $(_search_am_from_git_diff_cached 2)"
             hooks_utility_error "${BP_DISPLAY_NAME}"
         return 1
     else
-        echo "passed AM check" | hooks_utility_info "${BP_DISPLAY_NAME}"
+        echo "PASS: branch protection check" |
+            hooks_utility_info "${BP_DISPLAY_NAME}"
         return 0
     fi
 }
