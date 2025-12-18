@@ -87,6 +87,9 @@ hooks_utility_colorful_print() {
 #
 # ARGUMENT:
 #   MESSAGE     content to be print
+#
+# EXAMPLE:
+#   echo "content in red" | hooks_utility_print_in_red
 hooks_utility_print_in_black() {
     hooks_utility_colorful_print "${ANSI_COLOR_BLACK}"
 }
@@ -120,6 +123,22 @@ hooks_utility_print_in_white() {
 }
 
 # colorful print of specific words  ============================================
+# hooks_utility_colorful_print_pass()
+# hooks_utility_colorful_print_fail()
+# hooks_utility_colorful_print_debug()
+# hooks_utility_colorful_print_info()
+# hooks_utility_colorful_print_warning()
+# hooks_utility_colorful_print_error()
+# hooks_utility_colorful_print_critical()
+#
+# print specific keywords in appropriate color
+# utilizing ANSI color escape code, q.v. hooks_utility_colorful_print()
+#
+# USAGE:
+#   hooks_utility_print_in_* MESSAGE
+#
+# EXAMPLE:
+#   hooks_utility_colorful_print_pass
 hooks_utility_colorful_print_pass() {
     echo "${KEYWORD_PASS}" |
         hooks_utility_colorful_print "${ANSI_COLOR_GREEN_BOLD}"
@@ -130,7 +149,25 @@ hooks_utility_colorful_print_fail() {
         hooks_utility_colorful_print "${ANSI_COLOR_RED_BOLD}"
 }
 
-# TODO common names, such as PASS, FAIL, warn, etc.
+hooks_utility_colorful_print_debug() {
+    echo "${KEYWORD_DEBUG}" | hooks_utility_print_in_blue
+}
+
+hooks_utility_colorful_print_info() {
+    echo "${KEYWORD_INFO}" | hooks_utility_print_in_yellow
+}
+
+hooks_utility_colorful_print_warning() {
+    echo "${KEYWORD_WARNING}" | hooks_utility_print_in_yellow
+}
+
+hooks_utility_colorful_print_error() {
+    echo "${KEYWORD_ERROR}" | hooks_utility_print_in_red
+}
+
+hooks_utility_colorful_print_critical() {
+    echo "${KEYWORD_CRITICAL}" | hooks_utility_print_in_red
+}
 
 # constants  ===================================================================
 ANSI_COLOR_BLACK='\e[0;30m'
@@ -147,6 +184,11 @@ ANSI_RESET='\e[0m'
 
 KEYWORD_PASS="PASS"
 KEYWORD_FAIL="FAIL"
+KEYWORD_DEBUG="DEBUG"
+KEYWORD_INFO="INFO "
+KEYWORD_WARNING="WARN "
+KEYWORD_ERROR="ERROR"
+KEYWORD_CRITICAL="CRIT "
 
 # TODO rm
 ANSI_COLOR_GREY='\e[0;36m'
@@ -245,7 +287,7 @@ hooks_utility_critical() {
 
 # constants  ===================================================================
 # note: all of length 5
-# TODO use color module
+# TODO rm
 PREFIX_ERROR_DEBUG="DEBUG"
 PREFIX_ERROR_INFO="INFO "
 PREFIX_ERROR_WARNING="WARN "
