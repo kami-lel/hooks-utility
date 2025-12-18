@@ -42,6 +42,8 @@ ANSI_COLOR_RED='\e[0;31m'
 ANSI_COLOR_GREY='\e[0;90m'
 ANSI_RESET='\e[0m'
 
+# Fixme color as a module
+
 # log style message  ###########################################################
 
 # hooks_utility_debug()
