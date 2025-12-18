@@ -670,7 +670,7 @@ hooks_utility_ensure_file_modification() {
 #           'merge-binary-finish_feature' \
 #           'must change algorithm per commit' \
 hooks_utility_ensure_line_modification() {
-    # TODO
+    # Todo
     return 1
 }
 
