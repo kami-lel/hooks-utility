@@ -58,11 +58,13 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 #   echo "content in red" | hooks_utility_colorful_print "\e[0;31m"
 
 hooks_utility_colorful_print() {
-    local color, message
+    local color message
+
     message=$(cat -) # read from stdin
     color="${1}"
 
-    echo "${color}${message}${ANSI_RESET}"
+    printf "%b" "${color}${message}${ANSI_RESET}"
+
     return 0
 }
 
