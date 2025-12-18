@@ -43,6 +43,7 @@ ANSI_COLOR_GREY='\e[0;90m'
 ANSI_RESET='\e[0m'
 
 # Fixme color as a module
+# Todo common names, such as PASS, FAIL, warn, etc.
 
 # log style message  ###########################################################
 
