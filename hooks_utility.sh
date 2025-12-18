@@ -40,22 +40,28 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 
 # hooks_utility_colorful_print()
 #
-# print MESSAGE utilizing ANSI color escape code
+# print message from stdin utilizing ANSI color escape code
 #
 # USAGE:
 #   hooks_utility_colorful_print COLOR
 #
 # ARGUMENT:
 #   COLOR       ANSI color escape code, e.g. '\e[0;31m' for red
-#   MESSAGE     content to be print
 #
 # OUTPUT:
 #   print MESSAGE in COLOR to stdout
+#
+# RETURN:
+#   0       success
+#
+# EXAMPLE:
+#   echo "content in red" | hooks_utility_colorful_print "\e[0;31m"
 
 hooks_utility_colorful_print() {
     local color, message
+    message=$(cat -) # read from stdin
     color="${1}"
-    message="${2}"
+
     echo "${color}${message}${ANSI_RESET}"
     return 0
 }
