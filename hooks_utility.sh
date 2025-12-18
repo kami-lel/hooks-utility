@@ -43,7 +43,7 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 # print MESSAGE utilizing ANSI color escape code
 #
 # USAGE:
-#   hooks_utility_colorful_print COLOR MESSAGE
+#   hooks_utility_colorful_print COLOR
 #
 # ARGUMENT:
 #   COLOR       ANSI color escape code, e.g. '\e[0;31m' for red
@@ -53,7 +53,10 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 #   print MESSAGE in COLOR to stdout
 
 hooks_utility_colorful_print() {
-    # TODO
+    local color, message
+    color="${1}"
+    message="${2}"
+    echo "${color}${message}${ANSI_RESET}"
     return 0
 }
 
