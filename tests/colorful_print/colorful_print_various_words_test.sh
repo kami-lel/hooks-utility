@@ -4,3 +4,9 @@
 source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
 # TODO write tests for words
+
+hooks_utility_colorful_print_pass
+printf '%b' "\n"
+
+hooks_utility_colorful_print_fail
+printf '%b' "\n"

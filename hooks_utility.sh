@@ -38,6 +38,7 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 
 # ANSI colorful print  #########################################################
 
+# generic print colorful function  =============================================
 # hooks_utility_colorful_print()
 #
 # print message from stdin utilizing ANSI color escape code
@@ -68,6 +69,7 @@ hooks_utility_colorful_print() {
     return 0
 }
 
+# colorful print of specific color  ============================================
 # hooks_utility_print_in_black()
 # hooks_utility_print_in_red()
 # hooks_utility_print_in_green()
@@ -117,18 +119,34 @@ hooks_utility_print_in_white() {
     hooks_utility_colorful_print "${ANSI_COLOR_WHITE}"
 }
 
+# colorful print of specific words  ============================================
+hooks_utility_colorful_print_pass() {
+    echo "${KEYWORD_PASS}" |
+        hooks_utility_colorful_print "${ANSI_COLOR_GREEN_BOLD}"
+}
+
+hooks_utility_colorful_print_fail() {
+    echo "${KEYWORD_FAIL}" |
+        hooks_utility_colorful_print "${ANSI_COLOR_RED_BOLD}"
+}
+
 # TODO common names, such as PASS, FAIL, warn, etc.
 
 # constants  ===================================================================
 ANSI_COLOR_BLACK='\e[0;30m'
 ANSI_COLOR_RED='\e[0;31m'
+ANSI_COLOR_RED_BOLD='\e[1;31m'
 ANSI_COLOR_GREEN='\e[0;32m'
+ANSI_COLOR_GREEN_BOLD='\e[1;32m'
 ANSI_COLOR_YELLOW='\e[0;33m'
 ANSI_COLOR_BLUE='\e[0;34m'
 ANSI_COLOR_PURPLE='\e[0;35m'
 ANSI_COLOR_CYAN='\e[0;36m'
 ANSI_COLOR_WHITE='\e[0;37m'
 ANSI_RESET='\e[0m'
+
+KEYWORD_PASS="PASS"
+KEYWORD_FAIL="FAIL"
 
 # TODO rm
 ANSI_COLOR_GREY='\e[0;36m'
