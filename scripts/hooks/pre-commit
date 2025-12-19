@@ -8,15 +8,23 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 # perform branch protection
 hooks_utility_protect_branch
 
-# Todo use ensure readme edit
-# make sure CHANGELOG.md is edited
-hooks_utility_ensure_file_modification 'CHANGELOG.md' \
-    'merge-binary-finish_feature' \
-    'must record CHANGELOG when finish a feature branch'
+# ensure CHANGELOG is edited
+# Todo need test
+hooks_utility_ensure_changelog_edited "CHANGELOG.md"
 
-hooks_utility_ensure_file_modification "CHANGELOG.md" \
-    "merge-binary-release" \
-    "must record CHANGELOG when publish a new release"
+# ensure project version number is updated
+# Todo need test
+hooks_utility_ensure_version_updated "hooks_utility.sh" 10
+
+# make sure hooks_utility.sh contains no AM
+# Todo need test
+if [[ $(get_commit_type_at_pre_commit) == "merge-binary-release" ]]; then
+    PATTERN=
+    "${PRIMARY_AM_PATTERN}|${SECONDARY_AM_PATTERN}|${TERTIARY_AM_PATTERN}"
+    if git diff --cached --no-color | grep -E -q -- "$PATTERN"; then
+        exit 1
+    fi
+fi
 
 printf '%s' "$(hooks_utility_colorful_print_pass) pre-commit" |
     hooks_utility_info

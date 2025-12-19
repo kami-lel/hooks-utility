@@ -663,7 +663,7 @@ TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
 #   - 'merge-octopus': octopus merge commit of 3+ branches
 #
 # EXAMPLE:
-#   if [[ $( get_commit_type ) == "merge-binary" ]]
+#   if [[ $( get_commit_type_at_pre_commit ) == "merge-binary" ]]
 get_commit_type_at_pre_commit() {
     local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
 
@@ -791,6 +791,8 @@ hooks_utility_ensure_file_modification() {
     printf 're %s%s: %s' "${filename}" "${when_phrase}" "${message}" |
         hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
     return 1
+
+    # Todo print as log
 }
 
 # hooks_utility_ensure_line_modification()
@@ -819,71 +821,16 @@ hooks_utility_ensure_file_modification() {
 #           'must change algorithm per commit' \
 hooks_utility_ensure_line_modification() {
     # TODO
+    # Todo print as log
     return 1
 }
 
-hooks_utility_ensure_file_modification_when_merge() {
-    local filename message
-    filename="${1}"
-    message="${2}"
-
-    hooks_utility_ensure_file_modification \
-        "${filename}" 'merge-binary-finish_feature' "${message}"
-    hooks_utility_ensure_file_modification \
-        "${filename}" 'merge-binary-release' "${message}"
-
-    return "$?"
-}
-
-hooks_utility_ensure_file_modification_when_release() {
-    local filename message
-    filename="${1}"
-    message="${2}"
-
-    hooks_utility_ensure_file_modification \
-        "${filename}" 'merge-binary-release' "${message}"
-
-    return "$?"
-}
-
-hooks_utility_ensure_line_modification_when_merge() {
-    local filename start_line end_line message
-    filename="${1}"
-    start_line="${2}"
-    end_line="${3}"
-    message="${4}"
-
-    hooks_utility_ensure_line_modification \
-        "${filename}" "${start_line}" "${end_line}" \
-        'merge-binary-finish_feature' "${message}"
-
-    hooks_utility_ensure_line_modification \
-        "${filename}" "${start_line}" "${end_line}" \
-        'merge-binary-release' "${message}"
-
-    return "$?"
-}
-
-hooks_utility_ensure_line_modification_when_release() {
-    local filename start_line end_line message
-    filename="${1}"
-    start_line="${2}"
-    end_line="${3}"
-    message="${4}"
-
-    hooks_utility_ensure_line_modification \
-        "${filename}" "${start_line}" "${end_line}" \
-        'merge-binary-release' "${message}"
-
-    return "$?"
-}
-
-# hooks_utility_ensure_readme_edited()
+# hooks_utility_ensure_changelog_edited()
 #
 # in pre-commit, ensure README file
 #
 # USAGE:
-#   hooks_utility_ensure_readme_edited FILE
+#   hooks_utility_ensure_changelog_edited FILE
 #
 # ARGUMENT:
 #   README_FILE     file path of README file,
@@ -894,10 +841,11 @@ hooks_utility_ensure_line_modification_when_release() {
 #   1       failure
 #
 # EXAMPLE:
-#   hooks_utility_ensure_readme_edited 'README.md'
-hooks_utility_ensure_readme_edited() {
-    hooks_utility_ensure_file_modification_when_merge \
-        "${1}" "record changes of this feature branch"
+#   hooks_utility_ensure_changelog_edited 'README.md'
+hooks_utility_ensure_changelog_edited() {
+    hooks_utility_ensure_file_modification "${1}" \
+        'merge-binary-finish_feature' \
+        "record changes of this feature branch"
 
     return "$?"
 }
@@ -925,8 +873,9 @@ hooks_utility_ensure_version_updated() {
     filename="${1}"
     line="${2}"
 
-    hooks_utility_ensure_line_modification_when_release \
+    hooks_utility_ensure_line_modification \
         "${filename}" "${line}" "${line}" \
+        'merge-binary-release' \
         "update project version in the file"
 
     return "$?"
