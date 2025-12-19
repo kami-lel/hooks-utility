@@ -63,6 +63,9 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 # EXAMPLE:
 #   echo "content in red" | hooks_utility_colorful_print "\e[0;31m"
 hooks_utility_colorful_print() {
+    # consider configurations
+    local use_color=0 # default
+
     # TODO add -c/-C
     local color message
 
@@ -243,7 +246,6 @@ TIME_FORMAT="%H:%M:%S"
 # Fixme no ":" when message is empty
 # helper functions  ============================================================
 _print_log_message() {
-    # FIXME pass -c/-C to smart color
     # filtering by log level
     local -i level="$1"
     shift
@@ -256,6 +258,7 @@ _print_log_message() {
     # consider configurations
     local target_fd=1 use_color=0
     ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge 40 ]] && target_fd=2
+    # FIXME rm this
     ((ENABLE_ANSI_COLOR)) && [[ -t "$target_fd" ]] && use_color=1
 
     # parse inputs  ------------------------------------------------------------
@@ -320,6 +323,7 @@ _print_log_message() {
     esac
 
     # create prefix part w/ coloring
+    # FIXME pass -c/-C to smart color
     if ((use_color)); then
         prefix="$(printf '%s' "${prefix_tag}" |
             hooks_utility_colorful_print "${prefix_color}")"
@@ -340,6 +344,7 @@ _print_log_message() {
     fi
 
     # create date/time part w/ coloring
+    # FIXME pass -c/-C to smart color
     if ((use_color)); then
         date_time_format="$(printf '%s' "${date_time_format}" |
             hooks_utility_print_in_black)"
