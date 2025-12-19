@@ -40,7 +40,6 @@ cat "${tmp}"
 echo "Pass Message Content" | hooks_utility_pass 1>"${tmp}"
 cat "${tmp}"
 
-# BUG
 echo "Warning Message Content" | hooks_utility_warning 2>"${tmp}"
 cat "${tmp}"
 
