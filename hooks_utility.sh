@@ -672,7 +672,9 @@ _search_am_from_git_diff_cached() {
         if [[ -n ${lines} ]]; then
             # print file name
             printf '%s' "${filename}" | hooks_utility_padding_left_just -c '-'
-            printf '%s' "${lines}"
+
+            # print lines with AMs
+            printf '%s\n' "${lines}"
 
             # TODO print line w/ highlighting
         fi
