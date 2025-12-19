@@ -836,7 +836,7 @@ hooks_utility_ensure_file_modification() {
 #
 # USAGE:
 #   hooks_utility_ensure_line_modification FILE START_LINE END_LINE \
-#           COMMIT_TYPE MESSAGE
+#           COMMIT_TYPE MESSAGE [PATTERN]
 #
 # ARGUMENT:
 #   FILE            file which is required to be changed,
