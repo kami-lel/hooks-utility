@@ -651,17 +651,24 @@ get_commit_type_at_pre_commit() {
     return 0
 }
 
+# convert AM index 1~3 to pattern
+_am_class_index2pattern() {
+    local am_class="${1}"
+
+    case "${am_class}" in
+    1) echo "${PRIMARY_AM_PATTERN}" ;;
+    2) echo "${SECONDARY_AM_PATTERN}" ;;
+    3) echo "${TERTIARY_AM_PATTERN}" ;;
+    esac
+}
+
 # perform git diff --cached, find all AMs, print to stdout
 _search_am_from_git_diff_cached() {
     local -i am_class="$1" # 1:primary AM, 2:secondary, 3: tertiary
 
     # decide which pattern to use
     local pattern
-    case "${am_class}" in
-    1) pattern="${PRIMARY_AM_PATTERN}" ;;
-    2) pattern="${SECONDARY_AM_PATTERN}" ;;
-    3) pattern="${TERTIARY_AM_PATTERN}" ;;
-    esac
+    pattern="$(_am_index2pattern "${am_class}")"
 
     # iterate each added & modified files
     while IFS= read -r -d '' filename; do
@@ -684,9 +691,18 @@ _search_am_from_git_diff_cached() {
 }
 
 _highlight_am_in_git_diff_line() {
-    local line pattern
+    local line am_class pattern split_pattern
     line="${1}"
-    pattern="${2}"
+    am_class="${2}"
+    pattern="${3}"
+
+    split_pattern="^(.*)(${pattern})(.*)$"
+
+    if [[ $line =~ $split_pattern ]]; then
+        printf '%s\n%s\n%s\n' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "${BASH_REMATCH[3]}"
+    else
+        printf '%s' "${line}"
+    fi
 }
 
 # ensure file modification  ####################################################
