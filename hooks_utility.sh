@@ -855,7 +855,7 @@ hooks_utility_ensure_file_modification() {
 #           'merge-binary-finish_feature' \
 #           'must change algorithm per commit' \
 hooks_utility_ensure_line_modification() {
-    # todo write
+    # Todo write
     return 1
 }
 
@@ -904,7 +904,7 @@ hooks_utility_ensure_changelog_edited() {
 # EXAMPLE:
 #   hooks_utility_ensure_version_updated 'project.ini' 5
 hooks_utility_ensure_version_updated() {
-    # todo use ensure_line_modification() instead
+    # Todo use ensure_line_modification() instead
 
     local filename line
     filename="${1}"
