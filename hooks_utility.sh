@@ -243,6 +243,7 @@ TIME_FORMAT="%H:%M:%S"
 # Fixme no ":" when message is empty
 # helper functions  ============================================================
 _print_log_message() {
+    # FIXME pass -c/-C to smart color
     # filtering by log level
     local -i level="$1"
     shift
