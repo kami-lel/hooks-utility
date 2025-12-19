@@ -8,12 +8,40 @@
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
-echo \
-    "tests: log style message, basic tests  #######################################\
-##"
+# basic  =======================================================================
+echo 'log style message, test enter/pass/fail' |
+    hooks_utility_padding_left_just '#'
+echo 'basic' | hooks_utility_padding_left_just '='
 
-echo "Some Debugging Message Content" | hooks_utility_debug
-echo "Content of Informational Message" | hooks_utility_info
-echo "Warning!" | hooks_utility_warning
-echo "Some Error Message" | hooks_utility_error
-echo "Giving Critical Error Message" | hooks_utility_critical
+echo "Enter Some Script" | hooks_utility_enter
+echo "Finish Some Script" | hooks_utility_pass
+echo "Fail Some Script" | hooks_utility_fail
+
+# combined  ====================================================================
+echo "combined" | hooks_utility_padding_left_just '='
+
+# source & date  ---------------------------------------------------------------
+echo "source & date" | hooks_utility_padding_left_just '-'
+echo "Enter Some Script" | hooks_utility_enter -d "MainComponent"
+echo "Pass Some Script" | hooks_utility_pass -d "MainComponent"
+echo "Fail Some Script" | hooks_utility_fail -d "MainComponent"
+
+# source & date-time  ----------------------------------------------------------
+echo "source & date-time" | hooks_utility_padding_left_just '-'
+
+echo "Enter Some Script" |
+    hooks_utility_enter -dt "Information Test Component from Main Script"
+echo "Pass Some Script" |
+    hooks_utility_pass -dt "Information Test Component from Main Script"
+echo "Fail Some Script" |
+    hooks_utility_fail -dt "Information Test Component from Main Script"
+
+# source & date-time & colors  -------------------------------------------------
+echo "source & date & colors" | hooks_utility_padding_left_just '-'
+
+echo "Enter Some Script" |
+    hooks_utility_enter -dc "MainComponent"
+echo "Pass Some Script" |
+    hooks_utility_pass -dc "MainComponent"
+echo "Fail Some Script" |
+    hooks_utility_fail -dc "MainComponent"

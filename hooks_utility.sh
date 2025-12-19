@@ -152,6 +152,7 @@ ANSI_COLOR_GREEN='\e[0;32m'
 ANSI_COLOR_GREEN_BOLD='\e[1;32m'
 ANSI_COLOR_YELLOW='\e[0;33m'
 ANSI_COLOR_BLUE='\e[0;34m'
+ANSI_COLOR_BLUE_BOLD='\e[1;34m'
 ANSI_COLOR_PURPLE='\e[0;35m'
 ANSI_COLOR_CYAN='\e[0;36m'
 ANSI_COLOR_WHITE='\e[0;37m'
@@ -305,7 +306,7 @@ _print_log_message() {
         ;;
     11) # enter
         prefix_tag="$PREFIX_ERROR_ENTER"
-        prefix_color="$ANSI_COLOR_BLUE"
+        prefix_color="$ANSI_COLOR_BLUE_BOLD"
         ;;
     20) # info
         prefix_tag="$PREFIX_ERROR_INFO"
@@ -313,7 +314,7 @@ _print_log_message() {
         ;;
     21) # pass
         prefix_tag="$PREFIX_ERROR_PASS"
-        prefix_color="$ANSI_COLOR_YELLOW"
+        prefix_color="$ANSI_COLOR_GREEN_BOLD"
         ;;
     30) # warning
         prefix_tag="$PREFIX_ERROR_WARNING"
@@ -325,7 +326,7 @@ _print_log_message() {
         ;;
     41) # fail
         prefix_tag="$PREFIX_ERROR_FAIL"
-        prefix_color="$ANSI_COLOR_RED"
+        prefix_color="$ANSI_COLOR_RED_BOLD"
         ;;
     50) # critical
         prefix_tag="$PREFIX_ERROR_CRITICAL"
