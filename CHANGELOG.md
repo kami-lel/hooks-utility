@@ -17,6 +17,9 @@
 ## [Unreleased]
 
 ### Added
+
+- module *colorful print*
+
 ### Changed
 
 - change project structure to use it as **git submodule**

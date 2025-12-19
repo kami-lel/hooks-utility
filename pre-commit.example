@@ -3,7 +3,8 @@
 set -euo pipefail
 
 # shellcheck source=/dev/null
-source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility/hooks_utility.sh"
+# source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility/hooks_utility.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/./hooks_utility.sh"
 
 printf "start pre-commit" | hooks_utility_debug
 
@@ -23,6 +24,7 @@ hooks_utility_ensure_file_modification "CHANGELOG.md" \
 # Todo example for line mods
 # Todo example for ensure file change for Version file
 
-printf 'PASS pre-commit' | hooks_utility_info
+printf '%s' "$(hooks_utility_colorful_print_pass) pre-commit" |
+    hooks_utility_info
 
 exit 0

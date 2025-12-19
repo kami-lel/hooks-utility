@@ -33,17 +33,157 @@ ENABLE_SPLIT_OUTPUT_STREAM="${ENABLE_SPLIT_OUTPUT_STREAM:-1}"
 MAIN_BRANCH_NAME="${MAIN_BRANCH_NAME:-main}"
 DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
 
-# constants  ###################################################################
+# global constants  ############################################################
 HOOKS_UTILITY_DISPLAY_NAME="HU"
 
-ANSI_COLOR_BLUE='\e[0;34m'
-ANSI_COLOR_YELLOW='\e[0;33m'
+# ANSI colorful print  #########################################################
+
+# generic print colorful function  =============================================
+# hooks_utility_colorful_print()
+#
+# print message from stdin utilizing ANSI color escape code
+#
+# USAGE:
+#   hooks_utility_colorful_print COLOR
+#
+# ARGUMENT:
+#   COLOR       ANSI color escape code, e.g. '\e[0;31m' for red
+#
+# OUTPUT:
+#   print MESSAGE in COLOR to stdout
+#
+# RETURN:
+#   0       success
+#
+# EXAMPLE:
+#   echo "content in red" | hooks_utility_colorful_print "\e[0;31m"
+
+hooks_utility_colorful_print() {
+    local color message
+
+    message=$(cat -) # read from stdin
+    color="${1}"
+
+    printf "%b" "${color}${message}${ANSI_RESET}"
+
+    return 0
+}
+
+# colorful print of specific color  ============================================
+# hooks_utility_print_in_black()
+# hooks_utility_print_in_red()
+# hooks_utility_print_in_green()
+# hooks_utility_print_in_yellow()
+# hooks_utility_print_in_blue()
+# hooks_utility_print_in_purple()
+# hooks_utility_print_in_cyan()
+# hooks_utility_print_in_white()
+#
+# print MESSAGE in a color utilizing ANSI color escape code,
+# q.v. hooks_utility_colorful_print()
+#
+# USAGE:
+#   hooks_utility_print_in_* MESSAGE
+#
+# ARGUMENT:
+#   MESSAGE     content to be print
+#
+# EXAMPLE:
+#   echo "content in red" | hooks_utility_print_in_red
+hooks_utility_print_in_black() {
+    hooks_utility_colorful_print "${ANSI_COLOR_BLACK}"
+}
+
+hooks_utility_print_in_red() {
+    hooks_utility_colorful_print "${ANSI_COLOR_RED}"
+}
+
+hooks_utility_print_in_green() {
+    hooks_utility_colorful_print "${ANSI_COLOR_GREEN}"
+}
+
+hooks_utility_print_in_yellow() {
+    hooks_utility_colorful_print "${ANSI_COLOR_YELLOW}"
+}
+
+hooks_utility_print_in_blue() {
+    hooks_utility_colorful_print "${ANSI_COLOR_BLUE}"
+}
+
+hooks_utility_print_in_purple() {
+    hooks_utility_colorful_print "${ANSI_COLOR_PURPLE}"
+}
+
+hooks_utility_print_in_cyan() {
+    hooks_utility_colorful_print "${ANSI_COLOR_CYAN}"
+}
+
+hooks_utility_print_in_white() {
+    hooks_utility_colorful_print "${ANSI_COLOR_WHITE}"
+}
+
+# colorful print of specific words  ============================================
+# hooks_utility_colorful_print_pass()
+# hooks_utility_colorful_print_fail()
+# hooks_utility_colorful_print_debug()
+# hooks_utility_colorful_print_info()
+# hooks_utility_colorful_print_warning()
+# hooks_utility_colorful_print_error()
+# hooks_utility_colorful_print_critical()
+#
+# print specific keywords in appropriate color
+# utilizing ANSI color escape code, q.v. hooks_utility_colorful_print()
+#
+# USAGE:
+#   hooks_utility_print_in_* MESSAGE
+#
+# EXAMPLE:
+#   hooks_utility_colorful_print_pass
+hooks_utility_colorful_print_pass() {
+    echo "${KEYWORD_PASS}" |
+        hooks_utility_colorful_print "${ANSI_COLOR_GREEN_BOLD}"
+}
+
+hooks_utility_colorful_print_fail() {
+    echo "${KEYWORD_FAIL}" |
+        hooks_utility_colorful_print "${ANSI_COLOR_RED_BOLD}"
+}
+
+hooks_utility_colorful_print_debug() {
+    echo "${KEYWORD_DEBUG}" | hooks_utility_print_in_blue
+}
+
+hooks_utility_colorful_print_info() {
+    echo "${KEYWORD_INFO}" | hooks_utility_print_in_yellow
+}
+
+hooks_utility_colorful_print_warning() {
+    echo "${KEYWORD_WARNING}" | hooks_utility_print_in_yellow
+}
+
+hooks_utility_colorful_print_error() {
+    echo "${KEYWORD_ERROR}" | hooks_utility_print_in_red
+}
+
+hooks_utility_colorful_print_critical() {
+    echo "${KEYWORD_CRITICAL}" | hooks_utility_print_in_red
+}
+
+# constants  ===================================================================
+ANSI_COLOR_BLACK='\e[0;30m'
 ANSI_COLOR_RED='\e[0;31m'
-ANSI_COLOR_GREY='\e[0;90m'
+ANSI_COLOR_RED_BOLD='\e[1;31m'
+ANSI_COLOR_GREEN='\e[0;32m'
+ANSI_COLOR_GREEN_BOLD='\e[1;32m'
+ANSI_COLOR_YELLOW='\e[0;33m'
+ANSI_COLOR_BLUE='\e[0;34m'
+ANSI_COLOR_PURPLE='\e[0;35m'
+ANSI_COLOR_CYAN='\e[0;36m'
+ANSI_COLOR_WHITE='\e[0;37m'
 ANSI_RESET='\e[0m'
 
-# Fixme color as a module
-# Todo common names, such as PASS, FAIL, warn, etc.
+KEYWORD_PASS="PASS"
+KEYWORD_FAIL="FAIL"
 
 # log style message  ###########################################################
 
@@ -187,6 +327,9 @@ _print_log_message() {
     local source_arg="${1-}"
 
     # decide prefix tag & color based on level  --------------------------------
+
+    # create prefix part w/ coloring
+
     local prefix prefix_color
     case "$level" in
     10) # debug
@@ -213,7 +356,8 @@ _print_log_message() {
 
     # create prefix part w/ coloring
     if ((use_color)); then
-        prefix="${prefix_color}${prefix_tag}${ANSI_RESET}"
+        prefix="$(printf '%s' "${prefix_tag}" |
+            hooks_utility_colorful_print "${prefix_color}")"
     else
         prefix="${prefix_tag}"
     fi
@@ -232,7 +376,8 @@ _print_log_message() {
 
     # create date/time part w/ coloring
     if ((use_color)); then
-        date_time_format="${ANSI_COLOR_GREY}${date_time_format}${ANSI_RESET}"
+        date_time_format="$(printf '%s' "${date_time_format}" |
+            hooks_utility_print_in_black)"
     fi
 
     # populate format w/ current time
@@ -332,7 +477,9 @@ _print_padding_of_count() {
     result=$(printf '%*s' "${cnt}" '' | tr ' ' "${padding}")
 
     if ((use_color)); then
-        result="${ANSI_COLOR_GREY}${result}${ANSI_RESET}"
+        result="$(printf '%s' "${result}" |
+            hooks_utility_print_in_black)"
+
     fi
 
     printf '%b' "${result}"
@@ -365,7 +512,7 @@ _parse_adding_padding() {
     shift $((OPTIND - 1))
 
     # parse args
-    local padding="$1"
+    local padding="${1}"
 
     local -i message_len # calculate length of message
     message_len=$(printf '%s' "${message}" | wc -m)
