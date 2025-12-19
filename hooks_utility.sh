@@ -571,7 +571,11 @@ hooks_utility_protect_branch() {
     merge-binary-release)
         result1="$(_search_am_from_git_diff_cached 1)"
         result2="$(_search_am_from_git_diff_cached 2)"
-        result="${result1}${result2}"
+        if [[ -n $result1 || -n $result2 ]]; then
+            result="${result1}"$'\n'"${result2}"
+        else
+            result=""
+        fi
         ;;
     *)
         echo "skipped, trivial commit type" |
