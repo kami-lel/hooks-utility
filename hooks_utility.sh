@@ -576,9 +576,8 @@ $(_search_am_from_git_diff_cached 2)"
 
     # decide whether check is passed
     if [[ -n "${result}" ]]; then
-        # FIXME better wording
         # BUG not printing correct content
-        printf 'undesired AM(s) in incoming branch:\n%s' "${result}" |
+        printf 'must not include AM(s) in incoming branch:\n%s' "${result}" |
             hooks_utility_fail "${BP_DISPLAY_NAME}"
         return 1
     else
