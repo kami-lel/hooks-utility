@@ -850,5 +850,10 @@ hooks_utility_ensure_version_updated() {
         'must update file containing release Version'
 }
 
+hooks_utility_ensure_readme_edited() {
+    # Todo
+
+}
+
 # constants  ===================================================================
 ENSURE_FILE_CHANGED_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:EFM"
