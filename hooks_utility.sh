@@ -122,28 +122,6 @@ hooks_utility_print_in_white() {
     hooks_utility_colorful_print "${ANSI_COLOR_WHITE}"
 }
 
-# colorful print of specific words  ============================================
-# hooks_utility_colorful_print_pass()
-# hooks_utility_colorful_print_fail()
-#
-# print specific keywords in appropriate color
-# utilizing ANSI color escape code, q.v. hooks_utility_colorful_print()
-#
-# USAGE:
-#   hooks_utility_print_in_* MESSAGE
-#
-# EXAMPLE:
-#   hooks_utility_colorful_print_pass
-hooks_utility_colorful_print_pass() {
-    echo "${KEYWORD_PASS}" |
-        hooks_utility_colorful_print "${ANSI_COLOR_GREEN_BOLD}"
-}
-
-hooks_utility_colorful_print_fail() {
-    echo "${KEYWORD_FAIL}" |
-        hooks_utility_colorful_print "${ANSI_COLOR_RED_BOLD}"
-}
-
 # constants  ===================================================================
 ANSI_COLOR_BLACK='\e[0;30m'
 ANSI_COLOR_RED='\e[0;31m'
@@ -157,10 +135,6 @@ ANSI_COLOR_PURPLE='\e[0;35m'
 ANSI_COLOR_CYAN='\e[0;36m'
 ANSI_COLOR_WHITE='\e[0;37m'
 ANSI_RESET='\e[0m'
-
-# TODO rm
-KEYWORD_PASS="PASS"
-KEYWORD_FAIL="FAIL"
 
 # log style message  ###########################################################
 
