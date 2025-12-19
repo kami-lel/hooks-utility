@@ -851,8 +851,7 @@ hooks_utility_ensure_version_updated() {
 }
 
 hooks_utility_ensure_readme_edited() {
-    # Todo
-
+    return 0 # Todo
 }
 
 # constants  ===================================================================
