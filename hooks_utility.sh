@@ -157,17 +157,28 @@ ANSI_COLOR_CYAN='\e[0;36m'
 ANSI_COLOR_WHITE='\e[0;37m'
 ANSI_RESET='\e[0m'
 
+# TODO rm
 KEYWORD_PASS="PASS"
 KEYWORD_FAIL="FAIL"
 
 # log style message  ###########################################################
 
 # hooks_utility_debug()
+# hooks_utility_info()
+# hooks_utility_warning()
+# hooks_utility_error()
+# hooks_utility_critical()
 #
-# print message from stdin in log style message, prefixed with "DEBUG"
+# print message from stdin in log style message, prefixed with:
+#
+# - "DEBUG"
+# - "INFO " or "PASS "
+# - "WARN "
+# - "ERROR" or "FAIL "
+# - "CRIT "
 #
 # USAGE:
-#   hooks_utility_debug [-d] [-t] [-c|-C] [SOURCE]
+#   hooks_utility_* [-d] [-t] [-c|-C] [SOURCE]
 #
 # ARGUMENT:
 #   SOURCE      indicate reason/source of the message, as part of the message
@@ -193,63 +204,33 @@ hooks_utility_debug() {
     return "$?"
 }
 
-# hooks_utility_info()
-#
-# print message from stdin in log style message, prefixed with "INFO"
-#
-# USAGE:
-#   hooks_utility_info [-d] [-t] [-c|-C] [SOURCE]
-#
-# other aspects are same as hooks_utility_debug()
 hooks_utility_info() {
     _print_log_message 20 "$@"
     return "$?"
 }
 
-# hooks_utility_warning()
-#
-# print message from stdin in log style message, prefixed with "WARN"
-#
-# USAGE:
-#   hooks_utility_warning [-d] [-t] [-c|-C] [SOURCE]
-#
-# other aspects are same as hooks_utility_debug()
 hooks_utility_warning() {
     _print_log_message 30 "$@"
     return "$?"
 }
 
-# hooks_utility_error()
-#
-# print message from stdin in log style message, prefixed with "ERROR"
-#
-# USAGE:
-#   hooks_utility_error [-d] [-t] [-c|-C] [SOURCE]
-#
-# OUTPUT:
-#   print the formatted message to stdout/stderr
-#   depending on configuration ENABLE_SPLIT_OUTPUT_STREAM;
-#   utilizing ANSI coloring if stdout/stderr is a console
-#
-# other aspects are same as hooks_utility_debug()
 hooks_utility_error() {
     _print_log_message 40 "$@"
     return "$?"
 }
 
-# hooks_utility_critical()
-#
-# print message from stdin in log style message, prefixed with "CRIT"
-#
-# USAGE:
-#   hooks_utility_critical [-d] [-t] [-c|-C] [SOURCE]
-#
-# OUTPUT:
-#   same as hooks_utility_error()
-#
-# other aspects are same as hooks_utility_debug()
 hooks_utility_critical() {
     _print_log_message 50 "$@"
+    return "$?"
+}
+
+hooks_utility_pass() {
+    _print_log_message 21 "$@"
+    return "$?"
+}
+
+hooks_utility_fail() {
+    _print_log_message 41 "$@"
     return "$?"
 }
 
@@ -260,6 +241,8 @@ PREFIX_ERROR_INFO="INFO "
 PREFIX_ERROR_WARNING="WARN "
 PREFIX_ERROR_ERROR="ERROR"
 PREFIX_ERROR_CRITICAL="CRIT "
+PREFIX_ERROR_PASS="PASS "
+PREFIX_ERROR_FAIL="FAIL "
 
 DATE_FORMAT="%Y-%m-%d"
 TIME_FORMAT="%H:%M:%S"
@@ -315,12 +298,20 @@ _print_log_message() {
         prefix_tag="$PREFIX_ERROR_INFO"
         prefix_color="$ANSI_COLOR_YELLOW"
         ;;
+    21) # pass
+        prefix_tag="$PREFIX_ERROR_PASS"
+        prefix_color="$ANSI_COLOR_YELLOW"
+        ;;
     30) # warning
         prefix_tag="$PREFIX_ERROR_WARNING"
         prefix_color="$ANSI_COLOR_YELLOW"
         ;;
     40) # error
         prefix_tag="$PREFIX_ERROR_ERROR"
+        prefix_color="$ANSI_COLOR_RED"
+        ;;
+    41) # fail
+        prefix_tag="$PREFIX_ERROR_FAIL"
         prefix_color="$ANSI_COLOR_RED"
         ;;
     50) # critical
