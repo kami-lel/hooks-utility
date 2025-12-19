@@ -724,10 +724,10 @@ _highlight_am_line_in_git_diff_cached() {
 
     if [[ $line =~ $split_pattern ]]; then
         am_colored="$(_highlight_am_by_types "${BASH_REMATCH[2]}")"
-        printf '%s%s%s' \
+        printf '%s%s%s\n' \
             "${BASH_REMATCH[1]}" "${am_colored}" "${BASH_REMATCH[3]}"
     else
-        printf '%s' "${line}" # fallback
+        printf '%s\n' "${line}" # fallback
     fi
 }
 
