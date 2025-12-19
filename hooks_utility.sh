@@ -781,13 +781,14 @@ _highlight_am_by_types() {
 # in pre-commit, ensure certain file(s) must be modified
 #
 # USAGE:
-#   hooks_utility_ensure_file_modified FILE COMMIT_TYPE MESSAGE
+#   hooks_utility_ensure_file_modified FILE COMMIT_TYPE MESSAGE [PATTERN]
 #
 # ARGUMENT:
 #   FILE            file which is required to be changed,
 #                   relative path to repo root
 #   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
 #   MESSAGE         reason to give when failing the test
+#   [PATTERN]       optional additional test pattern applied to git diff result
 #
 # RETURN:
 #   0       success, FILE is edited; or skip b/c irrelevant COMMIT_TYPE
@@ -802,6 +803,7 @@ hooks_utility_ensure_file_modified() {
     filename="$1"
     commit_type_arg="$2"
     message="$3"
+    pattern="${4:-}"
 
     printf '%s' "${filename}" | hooks_utility_enter "${EFM_DISPLAY_NAME}"
 
@@ -819,15 +821,28 @@ hooks_utility_ensure_file_modified() {
     # proceed ensuring  ----------------------------------------------------
     local result
     result="$(git diff --cached --diff-filter=M -- "${filename}")"
+    local -i fail=1
     if [[ -n $result ]]; then
-        printf '%s' "${filename}" |
-            hooks_utility_pass "${EFM_DISPLAY_NAME}"
-        return 0
-    else
+        if [[ -n $pattern ]]; then # test for pattern
+            if [[ $result =~ $pattern ]]; then
+                # pass test for file modified + pattern matched
+                fail=0
+            fi
+        else
+            # pass test for file modified
+            fail=0
+        fi
+    fi
+
+    if [[ $fail ]]; then
         printf '%s\n%s' "${filename}" "${message}" |
             hooks_utility_fail "${EFM_DISPLAY_NAME}"
-        return 1
+    else
+        printf '%s' "${filename}" |
+            hooks_utility_pass "${EFM_DISPLAY_NAME}"
     fi
+
+    return "${fail}"
 }
 
 # hooks_utility_ensure_changelog_edited()
@@ -875,7 +890,7 @@ hooks_utility_ensure_changelog_edited() {
 # EXAMPLE:
 #   hooks_utility_ensure_version_updated 'project.ini' 5
 hooks_utility_ensure_version_updated() {
-    # Todo use ensure_line_modified() instead
+    # TODO use ensure_line_modified() instead
 
     local filename line
     filename="${1}"
