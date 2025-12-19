@@ -603,7 +603,7 @@ TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
 # OUTPUT:
 #   commit type printed to stdout:
 #
-#   - '': regular commit, and other non-merge commit
+#   - 'normal': regular commit, and other non-merge commit
 #   - 'merge-binary': binary merge commit of 2 branches
 #
 #       - 'merge-binary-finish_feature': any branch (except main) -> dev branch
