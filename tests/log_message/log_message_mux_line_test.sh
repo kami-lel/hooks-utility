@@ -1,11 +1,9 @@
 #!/bin/bash
 
 # shellcheck source=/dev/null
-source "$(dirname "${BASH_SOURCE[0]}")/../../scripts/hooks/hooks_utility.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
-echo \
-"tests: log style message, multiple lines  #####################################\
-##"
+echo "log style tests: multiple lines" | hooks_utility_padding_centered '#'
 
 echo "This informational message is intentionally long and spans \
 multiple lines to test wrapping and handling by the logging function.

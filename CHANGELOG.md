@@ -34,6 +34,33 @@
 
 
 
+## [2.0.0] - 2025-12-19
+
+### Added
+
+- module *colorful print*
+
+### Changed
+
+- change project structure to use it as **git submodule**
+- rename functionality to **branch protection** from *annotational marker check*
+- rename functionality to **ensure file modified** from *ensure file change*
+- rewrite logic for ensure file modified
+- rewrite logic for ANSI color handling
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## [1.1.1] - 2025-10-16
 
 ### Added
@@ -106,7 +133,8 @@
 
 
 
-[unreleased]: https://github.com/kami-lel/kami-log-py/compare/v1.1.1...dev
+[unreleased]: https://github.com/kami-lel/kami-log-py/compare/v2.0.0...dev
+[2.0.0]: https://github.com/kami-lel/kami-log-py/compare/v1.1.1...v2.0.0
 [1.1.1]: https://github.com/kami-lel/kami-log-py/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/kami-lel/kami-log-py/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/kami-lel/kami-log-py/releases/tag/v1.0.0
