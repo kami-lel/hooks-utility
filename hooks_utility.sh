@@ -900,7 +900,7 @@ hooks_utility_ensure_version_updated() {
 
     hooks_utility_ensure_file_modified "${1}" \
         'merge-binary-release' \
-        'must record changes of this feature branch' \
+        'must update project version' \
         "${pattern}"
 
     return "$?"
