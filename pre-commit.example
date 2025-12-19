@@ -5,6 +5,8 @@ set -euo pipefail
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility/hooks_utility.sh"
 
+# TODO use pass enter
+
 printf "start pre-commit" | hooks_utility_debug
 
 # perform branch protection

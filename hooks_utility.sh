@@ -164,6 +164,7 @@ KEYWORD_FAIL="FAIL"
 # log style message  ###########################################################
 
 # hooks_utility_debug()
+# hooks_utility_enter()
 # hooks_utility_info()
 # hooks_utility_warning()
 # hooks_utility_error()
@@ -171,7 +172,7 @@ KEYWORD_FAIL="FAIL"
 #
 # print message from stdin in log style message, prefixed with:
 #
-# - "DEBUG"
+# - "DEBUG" or "ENTER"
 # - "INFO " or "PASS "
 # - "WARN "
 # - "ERROR" or "FAIL "
@@ -201,6 +202,11 @@ KEYWORD_FAIL="FAIL"
 #   echo "some debug information" | hooks_utility_debug -dt  "Main Component"
 hooks_utility_debug() {
     _print_log_message 10 "$@"
+    return "$?"
+}
+
+hooks_utility_enter() {
+    _print_log_message 11 "$@"
     return "$?"
 }
 
@@ -241,6 +247,7 @@ PREFIX_ERROR_INFO="INFO "
 PREFIX_ERROR_WARNING="WARN "
 PREFIX_ERROR_ERROR="ERROR"
 PREFIX_ERROR_CRITICAL="CRIT "
+PREFIX_ERROR_ENTER="ENTER"
 PREFIX_ERROR_PASS="PASS "
 PREFIX_ERROR_FAIL="FAIL "
 
@@ -292,6 +299,10 @@ _print_log_message() {
     case "$level" in
     10) # debug
         prefix_tag="$PREFIX_ERROR_DEBUG"
+        prefix_color="$ANSI_COLOR_BLUE"
+        ;;
+    11) # enter
+        prefix_tag="$PREFIX_ERROR_ENTER"
         prefix_color="$ANSI_COLOR_BLUE"
         ;;
     20) # info
