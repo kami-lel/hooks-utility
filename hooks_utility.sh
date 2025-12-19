@@ -125,11 +125,6 @@ hooks_utility_print_in_white() {
 # colorful print of specific words  ============================================
 # hooks_utility_colorful_print_pass()
 # hooks_utility_colorful_print_fail()
-# hooks_utility_colorful_print_debug()
-# hooks_utility_colorful_print_info()
-# hooks_utility_colorful_print_warning()
-# hooks_utility_colorful_print_error()
-# hooks_utility_colorful_print_critical()
 #
 # print specific keywords in appropriate color
 # utilizing ANSI color escape code, q.v. hooks_utility_colorful_print()
@@ -147,26 +142,6 @@ hooks_utility_colorful_print_pass() {
 hooks_utility_colorful_print_fail() {
     echo "${KEYWORD_FAIL}" |
         hooks_utility_colorful_print "${ANSI_COLOR_RED_BOLD}"
-}
-
-hooks_utility_colorful_print_debug() {
-    echo "${KEYWORD_DEBUG}" | hooks_utility_print_in_blue
-}
-
-hooks_utility_colorful_print_info() {
-    echo "${KEYWORD_INFO}" | hooks_utility_print_in_yellow
-}
-
-hooks_utility_colorful_print_warning() {
-    echo "${KEYWORD_WARNING}" | hooks_utility_print_in_yellow
-}
-
-hooks_utility_colorful_print_error() {
-    echo "${KEYWORD_ERROR}" | hooks_utility_print_in_red
-}
-
-hooks_utility_colorful_print_critical() {
-    echo "${KEYWORD_CRITICAL}" | hooks_utility_print_in_red
 }
 
 # constants  ===================================================================
