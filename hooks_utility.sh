@@ -288,7 +288,6 @@ _print_log_message() {
 
     # filtering by log level
     local -i level="$1"
-    local -a pass_opn=()
     shift
 
     if [[ level -lt LOGGING_LEVEL ]]; then
@@ -306,14 +305,14 @@ _print_log_message() {
     message=$(cat -) # read from stdin
 
     # parse opn
-    local -i d_flag=0 t_flag=0
+    local -i d_flag=0 t_flag=0 lc_c_flag=0 uc_c_flag=0
     OPTIND=1
     while getopts ":dtcC" opt; do
         case "$opt" in
         d) d_flag=1 ;;
         t) t_flag=1 ;;
-        c) pass_opn+=("-c") ;;
-        C) pass_opn+=("-C") ;;
+        c) lc_c_flag=1 ;;
+        C) uc_c_flag=1 ;;
         \?) ;; # ignore invalid options
         esac
     done
@@ -323,7 +322,6 @@ _print_log_message() {
     local source_arg="${1-}"
 
     # decide prefix tag & color based on level  --------------------------------
-
     # create prefix part w/ coloring
 
     local prefix prefix_color
@@ -366,6 +364,7 @@ _print_log_message() {
     if ((use_color)); then
         prefix="$(printf '%s' "${prefix_tag}" |
             hooks_utility_colorful_print "${prefix_color}")"
+        # TODO
     else
         prefix="${prefix_tag}"
     fi
@@ -386,6 +385,8 @@ _print_log_message() {
     if ((use_color)); then
         date_time_format="$(printf '%s' "${date_time_format}" |
             hooks_utility_print_in_black)"
+
+        # TODO
     fi
 
     # populate format w/ current time
