@@ -150,11 +150,11 @@ ANSI_RESET='\e[0m'
 
 # helper methods  ==============================================================
 _colorful_print() {
-    local -i color level target_fd
-    local message
+    local -i level target_fd
+    local message color
+
     color="${1}"
-    level="${2}"     # TODO use
-    target_fd="${3}" # TODO use
+    target_fd="${2}"
 
     # decide if use color by config
     local -i use_color=1

@@ -5,36 +5,21 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
 tmp=$(mktemp)
 
+echo "log style message test on -c/-C" | hooks_utility_padding_centered '#'
 
-echo \
-"tests: log style message, -c/-C  #############################################\
-##"
-
-echo \
-"default behavior to terminal  ------------------------------------------------\
---"
-
+echo "default to terminal" | hooks_utility_padding_centered '='
 echo "Some Error Message Content" | hooks_utility_error
 
-echo \
-"default behavior to file  ----------------------------------------------------\
---"
-
-echo "Some Error Message Content" | hooks_utility_error 2> "${tmp}"
+echo "default to file" | hooks_utility_padding_centered '='
+echo "Some Error Message Content" | hooks_utility_error 2>"${tmp}"
 cat "${tmp}"
 
-echo \
-"use -c  ----------------------------------------------------------------------\
---"
-
+echo "use -c" | hooks_utility_padding_centered '='
 echo "Some Error Message Content" | hooks_utility_error -c
-echo "Some Error Message Content" | hooks_utility_error -c 2> "${tmp}"
+echo "Some Error Message Content" | hooks_utility_error -c 2>"${tmp}"
 cat "${tmp}"
 
-echo \
-"use -C  ----------------------------------------------------------------------\
---"
-
+echo "use -C" | hooks_utility_padding_centered '='
 echo "Some Error Message Content" | hooks_utility_error -C
-echo "Some Error Message Content" | hooks_utility_error -C 2> "${tmp}"
+echo "Some Error Message Content" | hooks_utility_error -C 2>"${tmp}"
 cat "${tmp}"
