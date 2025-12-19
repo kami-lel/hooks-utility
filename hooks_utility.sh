@@ -185,8 +185,6 @@ ANSI_RESET='\e[0m'
 KEYWORD_PASS="PASS"
 KEYWORD_FAIL="FAIL"
 
-# TODO rm
-ANSI_COLOR_GREY='\e[0;36m'
 # log style message  ###########################################################
 
 # hooks_utility_debug()
