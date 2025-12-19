@@ -550,7 +550,7 @@ _parse_adding_padding() {
 #   0   success: pass or skip checks
 #   1   failure: undesired AM detected
 hooks_utility_protect_branch() {
-    echo "start" | hooks_utility_debug "${BP_DISPLAY_NAME}"
+    echo "" | hooks_utility_enter "${BP_DISPLAY_NAME}"
 
     local commit_type
     commit_type=$(get_commit_type_at_pre_commit)
@@ -577,11 +577,11 @@ $(_search_am_from_git_diff_cached 2)"
     # decide whether check is passed
     if [[ -n "${result}" ]]; then
         printf 'undesired AM(s) in incoming branch:\n%s' "${result}" |
-            hooks_utility_error "${BP_DISPLAY_NAME}"
+            hooks_utility_fail "${BP_DISPLAY_NAME}"
         return 1
     else
-        echo "PASS: branch protection check" |
-            hooks_utility_info "${BP_DISPLAY_NAME}"
+        echo "" |
+            hooks_utility_pass "${BP_DISPLAY_NAME}"
         return 0
     fi
 }
