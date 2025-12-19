@@ -580,6 +580,7 @@ _parse_adding_padding() {
     return 0
 }
 
+# Todo need test
 # branch protection  ###########################################################
 # abbr. BP
 
@@ -663,7 +664,7 @@ TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
 #   - 'merge-octopus': octopus merge commit of 3+ branches
 #
 # EXAMPLE:
-#   if [[ $( get_commit_type ) == "merge-binary" ]]
+#   if [[ $( get_commit_type_at_pre_commit ) == "merge-binary" ]]
 get_commit_type_at_pre_commit() {
     local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
 
@@ -791,6 +792,8 @@ hooks_utility_ensure_file_modification() {
     printf 're %s%s: %s' "${filename}" "${when_phrase}" "${message}" |
         hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
     return 1
+
+    # todo print as log
 }
 
 # hooks_utility_ensure_line_modification()
@@ -818,8 +821,36 @@ hooks_utility_ensure_file_modification() {
 #           'merge-binary-finish_feature' \
 #           'must change algorithm per commit' \
 hooks_utility_ensure_line_modification() {
-    # Todo
+    # Todo write
+    # Todo print as log
     return 1
+}
+
+# hooks_utility_ensure_changelog_edited()
+#
+# in pre-commit, when merge to finish a feature branch,
+# ensure CHANGELOG file is edited to reflect
+#
+# USAGE:
+#   hooks_utility_ensure_changelog_edited CHANGELOG_FILE
+#
+#
+# ARGUMENT:
+#   CHANGELOG_FILE  file path of CHANGELOG file, relative path to repo root
+#
+# RETURN:
+#   0       success
+#   1       failure
+#
+# EXAMPLE:
+#   hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
+hooks_utility_ensure_changelog_edited() {
+    # Todo need test
+    hooks_utility_ensure_file_modification "${1}" \
+        'merge-binary-finish_feature' \
+        "record changes of this feature branch"
+
+    return "$?"
 }
 
 # hooks_utility_ensure_version_updated()
@@ -841,13 +872,17 @@ hooks_utility_ensure_line_modification() {
 # EXAMPLE:
 #   hooks_utility_ensure_version_updated 'project.ini' 5
 hooks_utility_ensure_version_updated() {
+    # Todo need test
     local filename line
-    filename="$1"
-    line="$2"
+    filename="${1}"
+    line="${2}"
 
-    hooks_utility_ensure_line_modification "${filename}" "${line}" "${line}" \
+    hooks_utility_ensure_line_modification \
+        "${filename}" "${line}" "${line}" \
         'merge-binary-release' \
-        'must update file containing release Version'
+        "update project version in the file"
+
+    return "$?"
 }
 
 # constants  ===================================================================

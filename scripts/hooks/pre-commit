@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# shellcheck source=/dev/null
+source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
+
+printf '%s' "$(hooks_utility_colorful_print_pass) pre-commit" |
+    hooks_utility_info
+
+exit 0
+
+# Fixme enable
+
+# perform branch protection
+hooks_utility_protect_branch
+
+# ensure CHANGELOG is edited
+hooks_utility_ensure_changelog_edited "CHANGELOG.md"
+
+# ensure project version number is updated
+# Todo need test
+hooks_utility_ensure_version_updated "hooks_utility.sh" 10
+
+# make sure hooks_utility.sh contains no AM
+# Todo need test
+if [[ $(get_commit_type_at_pre_commit) == "merge-binary-release" ]]; then
+    PATTERN=
+    "${PRIMARY_AM_PATTERN}|${SECONDARY_AM_PATTERN}|${TERTIARY_AM_PATTERN}"
+    if git diff --cached --no-color | grep -E -q -- "$PATTERN"; then
+        exit 1
+    fi
+fi
