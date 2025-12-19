@@ -14,13 +14,6 @@ hooks_utility_protect_branch
 
 # examples for ensure file modifications  --------------------------------------
 # make sure CHANGELOG.md is edited
-hooks_utility_ensure_file_modification 'CHANGELOG.md' \
-    'merge-binary-finish_feature' \
-    'must record CHANGELOG when finish a feature branch'
-
-hooks_utility_ensure_file_modification "CHANGELOG.md" \
-    "merge-binary-release" \
-    "must record CHANGELOG when publish a new release"
 
 printf '%s' "$(hooks_utility_colorful_print_pass) pre-commit" |
     hooks_utility_info
