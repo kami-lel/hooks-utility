@@ -790,7 +790,7 @@ _highlight_am_by_types() {
 #   FILE            file which is required to be changed,
 #                   relative path to repo root
 #   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
-#   MESSAGE         reason of failing this test
+#   MESSAGE         reason to give when failing the test
 #
 # RETURN:
 #   0       success, FILE is edited; or skip b/c irrelevant COMMIT_TYPE
@@ -806,39 +806,33 @@ hooks_utility_ensure_file_modification() {
     commit_type_arg="$2"
     message="$3"
 
+    printf 're %s' "${filename}" | hooks_utility_enter "${EFM_DISPLAY_NAME}"
+
     commit_type=$(get_commit_type_at_pre_commit)
     printf '\nfilename=%s\ncommit_type_arg=%s\ncommit_type=%s' \
         "${filename}" "${commit_type_arg}" "${commit_type}" |
-        hooks_utility_debug "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+        hooks_utility_debug "${EFM_DISPLAY_NAME}"
 
     if [[ "${commit_type}" != ${commit_type_arg}* ]]; then
         printf 'skipped, irrelevant commit type' |
-            hooks_utility_debug "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+            hooks_utility_debug "${EFM_DISPLAY_NAME}"
         return 0
-    fi
-
-    local when_phrase=''
-    if [[ -n "${commit_type_arg}" ]]; then
-        when_phrase=" when ${commit_type_arg}"
     fi
 
     # proceed ensuring  ----------------------------------------------------
     while IFS= read -r -d '' changed_file; do
         # search if filename is present in modified file list
         if [[ "${changed_file}" == "${filename}" ]]; then
-            printf 'ensured file changed%s: %s' \
-                "${when_phrase}" "${filename}" |
-                hooks_utility_info "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+            printf '%s' "${filename}" |
+                hooks_utility_pass "${EFM_DISPLAY_NAME}"
             return 0
         fi
     done < <(git diff --cached --name-only --diff-filter=M)
 
     # fail to find filename in changed file list
-    printf 're %s%s: %s' "${filename}" "${when_phrase}" "${message}" |
-        hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+    printf 're %s:%s' "${filename}" "${message}" |
+        hooks_utility_fail "${EFM_DISPLAY_NAME}"
     return 1
-
-    # TODO print as log
 }
 
 # hooks_utility_ensure_line_modification()
@@ -867,7 +861,6 @@ hooks_utility_ensure_file_modification() {
 #           'must change algorithm per commit' \
 hooks_utility_ensure_line_modification() {
     # TODO write
-    # TODO print as log
     return 1
 }
 
@@ -931,4 +924,7 @@ hooks_utility_ensure_version_updated() {
 }
 
 # constants  ===================================================================
+EFM_DISPLAY_NAME='Ensure File Modification'
+ELM_DISPLAY_NAME='Ensure Line Modification'
+# HACK rm this line
 ENSURE_FILE_CHANGED_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:EFM"
