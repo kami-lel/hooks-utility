@@ -651,7 +651,7 @@ get_commit_type_at_pre_commit() {
     return 0
 }
 
-# convert AM index 1~3 to pattern
+# convert AM class index [1~3] to pattern
 _am_class_index2pattern() {
     local am_class="${1}"
 
@@ -690,11 +690,18 @@ _search_am_from_git_diff_cached() {
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 }
 
+# add coloring of AM based on types
+_highlight_am_by_types() {
+    local am
+    am="${1}"
+
+    echo "${am}" # TODO
+}
+
 _highlight_am_in_git_diff_line() {
-    local line am_class pattern split_pattern
+    local line pattern split_pattern
     line="${1}"
-    am_class="${2}"
-    pattern="${3}"
+    pattern="${2}"
 
     split_pattern="^(.*)(${pattern})(.*)$"
 
