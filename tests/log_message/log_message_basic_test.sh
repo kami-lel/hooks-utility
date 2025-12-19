@@ -1,11 +1,16 @@
 #!/bin/bash
 
+# fundamental tests for:
+# hooks_utility_debug()
+# hooks_utility_info()
+# hooks_utility_warning()
+# hooks_utility_error()
+# hooks_utility_critical()
+
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
-echo \
-"tests: log style message, basic tests  #######################################\
-##"
+echo 'log style message, basic tests' | hooks_utility_padding_left_just '#'
 
 echo "Some Debugging Message Content" | hooks_utility_debug
 echo "Content of Informational Message" | hooks_utility_info

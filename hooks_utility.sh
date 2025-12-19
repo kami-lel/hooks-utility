@@ -122,28 +122,6 @@ hooks_utility_print_in_white() {
     hooks_utility_colorful_print "${ANSI_COLOR_WHITE}"
 }
 
-# colorful print of specific words  ============================================
-# hooks_utility_colorful_print_pass()
-# hooks_utility_colorful_print_fail()
-#
-# print specific keywords in appropriate color
-# utilizing ANSI color escape code, q.v. hooks_utility_colorful_print()
-#
-# USAGE:
-#   hooks_utility_print_in_* MESSAGE
-#
-# EXAMPLE:
-#   hooks_utility_colorful_print_pass
-hooks_utility_colorful_print_pass() {
-    echo "${KEYWORD_PASS}" |
-        hooks_utility_colorful_print "${ANSI_COLOR_GREEN_BOLD}"
-}
-
-hooks_utility_colorful_print_fail() {
-    echo "${KEYWORD_FAIL}" |
-        hooks_utility_colorful_print "${ANSI_COLOR_RED_BOLD}"
-}
-
 # constants  ===================================================================
 ANSI_COLOR_BLACK='\e[0;30m'
 ANSI_COLOR_RED='\e[0;31m'
@@ -152,22 +130,33 @@ ANSI_COLOR_GREEN='\e[0;32m'
 ANSI_COLOR_GREEN_BOLD='\e[1;32m'
 ANSI_COLOR_YELLOW='\e[0;33m'
 ANSI_COLOR_BLUE='\e[0;34m'
+ANSI_COLOR_BLUE_BOLD='\e[1;34m'
 ANSI_COLOR_PURPLE='\e[0;35m'
 ANSI_COLOR_CYAN='\e[0;36m'
 ANSI_COLOR_WHITE='\e[0;37m'
 ANSI_RESET='\e[0m'
 
-KEYWORD_PASS="PASS"
-KEYWORD_FAIL="FAIL"
-
 # log style message  ###########################################################
 
 # hooks_utility_debug()
+# hooks_utility_enter()
+# hooks_utility_info()
+# hooks_utility_pass()
+# hooks_utility_warning()
+# hooks_utility_error()
+# hooks_utility_fail()
+# hooks_utility_critical()
 #
-# print message from stdin in log style message, prefixed with "DEBUG"
+# print message from stdin in log style message, prefixed with:
+#
+# - "DEBUG" or "ENTER"
+# - "INFO " or "PASS "
+# - "WARN "
+# - "ERROR" or "FAIL "
+# - "CRIT "
 #
 # USAGE:
-#   hooks_utility_debug [-d] [-t] [-c|-C] [SOURCE]
+#   hooks_utility_* [-d] [-t] [-c|-C] [SOURCE]
 #
 # ARGUMENT:
 #   SOURCE      indicate reason/source of the message, as part of the message
@@ -193,63 +182,38 @@ hooks_utility_debug() {
     return "$?"
 }
 
-# hooks_utility_info()
-#
-# print message from stdin in log style message, prefixed with "INFO"
-#
-# USAGE:
-#   hooks_utility_info [-d] [-t] [-c|-C] [SOURCE]
-#
-# other aspects are same as hooks_utility_debug()
+hooks_utility_enter() {
+    _print_log_message 11 "$@"
+    return "$?"
+}
+
 hooks_utility_info() {
     _print_log_message 20 "$@"
     return "$?"
 }
 
-# hooks_utility_warning()
-#
-# print message from stdin in log style message, prefixed with "WARN"
-#
-# USAGE:
-#   hooks_utility_warning [-d] [-t] [-c|-C] [SOURCE]
-#
-# other aspects are same as hooks_utility_debug()
 hooks_utility_warning() {
     _print_log_message 30 "$@"
     return "$?"
 }
 
-# hooks_utility_error()
-#
-# print message from stdin in log style message, prefixed with "ERROR"
-#
-# USAGE:
-#   hooks_utility_error [-d] [-t] [-c|-C] [SOURCE]
-#
-# OUTPUT:
-#   print the formatted message to stdout/stderr
-#   depending on configuration ENABLE_SPLIT_OUTPUT_STREAM;
-#   utilizing ANSI coloring if stdout/stderr is a console
-#
-# other aspects are same as hooks_utility_debug()
 hooks_utility_error() {
     _print_log_message 40 "$@"
     return "$?"
 }
 
-# hooks_utility_critical()
-#
-# print message from stdin in log style message, prefixed with "CRIT"
-#
-# USAGE:
-#   hooks_utility_critical [-d] [-t] [-c|-C] [SOURCE]
-#
-# OUTPUT:
-#   same as hooks_utility_error()
-#
-# other aspects are same as hooks_utility_debug()
 hooks_utility_critical() {
     _print_log_message 50 "$@"
+    return "$?"
+}
+
+hooks_utility_pass() {
+    _print_log_message 21 "$@"
+    return "$?"
+}
+
+hooks_utility_fail() {
+    _print_log_message 41 "$@"
     return "$?"
 }
 
@@ -260,6 +224,9 @@ PREFIX_ERROR_INFO="INFO "
 PREFIX_ERROR_WARNING="WARN "
 PREFIX_ERROR_ERROR="ERROR"
 PREFIX_ERROR_CRITICAL="CRIT "
+PREFIX_ERROR_ENTER="ENTER"
+PREFIX_ERROR_PASS="PASS "
+PREFIX_ERROR_FAIL="FAIL "
 
 DATE_FORMAT="%Y-%m-%d"
 TIME_FORMAT="%H:%M:%S"
@@ -311,9 +278,17 @@ _print_log_message() {
         prefix_tag="$PREFIX_ERROR_DEBUG"
         prefix_color="$ANSI_COLOR_BLUE"
         ;;
+    11) # enter
+        prefix_tag="$PREFIX_ERROR_ENTER"
+        prefix_color="$ANSI_COLOR_BLUE_BOLD"
+        ;;
     20) # info
         prefix_tag="$PREFIX_ERROR_INFO"
         prefix_color="$ANSI_COLOR_YELLOW"
+        ;;
+    21) # pass
+        prefix_tag="$PREFIX_ERROR_PASS"
+        prefix_color="$ANSI_COLOR_GREEN_BOLD"
         ;;
     30) # warning
         prefix_tag="$PREFIX_ERROR_WARNING"
@@ -322,6 +297,10 @@ _print_log_message() {
     40) # error
         prefix_tag="$PREFIX_ERROR_ERROR"
         prefix_color="$ANSI_COLOR_RED"
+        ;;
+    41) # fail
+        prefix_tag="$PREFIX_ERROR_FAIL"
+        prefix_color="$ANSI_COLOR_RED_BOLD"
         ;;
     50) # critical
         prefix_tag="$PREFIX_ERROR_CRITICAL"

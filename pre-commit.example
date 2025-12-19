@@ -5,6 +5,8 @@ set -euo pipefail
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility/hooks_utility.sh"
 
+echo "pre-commit" | hooks_utility_enter
+
 printf "start pre-commit" | hooks_utility_debug
 
 # perform branch protection
@@ -15,7 +17,6 @@ hooks_utility_protect_branch
 # examples for ensure file modifications  --------------------------------------
 # make sure CHANGELOG.md is edited
 
-printf '%s' "$(hooks_utility_colorful_print_pass) pre-commit" |
-    hooks_utility_info
+echo "pre-commit" | hooks_utility_pass
 
 exit 0

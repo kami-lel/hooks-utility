@@ -5,8 +5,9 @@ set -euo pipefail
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
-printf '%s' "$(hooks_utility_colorful_print_pass) pre-commit" |
-    hooks_utility_info
+echo "pre-commit" | hooks_utility_enter
+
+echo "pre-commit" | hooks_utility_pass
 
 exit 0
 
