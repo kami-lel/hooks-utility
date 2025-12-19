@@ -10,7 +10,6 @@ echo '_highlight_am_by_types() test' | hooks_utility_padding_centered '#'
 
 # primary  ---------------------------------------------------------------------
 echo 'primary' | hooks_utility_padding_centered '-'
-printf '%s\n' "$(_am_class_index2pattern 1)"
 
 _highlight_am_by_types "TODO"
 printf '\n'

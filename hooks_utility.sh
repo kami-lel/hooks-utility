@@ -695,7 +695,7 @@ _highlight_am_by_types() {
     local am
     am="${1}"
 
-    echo "${am}" # TODO
+    printf '%s' "${am}" # TODO
 }
 
 _highlight_am_in_git_diff_line() {
