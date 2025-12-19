@@ -63,10 +63,6 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 # EXAMPLE:
 #   echo "content in red" | hooks_utility_colorful_print "\e[0;31m"
 hooks_utility_colorful_print() {
-    # consider configurations
-    local use_color=0 # default
-
-    # TODO add -c/-C
     local color message
 
     message=$(cat -) # read from stdin
@@ -75,6 +71,10 @@ hooks_utility_colorful_print() {
     printf "%b" "${color}${message}${ANSI_RESET}"
 
     return 0
+
+    # FIXME use calling
+    _colorful_print "${1}" 1 1 "$@"
+    return "$?"
 }
 
 # colorful print of specific color  ============================================
@@ -147,6 +147,36 @@ ANSI_COLOR_PURPLE='\e[0;35m'
 ANSI_COLOR_CYAN='\e[0;36m'
 ANSI_COLOR_WHITE='\e[0;37m'
 ANSI_RESET='\e[0m'
+
+# helper methods  ==============================================================
+_colorful_print() {
+    local -i color level target_fd
+    local message
+    color="${1}"
+    level="${2}"     # TODO use
+    target_fd="${3}" # TODO use
+
+    # decide if use color by config
+    local -i use_color=1
+    ((ENABLE_ANSI_COLOR)) && [[ -t "$target_fd" ]] && use_color=1
+
+    # parse  -c and -C
+    OPTIND=1
+    while getopts ":cC" opt; do
+        case "$opt" in
+        c) use_color=1 ;;
+        C) use_color=0 ;;
+        \?) ;; # ignore invalid options
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    message=$(cat -) # read from stdin
+
+    printf "%b" "${color}${message}${ANSI_RESET}"
+
+    return 0
+}
 
 # log style message  ###########################################################
 
@@ -248,6 +278,7 @@ TIME_FORMAT="%H:%M:%S"
 _print_log_message() {
     # filtering by log level
     local -i level="$1"
+    local -a pass_opn=()
     shift
 
     if [[ level -lt LOGGING_LEVEL ]]; then
@@ -272,8 +303,8 @@ _print_log_message() {
         case "$opt" in
         d) d_flag=1 ;;
         t) t_flag=1 ;;
-        c) use_color=1 ;;
-        C) use_color=0 ;;
+        c) pass_opn+=("-c") ;;
+        C) pass_opn+=("-C") ;;
         \?) ;; # ignore invalid options
         esac
     done
