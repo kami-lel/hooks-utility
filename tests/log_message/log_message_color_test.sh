@@ -40,7 +40,7 @@ cat "${tmp}"
 echo "Pass Message Content" | hooks_utility_pass 1>"${tmp}"
 cat "${tmp}"
 
-echo "Warning Message Content" | hooks_utility_warning 2>"${tmp}"
+echo "Warning Message Content" | hooks_utility_warning 1>"${tmp}"
 cat "${tmp}"
 
 echo "Error Message Content" | hooks_utility_error 2>"${tmp}"
