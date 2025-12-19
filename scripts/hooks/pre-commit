@@ -19,7 +19,7 @@ pattern='^# version: v[0-9.]+'
 hooks_utility_ensure_version_updated 'hooks-utility.sh' "${pattern}"
 
 # make sure hooks_utility.sh contains no AM
-# TODO need test
+# Todo need test
 if [[ $(get_commit_type_at_pre_commit) == "merge-binary-release" ]]; then
     PATTERN=
     "${PRIMARY_AM_PATTERN}|${SECONDARY_AM_PATTERN}|${TERTIARY_AM_PATTERN}"
