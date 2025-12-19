@@ -7,8 +7,6 @@ tmp=$(mktemp)
 
 echo "log style message test on -c/-C" | hooks_utility_padding_centered '#'
 
-# BUG bad coloring
-
 # ENABLE_ANSI_COLOR=1  #########################################################
 echo "ENABLE_ANSI_COLOR=1" | hooks_utility_padding_centered '#'
 enable_ansi_color_default="${ENABLE_ANSI_COLOR}"
