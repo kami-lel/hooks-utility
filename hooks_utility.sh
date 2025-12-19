@@ -33,9 +33,6 @@ ENABLE_SPLIT_OUTPUT_STREAM="${ENABLE_SPLIT_OUTPUT_STREAM:-1}"
 MAIN_BRANCH_NAME="${MAIN_BRANCH_NAME:-main}"
 DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
 
-# global constants  ############################################################
-HOOKS_UTILITY_DISPLAY_NAME="HU"
-
 # ANSI colorful print  #########################################################
 
 # generic print colorful function  =============================================
@@ -655,7 +652,7 @@ AM_TYPE_HACK='hack'
 # OUTPUT:
 #   commit type printed to stdout:
 #
-#   - 'normal': regular commit, and other non-merge commit
+#   - '': regular commit, and other non-merge commit
 #   - 'merge-binary': binary merge commit of 2 branches
 #
 #       - 'merge-binary-finish_feature': any branch (except main) -> dev branch
@@ -790,7 +787,7 @@ _highlight_am_by_types() {
 #   FILE            file which is required to be changed,
 #                   relative path to repo root
 #   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
-#   MESSAGE         reason of failing this test
+#   MESSAGE         reason to give when failing the test
 #
 # RETURN:
 #   0       success, FILE is edited; or skip b/c irrelevant COMMIT_TYPE
@@ -806,39 +803,31 @@ hooks_utility_ensure_file_modification() {
     commit_type_arg="$2"
     message="$3"
 
+    printf '%s' "${filename}" | hooks_utility_enter "${EFM_DISPLAY_NAME}"
+
     commit_type=$(get_commit_type_at_pre_commit)
     printf '\nfilename=%s\ncommit_type_arg=%s\ncommit_type=%s' \
         "${filename}" "${commit_type_arg}" "${commit_type}" |
-        hooks_utility_debug "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+        hooks_utility_debug "${EFM_DISPLAY_NAME}"
 
     if [[ "${commit_type}" != ${commit_type_arg}* ]]; then
         printf 'skipped, irrelevant commit type' |
-            hooks_utility_debug "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
+            hooks_utility_debug "${EFM_DISPLAY_NAME}"
         return 0
     fi
 
-    local when_phrase=''
-    if [[ -n "${commit_type_arg}" ]]; then
-        when_phrase=" when ${commit_type_arg}"
-    fi
-
     # proceed ensuring  ----------------------------------------------------
-    while IFS= read -r -d '' changed_file; do
-        # search if filename is present in modified file list
-        if [[ "${changed_file}" == "${filename}" ]]; then
-            printf 'ensured file changed%s: %s' \
-                "${when_phrase}" "${filename}" |
-                hooks_utility_info "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
-            return 0
-        fi
-    done < <(git diff --cached --name-only --diff-filter=M)
-
-    # fail to find filename in changed file list
-    printf 're %s%s: %s' "${filename}" "${when_phrase}" "${message}" |
-        hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
-    return 1
-
-    # Todo print as log
+    local result
+    result="$(git diff --cached --diff-filter=M -- "${filename}")"
+    if [[ -n $result ]]; then
+        printf '%s' "${filename}" |
+            hooks_utility_pass "${EFM_DISPLAY_NAME}"
+        return 0
+    else
+        printf '%s\n%s' "${filename}" "${message}" |
+            hooks_utility_fail "${EFM_DISPLAY_NAME}"
+        return 1
+    fi
 }
 
 # hooks_utility_ensure_line_modification()
@@ -847,7 +836,7 @@ hooks_utility_ensure_file_modification() {
 #
 # USAGE:
 #   hooks_utility_ensure_line_modification FILE START_LINE END_LINE \
-#           COMMIT_TYPE MESSAGE
+#           COMMIT_TYPE MESSAGE [PATTERN]
 #
 # ARGUMENT:
 #   FILE            file which is required to be changed,
@@ -867,7 +856,6 @@ hooks_utility_ensure_file_modification() {
 #           'must change algorithm per commit' \
 hooks_utility_ensure_line_modification() {
     # Todo write
-    # Todo print as log
     return 1
 }
 
@@ -890,10 +878,9 @@ hooks_utility_ensure_line_modification() {
 # EXAMPLE:
 #   hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 hooks_utility_ensure_changelog_edited() {
-    # Todo need test
     hooks_utility_ensure_file_modification "${1}" \
         'merge-binary-finish_feature' \
-        "record changes of this feature branch"
+        "must record changes of this feature branch"
 
     return "$?"
 }
@@ -917,7 +904,8 @@ hooks_utility_ensure_changelog_edited() {
 # EXAMPLE:
 #   hooks_utility_ensure_version_updated 'project.ini' 5
 hooks_utility_ensure_version_updated() {
-    # Todo need test
+    # Todo use ensure_line_modification() instead
+
     local filename line
     filename="${1}"
     line="${2}"
@@ -925,10 +913,10 @@ hooks_utility_ensure_version_updated() {
     hooks_utility_ensure_line_modification \
         "${filename}" "${line}" "${line}" \
         'merge-binary-release' \
-        "update project version in the file"
+        "must update project version"
 
     return "$?"
 }
 
 # constants  ===================================================================
-ENSURE_FILE_CHANGED_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:EFM"
+EFM_DISPLAY_NAME='Ensure File Modification'
