@@ -470,8 +470,6 @@ _parse_adding_padding() {
 
     local -i message_len # calculate length of message
     message_len=$(printf '%s' "${message}" | wc -m)
-    printf 'type=%s message_len=%s\n' "${type}" "${message_len}" |
-        hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
 
     # calculate left/right padding count  --------------------------------------
     local -i short_cnt long_cnt
@@ -490,14 +488,9 @@ _parse_adding_padding() {
         ;;
     esac
 
-    printf "short_cnt=%s long_cnt=%s\n" "${short_cnt}" "${long_cnt}" |
-        hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
-
     # print out  ---------------------------------------------------------------
     # special case: message too long, just print message itself
     if [[ short_cnt -lt 1 || long_cnt -lt 1 ]]; then
-        echo "message too long" |
-            hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
         printf '%s\n' "${message}"
     else
 
