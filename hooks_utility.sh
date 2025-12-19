@@ -901,7 +901,7 @@ hooks_utility_ensure_changelog_edited() {
 #
 # EXAMPLE:
 #   hooks_utility_ensure_version_updated 'project.ini' 5
-hooks_utility_ensure_version_updated() {
+hooks_utility_ensure_versionscripts/hooks_updated() {
 
     local filename line
     filename="${1}"
