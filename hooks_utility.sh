@@ -165,6 +165,7 @@ _colorful_print() {
     ((ENABLE_ANSI_COLOR)) && [[ -t "$target_fd" ]] && use_color=1
 
     # parse  -c and -C
+    # TODO parse use color
     OPTIND=1
     while getopts ":cC" opt; do
         case "$opt" in
