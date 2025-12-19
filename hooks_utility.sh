@@ -772,16 +772,16 @@ _highlight_am_by_types() {
     printf '%s' "${am}" | hooks_utility_colorful_print -c "${color}"
 }
 
-# ensure file modification  ####################################################
+# ensure file modified  ####################################################
 #
 # abbr. EFM
 
-# hooks_utility_ensure_file_modification()
+# hooks_utility_ensure_file_modified()
 #
 # in pre-commit, ensure certain file(s) must be modified
 #
 # USAGE:
-#   hooks_utility_ensure_file_modification FILE COMMIT_TYPE MESSAGE
+#   hooks_utility_ensure_file_modified FILE COMMIT_TYPE MESSAGE
 #
 # ARGUMENT:
 #   FILE            file which is required to be changed,
@@ -794,10 +794,10 @@ _highlight_am_by_types() {
 #   1       failure, FILE hasn't been edited
 #
 # EXAMPLE:
-#   hooks_utility_ensure_file_modification 'CHANGELOG.md' \
+#   hooks_utility_ensure_file_modified 'CHANGELOG.md' \
 #           'merge-binary-finish_feature' \
 #           'must record CHANGELOG when finish a feature branch' \
-hooks_utility_ensure_file_modification() {
+hooks_utility_ensure_file_modified() {
     local filename commit_type_arg message
     filename="$1"
     commit_type_arg="$2"
@@ -830,35 +830,6 @@ hooks_utility_ensure_file_modification() {
     fi
 }
 
-# hooks_utility_ensure_line_modification()
-#
-# in pre-commit, ensure certain line(s) must be modified
-#
-# USAGE:
-#   hooks_utility_ensure_line_modification FILE START_LINE END_LINE \
-#           COMMIT_TYPE MESSAGE [PATTERN]
-#
-# ARGUMENT:
-#   FILE            file which is required to be changed,
-#                   relative path to repo root
-#   START_LINE      line number of start of check range in FILE
-#   END_LINE        line number of end of check range in FILE
-#   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
-#   MESSAGE         reason of failing this test
-#
-# RETURN:
-#   0       success, range in FILE is edited; or skip b/c irrelevant COMMIT_TYPE
-#   1       failure, range in FILE hasn't been edited
-#
-# EXAMPLE:
-#   hooks_utility_ensure_line_modification "code.py" 1 5 \
-#           'merge-binary-finish_feature' \
-#           'must change algorithm per commit' \
-hooks_utility_ensure_line_modification() {
-    # Todo write
-    return 1
-}
-
 # hooks_utility_ensure_changelog_edited()
 #
 # in pre-commit, when merge to finish a feature branch,
@@ -878,7 +849,7 @@ hooks_utility_ensure_line_modification() {
 # EXAMPLE:
 #   hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 hooks_utility_ensure_changelog_edited() {
-    hooks_utility_ensure_file_modification "${1}" \
+    hooks_utility_ensure_file_modified "${1}" \
         'merge-binary-finish_feature' \
         "must record changes of this feature branch"
 
@@ -904,13 +875,13 @@ hooks_utility_ensure_changelog_edited() {
 # EXAMPLE:
 #   hooks_utility_ensure_version_updated 'project.ini' 5
 hooks_utility_ensure_version_updated() {
-    # Todo use ensure_line_modification() instead
+    # Todo use ensure_line_modified() instead
 
     local filename line
     filename="${1}"
     line="${2}"
 
-    hooks_utility_ensure_line_modification \
+    hooks_utility_ensure_line_modified \
         "${filename}" "${line}" "${line}" \
         'merge-binary-release' \
         "must update project version"
@@ -919,4 +890,4 @@ hooks_utility_ensure_version_updated() {
 }
 
 # constants  ===================================================================
-EFM_DISPLAY_NAME='Ensure File Modification'
+EFM_DISPLAY_NAME='Ensure File Modified'
