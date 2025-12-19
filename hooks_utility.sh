@@ -828,7 +828,7 @@ hooks_utility_ensure_file_modified() {
 
     # proceed ensuring  ----------------------------------------------------
     local result
-    result="$(git diff --cached --diff-filter=M -- "${filename}")"
+    result="$(git diff --cached --unified=0 --no-color --diff-filter=M -- "${filename}")"
     local -i fail=1
     if [[ -n $result ]]; then
         printf 'find file modification:\n%s' "${result}" |
