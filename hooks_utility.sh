@@ -532,7 +532,6 @@ _parse_adding_padding() {
     return 0
 }
 
-# TODO need complete test
 # branch protection  ###########################################################
 # abbr. BP
 
