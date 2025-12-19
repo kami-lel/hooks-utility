@@ -3,43 +3,39 @@
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
-echo \
-"tests: log style message, combines args/optns  ###############################\
-##"
+echo "log style message tests:combines args" | hooks_utility_padding_centered '#'
 
-echo \
-"source & date  ---------------------------------------------------------------\
---"
+# source & date  ---------------------------------------------------------------
+echo "source & date" | hooks_utility_padding_centered '-'
 
-echo "Some Debugging Message Content" | \
+echo "Some Debugging Message Content" |
         hooks_utility_debug -d "MainComponent"
-echo "Some Debugging Message Content" | \
+echo "Some Debugging Message Content" |
         hooks_utility_debug -d "MainComponent"
-echo "Content of Informational Message" | \
+echo "Content of Informational Message" |
         hooks_utility_info -d "MainComponent"
-echo "Warning!" | \
-        hooks_utility_warning -d  "MainComponent"
+echo "Warning!" |
+        hooks_utility_warning -d "MainComponent"
 
-echo \
-"source & date-time  ----------------------------------------------------------\
---"
+# source & date-time  ----------------------------------------------------------
+echo "source & date-time" | hooks_utility_padding_centered '-'
 
-echo "Some Debugging Message Content" | \
+echo "Some Debugging Message Content" |
         hooks_utility_debug -dt "Information Test Component from Main Script"
-echo "Some Debugging Message Content" | \
+echo "Some Debugging Message Content" |
         hooks_utility_debug -dt "Information Test Component from Main Script"
-echo "Content of Informational Message" | \
+echo "Content of Informational Message" |
         hooks_utility_info -dt "Information Test Component from Main Script"
-echo "Warning!" | \
+echo "Warning!" |
         hooks_utility_warning -dt "Information Test Component from Main Script"
 
+# source & date & color  -------------------------------------------------------
+echo "source & date & color" | hooks_utility_padding_centered '-'
 
-echo \
-"source & date & colors  ------------------------------------------------------\
---"
-
-echo "Some Debugging Message Content" | \
+echo "Some Debugging Message Content" |
         hooks_utility_debug -dc "MainComponent"
 
-echo "Some Debugging Message Content" | \
+echo "Some Debugging Message Content" |
         hooks_utility_debug -dC "MainComponent"
+
+# BUG, no show

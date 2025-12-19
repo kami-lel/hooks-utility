@@ -10,24 +10,24 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
 # basic  =======================================================================
 echo 'log style message, test enter/pass/fail' |
-    hooks_utility_padding_left_just '#'
-echo 'basic' | hooks_utility_padding_left_just '='
+    hooks_utility_padding_centered '#'
+echo 'basic' | hooks_utility_padding_centered '='
 
 echo "Enter Some Script" | hooks_utility_enter
 echo "Finish Some Script" | hooks_utility_pass
 echo "Fail Some Script" | hooks_utility_fail
 
 # combined  ====================================================================
-echo "combined" | hooks_utility_padding_left_just '='
+echo "combined" | hooks_utility_padding_centered '='
 
 # source & date  ---------------------------------------------------------------
-echo "source & date" | hooks_utility_padding_left_just '-'
+echo "source & date" | hooks_utility_padding_centered '-'
 echo "Enter Some Script" | hooks_utility_enter -d "MainComponent"
 echo "Pass Some Script" | hooks_utility_pass -d "MainComponent"
 echo "Fail Some Script" | hooks_utility_fail -d "MainComponent"
 
 # source & date-time  ----------------------------------------------------------
-echo "source & date-time" | hooks_utility_padding_left_just '-'
+echo "source & date-time" | hooks_utility_padding_centered '-'
 
 echo "Enter Some Script" |
     hooks_utility_enter -dt "Information Test Component from Main Script"
@@ -37,7 +37,7 @@ echo "Fail Some Script" |
     hooks_utility_fail -dt "Information Test Component from Main Script"
 
 # source & date-time & colors  -------------------------------------------------
-echo "source & date & colors" | hooks_utility_padding_left_just '-'
+echo "source & date & colors" | hooks_utility_padding_centered '-'
 
 echo "Enter Some Script" |
     hooks_utility_enter -dc "MainComponent"
