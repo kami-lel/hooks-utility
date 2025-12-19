@@ -150,11 +150,15 @@ ANSI_RESET='\e[0m'
 
 # helper methods  ==============================================================
 _colorful_print() {
-    local -i level target_fd
-    local message color
+    local target_fd message color
 
     color="${1}"
     target_fd="${2}"
+    shift 2
+
+    # BUG it doesn't disable color when print to file
+
+    echo "${target_fd}" # HACK
 
     # decide if use color by config
     local -i use_color=1
@@ -404,6 +408,7 @@ _print_log_message() {
 }
 
 # padding print  ###############################################################
+# TODO change coloring logic to use smart colorful printing
 
 # hooks_utility_padding_left_just()
 #
