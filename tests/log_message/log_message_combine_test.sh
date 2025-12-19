@@ -35,7 +35,5 @@ echo "source & date & color" | hooks_utility_padding_centered '-'
 echo "Some Debugging Message Content" |
         hooks_utility_debug -dc "MainComponent"
 
-echo "Some Debugging Message Content" |
+echo "Some Debugging Message Content No Color" |
         hooks_utility_debug -dC "MainComponent"
-
-# BUG, no show

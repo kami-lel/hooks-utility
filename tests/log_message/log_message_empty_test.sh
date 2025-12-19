@@ -8,7 +8,6 @@ echo 'log style message, empty test' | hooks_utility_padding_left_just '#'
 echo 'only prefix' | hooks_utility_padding_centered '='
 
 echo 'empty debug' | hooks_utility_padding_centered '-'
-# BUG no show
 echo '' | hooks_utility_debug
 
 echo 'empty info' | hooks_utility_padding_centered '-'
