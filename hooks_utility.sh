@@ -33,9 +33,6 @@ ENABLE_SPLIT_OUTPUT_STREAM="${ENABLE_SPLIT_OUTPUT_STREAM:-1}"
 MAIN_BRANCH_NAME="${MAIN_BRANCH_NAME:-main}"
 DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
 
-# global constants  ############################################################
-HOOKS_UTILITY_DISPLAY_NAME="HU"
-
 # ANSI colorful print  #########################################################
 
 # generic print colorful function  =============================================
@@ -820,7 +817,8 @@ hooks_utility_ensure_file_modification() {
     fi
 
     # proceed ensuring  ----------------------------------------------------
-    local result="(git diff --cached --diff-filter=M -- ${filename})"
+    local result
+    result="$(git diff --cached --diff-filter=M -- "${filename}")"
     if [[ -n $result ]]; then
         printf '%s' "${filename}" |
             hooks_utility_pass "${EFM_DISPLAY_NAME}"
