@@ -7,14 +7,14 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
 echo "pre-commit" | hooks_utility_enter
 
+# perform branch protection
+hooks_utility_protect_branch
+
 echo "pre-commit" | hooks_utility_pass
 
 exit 0
 
 # Fixme enable
-
-# perform branch protection
-hooks_utility_protect_branch
 
 # ensure CHANGELOG is edited
 hooks_utility_ensure_changelog_edited "CHANGELOG.md"

@@ -470,8 +470,6 @@ _parse_adding_padding() {
 
     local -i message_len # calculate length of message
     message_len=$(printf '%s' "${message}" | wc -m)
-    printf 'type=%s message_len=%s\n' "${type}" "${message_len}" |
-        hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
 
     # calculate left/right padding count  --------------------------------------
     local -i short_cnt long_cnt
@@ -490,14 +488,9 @@ _parse_adding_padding() {
         ;;
     esac
 
-    printf "short_cnt=%s long_cnt=%s\n" "${short_cnt}" "${long_cnt}" |
-        hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
-
     # print out  ---------------------------------------------------------------
     # special case: message too long, just print message itself
     if [[ short_cnt -lt 1 || long_cnt -lt 1 ]]; then
-        echo "message too long" |
-            hooks_utility_debug "${PADDING_PRINT_DISPLAY_NAME}"
         printf '%s\n' "${message}"
     else
 
@@ -557,7 +550,7 @@ _parse_adding_padding() {
 #   0   success: pass or skip checks
 #   1   failure: undesired AM detected
 hooks_utility_protect_branch() {
-    echo "start" | hooks_utility_debug "${BP_DISPLAY_NAME}"
+    echo "" | hooks_utility_enter "${BP_DISPLAY_NAME}"
 
     local commit_type
     commit_type=$(get_commit_type_at_pre_commit)
@@ -584,11 +577,11 @@ $(_search_am_from_git_diff_cached 2)"
     # decide whether check is passed
     if [[ -n "${result}" ]]; then
         printf 'undesired AM(s) in incoming branch:\n%s' "${result}" |
-            hooks_utility_error "${BP_DISPLAY_NAME}"
+            hooks_utility_fail "${BP_DISPLAY_NAME}"
         return 1
     else
-        echo "PASS: branch protection check" |
-            hooks_utility_info "${BP_DISPLAY_NAME}"
+        echo "" |
+            hooks_utility_pass "${BP_DISPLAY_NAME}"
         return 0
     fi
 }
