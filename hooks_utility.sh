@@ -62,7 +62,6 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 # EXAMPLE:
 #   echo "content in red" | hooks_utility_colorful_print "\e[0;31m"
 hooks_utility_colorful_print() {
-    # BUG stdout/stderr confused
     # parse opn  ---------------------------------------------------------------
     local -i lc_c_flag=0 uc_c_flag=0
     OPTIND=1
