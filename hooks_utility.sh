@@ -820,20 +820,16 @@ hooks_utility_ensure_file_modification() {
     fi
 
     # proceed ensuring  ----------------------------------------------------
-    while IFS= read -r -d '' changed_file; do
-        # search if filename is present in modified file list
-        if [[ "${changed_file}" == "${filename}" ]]; then
-            printf '%s' "${filename}" |
-                hooks_utility_pass "${EFM_DISPLAY_NAME}"
-            return 0
-        fi
-        echo "${changed_file}" # HACK
-    done < <(git diff --cached --name-only --diff-filter=M)
-
-    # fail to find filename in changed file list
-    printf 're %s: %s' "${filename}" "${message}" |
-        hooks_utility_fail "${EFM_DISPLAY_NAME}"
-    return 1
+    local result="(git diff -cached -- ${filename})"
+    if [[ -n $result ]]; then
+        printf '%s' "${filename}" |
+            hooks_utility_pass "${EFM_DISPLAY_NAME}"
+        return 0
+    else
+        printf 're %s: %s' "${filename}" "${message}" |
+            hooks_utility_fail "${EFM_DISPLAY_NAME}"
+        return 1
+    fi
 }
 
 # hooks_utility_ensure_line_modification()
@@ -861,7 +857,7 @@ hooks_utility_ensure_file_modification() {
 #           'merge-binary-finish_feature' \
 #           'must change algorithm per commit' \
 hooks_utility_ensure_line_modification() {
-    # TODO write
+    # todo write
     return 1
 }
 
@@ -911,6 +907,8 @@ hooks_utility_ensure_changelog_edited() {
 # EXAMPLE:
 #   hooks_utility_ensure_version_updated 'project.ini' 5
 hooks_utility_ensure_version_updated() {
+    # todo use ensure_line_modification() instead
+
     # TODO need test
     local filename line
     filename="${1}"
@@ -926,6 +924,3 @@ hooks_utility_ensure_version_updated() {
 
 # constants  ===================================================================
 EFM_DISPLAY_NAME='Ensure File Modification'
-ELM_DISPLAY_NAME='Ensure Line Modification'
-# HACK rm this line
-ENSURE_FILE_CHANGED_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:EFM"
