@@ -810,12 +810,18 @@ hooks_utility_ensure_file_modified() {
     printf '%s' "${filename}" | hooks_utility_enter "${EFM_DISPLAY_NAME}"
 
     commit_type=$(get_commit_type_at_pre_commit)
-    printf '\nfilename=%s\n' \
+
+    # print debug infor
+    printf 'args:\nfilename=%s\n' \
         'commit_type_arg=%s\n' \
         'commit_type=%s\n' \
         'message=%s\n' \
         'pattern=%s' \
-        "${filename}" "${commit_type_arg}" "${commit_type}" "${message}" "${pattern}" |
+        "${filename}" \
+        "${commit_type_arg}" \
+        "${commit_type}" \
+        "${message}" \
+        "${pattern}" |
         hooks_utility_debug "${EFM_DISPLAY_NAME}"
 
     if [[ "${commit_type}" != ${commit_type_arg}* ]]; then
