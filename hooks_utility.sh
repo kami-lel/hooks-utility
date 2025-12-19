@@ -576,8 +576,7 @@ $(_search_am_from_git_diff_cached 2)"
 
     # decide whether check is passed
     if [[ -n "${result}" ]]; then
-        # BUG not printing correct content
-        printf 'must not include AM(s) in incoming branch:\n%s' "${result}" |
+        printf 'remove AM(s) of incoming branch in file(s):\n%s' "${result}" |
             hooks_utility_fail "${BP_DISPLAY_NAME}"
         return 1
     else
@@ -653,6 +652,9 @@ get_commit_type_at_pre_commit() {
 
 # perform git diff --cached, find all AMs, print to stdout
 _search_am_from_git_diff_cached() {
+
+    # BUG not printing correct content
+    # TODO highlighting
     local -i am_class="$1" # 1:primary AM, 2:secondary, 3: tertiary
 
     # decide which pattern to use
