@@ -99,6 +99,12 @@ hooks_utility_colorful_print() {
 # ARGUMENT:
 #   MESSAGE     content to be print
 #
+# OUTPUT:
+#   print MESSAGE in COLOR to stdout
+#
+# RETURN:
+#   0       success
+#
 # EXAMPLE:
 #   echo "content in red" | hooks_utility_print_in_red
 hooks_utility_print_in_black() {
@@ -767,7 +773,7 @@ _highlight_am_by_types() {
     "${AM_TYPE_HACK}") color="${ANSI_COLOR_BLUE_BG}" ;;
     esac
 
-    printf '%s' "${am}" | hooks_utility_colorful_print "${color}"
+    printf '%s' "${am}" | hooks_utility_colorful_print -c "${color}"
 }
 
 # ensure file modification  ####################################################
