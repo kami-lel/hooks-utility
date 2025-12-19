@@ -810,8 +810,12 @@ hooks_utility_ensure_file_modified() {
     printf '%s' "${filename}" | hooks_utility_enter "${EFM_DISPLAY_NAME}"
 
     commit_type=$(get_commit_type_at_pre_commit)
-    printf '\nfilename=%s\ncommit_type_arg=%s\ncommit_type=%s' \
-        "${filename}" "${commit_type_arg}" "${commit_type}" |
+    printf '\nfilename=%s\n' \
+        'commit_type_arg=%s\n' \
+        'commit_type=%s\n' \
+        'message=%s\n' \
+        'pattern=%s' \
+        "${filename}" "${commit_type_arg}" "${commit_type}" "${message}" "${pattern}" |
         hooks_utility_debug "${EFM_DISPLAY_NAME}"
 
     if [[ "${commit_type}" != ${commit_type_arg}* ]]; then
@@ -825,8 +829,12 @@ hooks_utility_ensure_file_modified() {
     result="$(git diff --cached --diff-filter=M -- "${filename}")"
     local -i fail=1
     if [[ -n $result ]]; then
+        printf 'find file modification:\n%s' "${result}" |
+            hooks_utility_debug "${EFM_DISPLAY_NAME}"
+
         if [[ -n $pattern ]]; then # test for pattern
             if printf '%s\n' "$result" | grep -E -x -q -- "$pattern"; then
+                # BUG fail to find line
                 # pass test for file modified + pattern matched
                 fail=0
             fi
