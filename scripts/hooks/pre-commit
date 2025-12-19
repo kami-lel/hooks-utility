@@ -15,7 +15,7 @@ hooks_utility_protect_branch
 hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 
 # make sure version is bumped when finish feature branch
-pattern='^# version: v[0-9.]+'
+pattern='^# version: *v[0-9.]+'
 hooks_utility_ensure_version_updated 'hooks-utility.sh' "${pattern}"
 
 echo "pre-commit" | hooks_utility_pass
