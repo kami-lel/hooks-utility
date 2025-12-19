@@ -26,7 +26,7 @@ LOGGING_LEVEL="${LOGGING_LEVEL:-20}"
 
 # sent messages to stdout/stderr depending on message level
 ENABLE_SPLIT_OUTPUT_STREAM="${ENABLE_SPLIT_OUTPUT_STREAM:-1}"
-# 1=message of level >= 30 is sent to stderr, while rest is sent to stdout
+# 1=message of level >= 40 is sent to stderr, while rest is sent to stdout
 # 0=all messages are sent to stdout
 
 # branch protection config  ----------------------------------------------------
@@ -228,8 +228,8 @@ _colorful_print_with_target_fd() {
 # OUTPUT:
 #   print the formatted message to:
 #
-#   - stdout: debug, enter, info, pass
-#   - stderr: warning, error, fail, critical
+#   - stdout: debug, enter, info, pass, warning
+#   - stderr: error, fail, critical
 #
 #   utilizing ANSI coloring if it is a console
 #
@@ -240,42 +240,42 @@ _colorful_print_with_target_fd() {
 #   echo "some information" | hooks_utility_info
 #   echo "some debug information" | hooks_utility_debug -dt  "Main Component"
 hooks_utility_debug() {
-    _print_log_message 10 "$@"
+    _print_log_message "${LOGGING_LEVEL_DEBUG}" "$@"
     return "$?"
 }
 
 hooks_utility_enter() {
-    _print_log_message 11 "$@"
+    _print_log_message "${LOGGING_LEVEL_ENTER}" "$@"
     return "$?"
 }
 
 hooks_utility_info() {
-    _print_log_message 20 "$@"
-    return "$?"
-}
-
-hooks_utility_warning() {
-    _print_log_message 30 "$@"
-    return "$?"
-}
-
-hooks_utility_error() {
-    _print_log_message 40 "$@"
-    return "$?"
-}
-
-hooks_utility_critical() {
-    _print_log_message 50 "$@"
+    _print_log_message "${LOGGING_LEVEL_INFO}" "$@"
     return "$?"
 }
 
 hooks_utility_pass() {
-    _print_log_message 21 "$@"
+    _print_log_message "${LOGGING_LEVEL_PASS}" "$@"
+    return "$?"
+}
+
+hooks_utility_warning() {
+    _print_log_message "${LOGGING_LEVEL_WARNING}" "$@"
+    return "$?"
+}
+
+hooks_utility_error() {
+    _print_log_message "${LOGGING_LEVEL_ERROR}" "$@"
     return "$?"
 }
 
 hooks_utility_fail() {
-    _print_log_message 41 "$@"
+    _print_log_message "${LOGGING_LEVEL_FAIL}" "$@"
+    return "$?"
+}
+
+hooks_utility_critical() {
+    _print_log_message "${LOGGING_LEVEL_CRITICAL}" "$@"
     return "$?"
 }
 
@@ -289,6 +289,15 @@ PREFIX_ERROR_CRITICAL="CRIT "
 PREFIX_ERROR_ENTER="ENTER"
 PREFIX_ERROR_PASS="PASS "
 PREFIX_ERROR_FAIL="FAIL "
+
+LOGGING_LEVEL_DEBUG=10
+LOGGING_LEVEL_ENTER=11
+LOGGING_LEVEL_INFO=20
+LOGGING_LEVEL_PASS=21
+LOGGING_LEVEL_WARNING=30
+LOGGING_LEVEL_ERROR=40
+LOGGING_LEVEL_FAIL=41
+LOGGING_LEVEL_CRITICAL=50
 
 DATE_FORMAT="%Y-%m-%d"
 TIME_FORMAT="%H:%M:%S"
@@ -307,7 +316,8 @@ _print_log_message() {
     # parse inputs  ------------------------------------------------------------
     # consider configurations
     local target_fd=1
-    ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge 30 ]] && target_fd=2
+    ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge ${LOGGING_LEVEL_ERROR} ]] &&
+        target_fd=2
 
     local message_arg
     message_arg=$(cat -) # read from stdin
@@ -349,35 +359,35 @@ _print_log_message() {
     # print prefix part  -------------------------------------------------------
     local prefix_color
     case "$level" in
-    10) # debug
+    "$LOGGING_LEVEL_DEBUG")
         prefix_tag="$PREFIX_ERROR_DEBUG"
         prefix_color="$ANSI_COLOR_BLUE"
         ;;
-    11) # enter
+    "$LOGGING_LEVEL_ENTER")
         prefix_tag="$PREFIX_ERROR_ENTER"
         prefix_color="$ANSI_COLOR_BLUE_BOLD"
         ;;
-    20) # info
+    "$LOGGING_LEVEL_INFO")
         prefix_tag="$PREFIX_ERROR_INFO"
         prefix_color="$ANSI_COLOR_YELLOW"
         ;;
-    21) # pass
+    "$LOGGING_LEVEL_PASS")
         prefix_tag="$PREFIX_ERROR_PASS"
         prefix_color="$ANSI_COLOR_GREEN_BOLD"
         ;;
-    30) # warning
+    "$LOGGING_LEVEL_WARNING")
         prefix_tag="$PREFIX_ERROR_WARNING"
         prefix_color="$ANSI_COLOR_YELLOW"
         ;;
-    40) # error
+    "$LOGGING_LEVEL_ERROR")
         prefix_tag="$PREFIX_ERROR_ERROR"
         prefix_color="$ANSI_COLOR_RED"
         ;;
-    41) # fail
+    "$LOGGING_LEVEL_FAIL")
         prefix_tag="$PREFIX_ERROR_FAIL"
         prefix_color="$ANSI_COLOR_RED_BOLD"
         ;;
-    50) # critical
+    "$LOGGING_LEVEL_CRITICAL")
         prefix_tag="$PREFIX_ERROR_CRITICAL"
         prefix_color="$ANSI_COLOR_RED"
         ;;
