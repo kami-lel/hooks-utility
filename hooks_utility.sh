@@ -184,11 +184,6 @@ ANSI_RESET='\e[0m'
 
 KEYWORD_PASS="PASS"
 KEYWORD_FAIL="FAIL"
-KEYWORD_DEBUG="DEBUG"
-KEYWORD_INFO="INFO "
-KEYWORD_WARNING="WARN "
-KEYWORD_ERROR="ERROR"
-KEYWORD_CRITICAL="CRIT "
 
 # TODO rm
 ANSI_COLOR_GREY='\e[0;36m'
@@ -287,7 +282,6 @@ hooks_utility_critical() {
 
 # constants  ===================================================================
 # note: all of length 5
-# TODO rm
 PREFIX_ERROR_DEBUG="DEBUG"
 PREFIX_ERROR_INFO="INFO "
 PREFIX_ERROR_WARNING="WARN "
@@ -335,6 +329,9 @@ _print_log_message() {
     local source_arg="${1-}"
 
     # decide prefix tag & color based on level  --------------------------------
+
+    # create prefix part w/ coloring
+
     local prefix prefix_color
     case "$level" in
     10) # debug
@@ -361,7 +358,8 @@ _print_log_message() {
 
     # create prefix part w/ coloring
     if ((use_color)); then
-        prefix="${prefix_color}${prefix_tag}${ANSI_RESET}"
+        prefix="$(printf '%s' "${prefix_tag}" |
+            hooks_utility_colorful_print "${prefix_color}")"
     else
         prefix="${prefix_tag}"
     fi
