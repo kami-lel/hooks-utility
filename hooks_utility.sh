@@ -838,7 +838,7 @@ hooks_utility_ensure_file_modification() {
         hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
     return 1
 
-    # Todo print as log
+    # TODO print as log
 }
 
 # hooks_utility_ensure_line_modification()
@@ -866,8 +866,8 @@ hooks_utility_ensure_file_modification() {
 #           'merge-binary-finish_feature' \
 #           'must change algorithm per commit' \
 hooks_utility_ensure_line_modification() {
-    # Todo write
-    # Todo print as log
+    # TODO write
+    # TODO print as log
     return 1
 }
 
@@ -890,7 +890,7 @@ hooks_utility_ensure_line_modification() {
 # EXAMPLE:
 #   hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 hooks_utility_ensure_changelog_edited() {
-    # Todo need test
+    # TODO need test
     hooks_utility_ensure_file_modification "${1}" \
         'merge-binary-finish_feature' \
         "record changes of this feature branch"
@@ -917,7 +917,7 @@ hooks_utility_ensure_changelog_edited() {
 # EXAMPLE:
 #   hooks_utility_ensure_version_updated 'project.ini' 5
 hooks_utility_ensure_version_updated() {
-    # Todo need test
+    # TODO need test
     local filename line
     filename="${1}"
     line="${2}"
