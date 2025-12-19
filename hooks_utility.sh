@@ -37,7 +37,7 @@ DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
 HOOKS_UTILITY_DISPLAY_NAME="HU"
 
 # ANSI colorful print  #########################################################
-# Fixme add -cC and terminal decision progress
+# FIXME add -cC and terminal decision progress
 
 # generic print colorful function  =============================================
 # hooks_utility_colorful_print()
@@ -45,10 +45,14 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 # print message from stdin utilizing ANSI color escape code
 #
 # USAGE:
-#   hooks_utility_colorful_print COLOR
+#   hooks_utility_colorful_print [-c|-C] COLOR
 #
 # ARGUMENT:
 #   COLOR       ANSI color escape code, e.g. '\e[0;31m' for red
+#
+# OPTION:
+#   -c      always use ANSI coloring
+#   -C      never use ANSI coloring
 #
 # OUTPUT:
 #   print MESSAGE in COLOR to stdout
@@ -58,8 +62,8 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 #
 # EXAMPLE:
 #   echo "content in red" | hooks_utility_colorful_print "\e[0;31m"
-
 hooks_utility_colorful_print() {
+    # TODO add -c/-C
     local color message
 
     message=$(cat -) # read from stdin
@@ -797,7 +801,7 @@ hooks_utility_ensure_file_modification() {
         hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
     return 1
 
-    # todo print as log
+    # Todo print as log
 }
 
 # hooks_utility_ensure_line_modification()
