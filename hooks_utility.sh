@@ -788,7 +788,9 @@ _highlight_am_by_types() {
 #                   relative path to repo root
 #   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
 #   MESSAGE         reason to give when failing the test
-#   [PATTERN]       optional additional test pattern applied to git diff result
+#   [LINE_PATTERN]  if provided, perform additional tests;
+#                   ensure at least one line from: git diff --cached FILENAME
+#                   will match this pattern, in Extended RE
 #
 # RETURN:
 #   0       success, FILE is edited; or skip b/c irrelevant COMMIT_TYPE
@@ -824,7 +826,7 @@ hooks_utility_ensure_file_modified() {
     local -i fail=1
     if [[ -n $result ]]; then
         if [[ -n $pattern ]]; then # test for pattern
-            if [[ $result =~ $pattern ]]; then
+            if printf '%s\n' "$result" | grep -E -x -q -- "$pattern"; then
                 # pass test for file modified + pattern matched
                 fail=0
             fi
@@ -881,7 +883,8 @@ hooks_utility_ensure_changelog_edited() {
 # ARGUMENT:
 #   FILE            file which is required to be changed,
 #                   relative path to repo root
-#   LINE            line (in FILE) which version should be found
+#   LINE_PATTERN    an pattern that match the line containing the version,
+#                   in extended re
 #
 # RETURN:
 #   0       success
@@ -890,16 +893,15 @@ hooks_utility_ensure_changelog_edited() {
 # EXAMPLE:
 #   hooks_utility_ensure_version_updated 'project.ini' 5
 hooks_utility_ensure_version_updated() {
-    # TODO use ensure_line_modified() instead
 
     local filename line
     filename="${1}"
-    line="${2}"
+    pattern="${2}"
 
-    hooks_utility_ensure_line_modified \
-        "${filename}" "${line}" "${line}" \
-        'merge-binary-release' \
-        "must update project version"
+    hooks_utility_ensure_file_modified "${1}" \
+        'merge-binary-finish_feature' \
+        'must record changes of this feature branch' \
+        "${pattern}"
 
     return "$?"
 }
