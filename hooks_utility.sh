@@ -37,7 +37,6 @@ DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
 HOOKS_UTILITY_DISPLAY_NAME="HU"
 
 # ANSI colorful print  #########################################################
-# Fixme add -cC and terminal decision progress
 
 # generic print colorful function  =============================================
 # hooks_utility_colorful_print()
@@ -45,10 +44,14 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 # print message from stdin utilizing ANSI color escape code
 #
 # USAGE:
-#   hooks_utility_colorful_print COLOR
+#   hooks_utility_colorful_print [-c|-C] COLOR
 #
 # ARGUMENT:
 #   COLOR       ANSI color escape code, e.g. '\e[0;31m' for red
+#
+# OPTION:
+#   -c      always use ANSI coloring
+#   -C      never use ANSI coloring
 #
 # OUTPUT:
 #   print MESSAGE in COLOR to stdout
@@ -58,16 +61,22 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 #
 # EXAMPLE:
 #   echo "content in red" | hooks_utility_colorful_print "\e[0;31m"
-
 hooks_utility_colorful_print() {
-    local color message
+    # parse opn  ---------------------------------------------------------------
+    local -i lc_c_flag=0 uc_c_flag=0
+    OPTIND=1
+    while getopts ":cC" opt; do
+        case "$opt" in
+        c) lc_c_flag=1 ;;
+        C) uc_c_flag=1 ;;
+        \?) ;; # ignore invalid options
+        esac
+    done
+    shift $((OPTIND - 1))
 
-    message=$(cat -) # read from stdin
-    color="${1}"
-
-    printf "%b" "${color}${message}${ANSI_RESET}"
-
-    return 0
+    # perform by calling internal  ---------------------------------------------
+    _colorful_print_with_target_fd "${1}" 1 "${lc_c_flag}" "${uc_c_flag}"
+    return "$?"
 }
 
 # colorful print of specific color  ============================================
@@ -140,6 +149,47 @@ ANSI_COLOR_PURPLE='\e[0;35m'
 ANSI_COLOR_CYAN='\e[0;36m'
 ANSI_COLOR_WHITE='\e[0;37m'
 ANSI_RESET='\e[0m'
+
+# helper methods  ==============================================================
+_colorful_print_with_target_fd() {
+    local color
+    local -i target_fd lc_c_flag uc_c_flag
+    color="${1}"
+    target_fd="${2}"
+    lc_c_flag="${3}"
+    uc_c_flag="${4}"
+
+    # decide color by config  --------------------------------------------------
+    local use_color=0
+    ((ENABLE_ANSI_COLOR)) && [[ -t "$target_fd" ]] && use_color=1
+    if ((lc_c_flag)); then
+        use_color=1
+    elif ((uc_c_flag)); then
+        use_color=0
+    fi
+
+    message=$(cat -) # read from stdin
+
+    # actually print  ---------------------------------------------------------
+    local content
+    # decide if coloring
+    if ((use_color)); then
+        content="${color}${message}${ANSI_RESET}"
+    else
+        content="${message}"
+    fi
+
+    # decide stdout or stderr
+    if [[ ${target_fd} == 1 ]]; then
+        # print to stdout
+        printf "%b" "$content"
+    else
+        # print to stderr
+        printf "%b" "$content" >&2
+    fi
+
+    return 0
+}
 
 # log style message  ###########################################################
 
@@ -236,36 +286,34 @@ PREFIX_ERROR_FAIL="FAIL "
 DATE_FORMAT="%Y-%m-%d"
 TIME_FORMAT="%H:%M:%S"
 
-# Fixme no ":" when message is empty
 # helper functions  ============================================================
 _print_log_message() {
-    # filtering by log level
     local -i level="$1"
     shift
 
+    # filtering (skip) by log level
     if [[ level -lt LOGGING_LEVEL ]]; then
         # this message is filtered out
         return 0
     fi
 
-    # consider configurations
-    local target_fd=1 use_color=0
-    ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge 40 ]] && target_fd=2
-    ((ENABLE_ANSI_COLOR)) && [[ -t "$target_fd" ]] && use_color=1
-
     # parse inputs  ------------------------------------------------------------
-    local message
-    message=$(cat -) # read from stdin
+    # consider configurations
+    local target_fd=1
+    ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge 40 ]] && target_fd=2
 
-    # parse options
-    local -i d_flag=0 t_flag=0
+    local message_arg
+    message_arg=$(cat -) # read from stdin
+
+    # parse opn
+    local -i d_flag=0 t_flag=0 lc_c_flag=0 uc_c_flag=0
     OPTIND=1
     while getopts ":dtcC" opt; do
         case "$opt" in
         d) d_flag=1 ;;
         t) t_flag=1 ;;
-        c) use_color=1 ;;
-        C) use_color=0 ;;
+        c) lc_c_flag=1 ;;
+        C) uc_c_flag=1 ;;
         \?) ;; # ignore invalid options
         esac
     done
@@ -274,10 +322,26 @@ _print_log_message() {
     # parse args
     local source_arg="${1-}"
 
-    # decide prefix tag & color based on level  --------------------------------
+    # print date/time part  ---------------------------------------------------
+    local timestamp=""
 
-    # create prefix part w/ coloring
+    local date_time_format=""
+    if ((d_flag && t_flag)); then
+        date_time_format="${DATE_FORMAT} ${TIME_FORMAT} "
+    elif ((d_flag)); then
+        date_time_format="${DATE_FORMAT} "
+    elif ((t_flag)); then
+        date_time_format="${TIME_FORMAT} "
+    fi
 
+    if [[ -n ${date_time_format} ]]; then # print only needed
+        printf "%(${date_time_format})T" -1 |
+            _colorful_print_with_target_fd \
+                "${ANSI_COLOR_BLACK}" "${target_fd}" \
+                "${lc_c_flag}" "${uc_c_flag}"
+    fi
+
+    # print prefix part  -------------------------------------------------------
     local prefix prefix_color
     case "$level" in
     10) # debug
@@ -314,36 +378,10 @@ _print_log_message() {
         ;;
     esac
 
-    # create prefix part w/ coloring
-    if ((use_color)); then
-        prefix="$(printf '%s' "${prefix_tag}" |
-            hooks_utility_colorful_print "${prefix_color}")"
-    else
-        prefix="${prefix_tag}"
-    fi
-
-    # create date/time part  ---------------------------------------------------
-    local timestamp=""
-
-    local date_time_format=""
-    if ((d_flag && t_flag)); then
-        date_time_format="${DATE_FORMAT} ${TIME_FORMAT} "
-    elif ((d_flag)); then
-        date_time_format="${DATE_FORMAT} "
-    elif ((t_flag)); then
-        date_time_format="${TIME_FORMAT} "
-    fi
-
-    # create date/time part w/ coloring
-    if ((use_color)); then
-        date_time_format="$(printf '%s' "${date_time_format}" |
-            hooks_utility_print_in_black)"
-    fi
-
-    # populate format w/ current time
-    if [[ -n ${date_time_format} ]]; then
-        printf -v timestamp "%(${date_time_format})T" -1
-    fi
+    printf '%s' "${prefix_tag}" |
+        _colorful_print_with_target_fd \
+            "${prefix_color}" "${target_fd}" \
+            "${lc_c_flag}" "${uc_c_flag}"
 
     # create source part  ------------------------------------------------------
     local source=""
@@ -351,18 +389,26 @@ _print_log_message() {
         source="(${source_arg})"
     fi
 
-    # actually print  ----------------------------------------------------------
-    local content="${timestamp}${prefix}${source}:\t${message}"
+    # create message part  -----------------------------------------------------
+    local message=""
+    if [[ -n ${message_arg} ]]; then
+        message=":\t${message_arg}"
+    fi
+
+    # print source & message part
     if [[ ${target_fd} == 1 ]]; then
         # print to stdout
-        printf "%b\n" "$content"
+        printf "%b%b\n" "${source}" "${message}"
     else
         # print to stderr
-        printf "%b\n" "$content" >&2
+        printf "%b%b\n" "${source}" "${message}" >&2
     fi
+
+    return 0
 }
 
 # padding print  ###############################################################
+# TODO change coloring logic to use smart colorful printing
 
 # hooks_utility_padding_left_just()
 #
@@ -797,7 +843,7 @@ hooks_utility_ensure_file_modification() {
         hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
     return 1
 
-    # todo print as log
+    # Todo print as log
 }
 
 # hooks_utility_ensure_line_modification()
