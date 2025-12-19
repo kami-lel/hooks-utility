@@ -302,8 +302,8 @@ _print_log_message() {
     local target_fd=1
     ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge 40 ]] && target_fd=2
 
-    local message
-    message=$(cat -) # read from stdin
+    local message_arg
+    message_arg=$(cat -) # read from stdin
 
     # parse opn
     local -i d_flag=0 t_flag=0 lc_c_flag=0 uc_c_flag=0
@@ -378,14 +378,10 @@ _print_log_message() {
         ;;
     esac
 
-    prefix="$(printf '%s' "${prefix_tag}" |
-        hooks_utility_colorful_print "${prefix_color}")"
-    # TODO
-
-    return 0
-
-    # decide prefix tag & color based on level  --------------------------------
-    # create prefix part w/ coloring
+    printf '%s' "${prefix_tag}" |
+        _colorful_print_with_target_fd \
+            "${prefix_color}" "${target_fd}" \
+            "${lc_c_flag}" "${uc_c_flag}"
 
     # create source part  ------------------------------------------------------
     local source=""
@@ -393,16 +389,22 @@ _print_log_message() {
         source="(${source_arg})"
     fi
 
-    # FIXME no ":" when message is empty
-    # actually print  ----------------------------------------------------------
-    local content="${timestamp}${prefix}${source}:\t${message}"
+    # create message part  -----------------------------------------------------
+    local message=""
+    if [[ -n ${message_arg} ]]; then
+        message=":\t${message_arg}"
+    fi
+
+    # print source & message part
     if [[ ${target_fd} == 1 ]]; then
         # print to stdout
-        printf "%b\n" "$content"
+        printf "%b%b\n" "${source}" "${message}"
     else
         # print to stderr
-        printf "%b\n" "$content" >&2
+        printf "%b%b\n" "${source}" "${message}" >&2
     fi
+
+    return 0
 }
 
 # padding print  ###############################################################
