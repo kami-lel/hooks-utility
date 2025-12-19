@@ -738,16 +738,16 @@ _am_class_index2pattern() {
 }
 
 _highlight_am_line_in_git_diff_cached() {
-    local line pattern split_pattern am_colored
+    local line pattern split_pattern
     line="${1}"
     pattern="${2}"
 
     split_pattern="^(.*)(${pattern})(.*)$"
 
     if [[ $line =~ $split_pattern ]]; then
-        am_colored="$(_highlight_am_by_types "${BASH_REMATCH[2]}")"
-        printf '%s%s%s\n' \
-            "${BASH_REMATCH[1]}" "${am_colored}" "${BASH_REMATCH[3]}"
+        printf '%s' "${BASH_REMATCH[1]}"
+        _highlight_am_by_types "${BASH_REMATCH[2]}"
+        printf '%s\n' "${BASH_REMATCH[3]}"
     else
         printf '%s\n' "${line}" # fallback
     fi
