@@ -37,6 +37,7 @@ DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
 HOOKS_UTILITY_DISPLAY_NAME="HU"
 
 # ANSI colorful print  #########################################################
+# Fixme add -cC and terminal decision progress
 
 # generic print colorful function  =============================================
 # hooks_utility_colorful_print()
@@ -671,14 +672,21 @@ _search_am_from_git_diff_cached() {
 
         if [[ -n ${lines} ]]; then
             # print file name
-            printf '%s' "${filename}" | hooks_utility_padding_left_just -c '-'
+            printf '%s' "${filename}" | hooks_utility_padding_centered -c '-'
 
             # print lines with AMs
-            printf '%s\n' "${lines}"
+            while IFS= read -r line || [ -n "$line" ]; do
+                _highlight_am_in_git_diff_line "${line}" "${pattern}"
+            done <<<"$lines"
 
-            # TODO print line w/ highlighting
         fi
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
+}
+
+_highlight_am_in_git_diff_line() {
+    local line pattern
+    line="${1}"
+    pattern="${2}"
 }
 
 # ensure file modification  ####################################################
