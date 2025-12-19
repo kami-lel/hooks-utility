@@ -323,8 +323,6 @@ _print_log_message() {
     local source_arg="${1-}"
 
     # print date/time part  ---------------------------------------------------
-    local timestamp=""
-
     local date_time_format=""
     if ((d_flag && t_flag)); then
         date_time_format="${DATE_FORMAT} ${TIME_FORMAT} "
@@ -342,7 +340,7 @@ _print_log_message() {
     fi
 
     # print prefix part  -------------------------------------------------------
-    local prefix prefix_color
+    local prefix_color
     case "$level" in
     10) # debug
         prefix_tag="$PREFIX_ERROR_DEBUG"
@@ -408,7 +406,6 @@ _print_log_message() {
 }
 
 # padding print  ###############################################################
-# TODO change coloring logic to use smart colorful printing
 
 # hooks_utility_padding_left_just()
 #
@@ -484,6 +481,7 @@ _print_padding_of_count() {
     if ((use_color)); then
         result="$(printf '%s' "${result}" |
             hooks_utility_print_in_black)"
+        # TODO change
 
     fi
 
