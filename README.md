@@ -3,6 +3,7 @@
 a collections of utility functions for **git hooks**
 
 <!-- todo auto generate better commit/merge message -->
+<!-- bug branch protection: \n in line get interpreted -->
 
 
 
