@@ -3,7 +3,7 @@
 a collections of utility functions for **git hooks**
 
 <!-- todo auto generate better commit/merge message -->
-<!-- fixme in _search_am_from_git_diff_cached print lines, with format of line number & coloring AM -->
+<!-- bug branch protection: \n in line get interpreted -->
 
 
 
