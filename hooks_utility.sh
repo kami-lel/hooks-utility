@@ -127,11 +127,14 @@ hooks_utility_print_in_white() {
 ANSI_COLOR_BLACK='\e[0;30m'
 ANSI_COLOR_RED='\e[0;31m'
 ANSI_COLOR_RED_BOLD='\e[1;31m'
+ANSI_COLOR_RED_BG='\e[41m'
 ANSI_COLOR_GREEN='\e[0;32m'
 ANSI_COLOR_GREEN_BOLD='\e[1;32m'
 ANSI_COLOR_YELLOW='\e[0;33m'
+ANSI_COLOR_YELLOW_BG='\e[43m'
 ANSI_COLOR_BLUE='\e[0;34m'
 ANSI_COLOR_BLUE_BOLD='\e[1;34m'
+ANSI_COLOR_BLUE_BG='\e[44m'
 ANSI_COLOR_PURPLE='\e[0;35m'
 ANSI_COLOR_CYAN='\e[0;36m'
 ANSI_COLOR_WHITE='\e[0;37m'
@@ -592,6 +595,10 @@ BP_DISPLAY_NAME='branch protection'
 PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
 SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
 TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
+AM_TYPE_TODO='todo'
+AM_TYPE_BUG='bug'
+AM_TYPE_FIXME='fixme'
+AM_TYPE_HACK='hack'
 
 # helper functions  ============================================================
 
@@ -692,10 +699,18 @@ _search_am_from_git_diff_cached() {
 
 # add coloring of AM based on types
 _highlight_am_by_types() {
-    local am
+    local am am_lc color
     am="${1}"
+    am_lc="${am,,}" # make lower case
 
-    printf '%s' "${am}" # TODO
+    case "${am_lc}" in
+    "${AM_TYPE_TODO}") color="${ANSI_COLOR_YELLOW_BG}" ;;
+    "${AM_TYPE_BUG}") color="${ANSI_COLOR_RED_BG}" ;;
+    "${AM_TYPE_FIXME}") color="${ANSI_COLOR_YELLOW_BG}" ;;
+    "${AM_TYPE_HACK}") color="${ANSI_COLOR_BLUE_BG}" ;;
+    esac
+
+    printf '%s' "${am}" | hooks_utility_colorful_print "${color}"
 }
 
 _highlight_am_in_git_diff_line() {
