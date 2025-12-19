@@ -7,6 +7,9 @@ tmp=$(mktemp)
 
 echo "log style message test on -c/-C" | hooks_utility_padding_centered '#'
 
+# ENABLE_ANSI_COLOR=1  =========================================================
+echo "ENABLE_ANSI_COLOR=1" | hooks_utility_padding_centered '='
+
 # default to terminal  =========================================================
 echo "default to terminal" | hooks_utility_padding_centered '='
 echo "Some Error Message Content" | hooks_utility_error

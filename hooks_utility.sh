@@ -285,6 +285,7 @@ TIME_FORMAT="%H:%M:%S"
 # helper functions  ============================================================
 _print_log_message() {
     # FIXME utilize _colorful_print()
+
     # filtering by log level
     local -i level="$1"
     local -a pass_opn=()
@@ -295,23 +296,16 @@ _print_log_message() {
         return 0
     fi
 
+    # parse inputs  ------------------------------------------------------------
     # consider configurations
     local target_fd=1 use_color=0
     ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge 40 ]] && target_fd=2
     ((ENABLE_ANSI_COLOR)) && [[ -t "$target_fd" ]] && use_color=1
 
-    if [[ -t "$target_fd" ]]; then
-        is_tty=1
-    else
-        is_tty=0
-    fi
-    printf 'color=%d target_fd=%d is_term=%s\n' "${use_color}" "${target_fd}" "${is_tty}" # HACK
-
-    # parse inputs  ------------------------------------------------------------
     local message
     message=$(cat -) # read from stdin
 
-    # parse options
+    # parse opn
     local -i d_flag=0 t_flag=0
     OPTIND=1
     while getopts ":dtcC" opt; do
