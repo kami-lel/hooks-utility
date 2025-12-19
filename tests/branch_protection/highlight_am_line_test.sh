@@ -79,8 +79,8 @@ _highlight_am_line_in_git_diff_cached \
 printf '\n'
 
 _highlight_am_line_in_git_diff_cached \
-    'send_message(msg)  # bug: occasionally sends'
-"${pattern}"
+    'send_message(msg)  # bug: occasionally sends' \
+    "${pattern}"
 printf '\n'
 
 # c ============================================================================

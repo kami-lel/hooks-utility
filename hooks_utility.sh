@@ -130,6 +130,7 @@ ANSI_COLOR_RED_BOLD='\e[1;31m'
 ANSI_COLOR_RED_BG='\e[41m'
 ANSI_COLOR_GREEN='\e[0;32m'
 ANSI_COLOR_GREEN_BOLD='\e[1;32m'
+ANSI_COLOR_GREEN_BG='\e[42m'
 ANSI_COLOR_YELLOW='\e[0;33m'
 ANSI_COLOR_YELLOW_BG='\e[43m'
 ANSI_COLOR_BLUE='\e[0;34m'
@@ -705,7 +706,7 @@ _highlight_am_by_types() {
     am_lc="${am,,}" # make lower case
 
     case "${am_lc}" in
-    "${AM_TYPE_TODO}") color="${ANSI_COLOR_YELLOW_BG}" ;;
+    "${AM_TYPE_TODO}") color="${ANSI_COLOR_GREEN_BG}" ;;
     "${AM_TYPE_BUG}") color="${ANSI_COLOR_RED_BG}" ;;
     "${AM_TYPE_FIXME}") color="${ANSI_COLOR_YELLOW_BG}" ;;
     "${AM_TYPE_HACK}") color="${ANSI_COLOR_BLUE_BG}" ;;
