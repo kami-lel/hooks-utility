@@ -13,7 +13,11 @@ echo "Some Error Message Content" | hooks_utility_error
 
 # default to file  =============================================================
 echo "default to file" | hooks_utility_padding_centered '='
+
 echo "Some Error Message Content" | hooks_utility_error 2>"${tmp}"
+cat "${tmp}"
+
+echo "Some Info Message Content" | hooks_utility_info 1>"${tmp}"
 cat "${tmp}"
 
 # use -c  ======================================================================

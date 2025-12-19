@@ -158,11 +158,16 @@ _colorful_print() {
 
     # BUG it doesn't disable color when print to file
 
-    echo "${target_fd}" # HACK
-
     # decide if use color by config
-    local -i use_color=1
+    local use_color=0
     ((ENABLE_ANSI_COLOR)) && [[ -t "$target_fd" ]] && use_color=1
+
+    if [[ -t "$target_fd" ]]; then
+        is_tty=1
+    else
+        is_tty=0
+    fi
+    printf 'color=%d target_fd=%d is_term=%s\n' "${use_color}" "${target_fd}" "${is_tty}" # HACK
 
     # parse  -c and -C
     # TODO parse use color
@@ -296,6 +301,13 @@ _print_log_message() {
     ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge 40 ]] && target_fd=2
     # FIXME rm this
     ((ENABLE_ANSI_COLOR)) && [[ -t "$target_fd" ]] && use_color=1
+
+    if [[ -t "$target_fd" ]]; then
+        is_tty=1
+    else
+        is_tty=0
+    fi
+    printf 'color=%d target_fd=%d is_term=%s\n' "${use_color}" "${target_fd}" "${is_tty}" # HACK
 
     # parse inputs  ------------------------------------------------------------
     local message
