@@ -19,7 +19,6 @@ hooks_utility_protect_branch
 hooks_utility_ensure_changelog_edited "CHANGELOG.md"
 
 # ensure project version number is updated
-# Todo need test
 hooks_utility_ensure_version_updated "hooks_utility.sh" 10
 
 # make sure hooks_utility.sh contains no AM
