@@ -824,7 +824,7 @@ hooks_utility_ensure_file_modification() {
             hooks_utility_pass "${EFM_DISPLAY_NAME}"
         return 0
     else
-        printf 're %s: %s' "${filename}" "${message}" |
+        printf '%s\n%s' "${filename}" "${message}" |
             hooks_utility_fail "${EFM_DISPLAY_NAME}"
         return 1
     fi
@@ -878,10 +878,9 @@ hooks_utility_ensure_line_modification() {
 # EXAMPLE:
 #   hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 hooks_utility_ensure_changelog_edited() {
-    # TODO need test
     hooks_utility_ensure_file_modification "${1}" \
         'merge-binary-finish_feature' \
-        "record changes of this feature branch"
+        "must record changes of this feature branch"
 
     return "$?"
 }
@@ -907,7 +906,6 @@ hooks_utility_ensure_changelog_edited() {
 hooks_utility_ensure_version_updated() {
     # todo use ensure_line_modification() instead
 
-    # TODO need test
     local filename line
     filename="${1}"
     line="${2}"
@@ -915,7 +913,7 @@ hooks_utility_ensure_version_updated() {
     hooks_utility_ensure_line_modification \
         "${filename}" "${line}" "${line}" \
         'merge-binary-release' \
-        "update project version in the file"
+        "must update project version"
 
     return "$?"
 }
