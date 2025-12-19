@@ -74,9 +74,6 @@ hooks_utility_colorful_print() {
     done
     shift $((OPTIND - 1))
 
-    # parse args  --------------------------------------------------------------
-    local color="${1}"
-
     # perform by calling internal  ---------------------------------------------
     _colorful_print_with_target_fd "${1}" 1 "${lc_c_flag}" "${uc_c_flag}"
     return "$?"
@@ -173,7 +170,7 @@ _colorful_print_with_target_fd() {
 
     message=$(cat -) # read from stdin
 
-    # decide print color  ------------------------------------------------------
+    # actually print  ---------------------------------------------------------
     local content
     # decide if coloring
     if ((use_color)); then
@@ -181,7 +178,15 @@ _colorful_print_with_target_fd() {
     else
         content="${message}"
     fi
-    printf "%b" "$content"
+
+    # decide stdout or stderr
+    if [[ ${target_fd} == 1 ]]; then
+        # print to stdout
+        printf "%b" "$content"
+    else
+        # print to stderr
+        printf "%b" "$content" >&2
+    fi
 
     return 0
 }
@@ -281,15 +286,12 @@ PREFIX_ERROR_FAIL="FAIL "
 DATE_FORMAT="%Y-%m-%d"
 TIME_FORMAT="%H:%M:%S"
 
-# Fixme no ":" when message is empty
 # helper functions  ============================================================
 _print_log_message() {
-    # FIXME utilize _colorful_print()
-
-    # filtering by log level
     local -i level="$1"
     shift
 
+    # filtering (skip) by log level
     if [[ level -lt LOGGING_LEVEL ]]; then
         # this message is filtered out
         return 0
@@ -297,9 +299,8 @@ _print_log_message() {
 
     # parse inputs  ------------------------------------------------------------
     # consider configurations
-    local target_fd=1 use_color=0
+    local target_fd=1
     ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge 40 ]] && target_fd=2
-    ((ENABLE_ANSI_COLOR)) && [[ -t "$target_fd" ]] && use_color=1
 
     local message
     message=$(cat -) # read from stdin
@@ -321,9 +322,26 @@ _print_log_message() {
     # parse args
     local source_arg="${1-}"
 
-    # decide prefix tag & color based on level  --------------------------------
-    # create prefix part w/ coloring
+    # print date/time part  ---------------------------------------------------
+    local timestamp=""
 
+    local date_time_format=""
+    if ((d_flag && t_flag)); then
+        date_time_format="${DATE_FORMAT} ${TIME_FORMAT} "
+    elif ((d_flag)); then
+        date_time_format="${DATE_FORMAT} "
+    elif ((t_flag)); then
+        date_time_format="${TIME_FORMAT} "
+    fi
+
+    if [[ -n ${date_time_format} ]]; then # print only needed
+        printf "%(${date_time_format})T" -1 |
+            _colorful_print_with_target_fd \
+                "${ANSI_COLOR_BLACK}" "${target_fd}" \
+                "${lc_c_flag}" "${uc_c_flag}"
+    fi
+
+    # print prefix part  -------------------------------------------------------
     local prefix prefix_color
     case "$level" in
     10) # debug
@@ -360,39 +378,14 @@ _print_log_message() {
         ;;
     esac
 
+    prefix="$(printf '%s' "${prefix_tag}" |
+        hooks_utility_colorful_print "${prefix_color}")"
+    # TODO
+
+    return 0
+
+    # decide prefix tag & color based on level  --------------------------------
     # create prefix part w/ coloring
-    if ((use_color)); then
-        prefix="$(printf '%s' "${prefix_tag}" |
-            hooks_utility_colorful_print "${prefix_color}")"
-        # TODO
-    else
-        prefix="${prefix_tag}"
-    fi
-
-    # create date/time part  ---------------------------------------------------
-    local timestamp=""
-
-    local date_time_format=""
-    if ((d_flag && t_flag)); then
-        date_time_format="${DATE_FORMAT} ${TIME_FORMAT} "
-    elif ((d_flag)); then
-        date_time_format="${DATE_FORMAT} "
-    elif ((t_flag)); then
-        date_time_format="${TIME_FORMAT} "
-    fi
-
-    # create date/time part w/ coloring
-    if ((use_color)); then
-        date_time_format="$(printf '%s' "${date_time_format}" |
-            hooks_utility_print_in_black)"
-
-        # TODO
-    fi
-
-    # populate format w/ current time
-    if [[ -n ${date_time_format} ]]; then
-        printf -v timestamp "%(${date_time_format})T" -1
-    fi
 
     # create source part  ------------------------------------------------------
     local source=""
@@ -400,6 +393,7 @@ _print_log_message() {
         source="(${source_arg})"
     fi
 
+    # FIXME no ":" when message is empty
     # actually print  ----------------------------------------------------------
     local content="${timestamp}${prefix}${source}:\t${message}"
     if [[ ${target_fd} == 1 ]]; then
