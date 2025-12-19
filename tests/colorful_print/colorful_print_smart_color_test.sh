@@ -36,11 +36,11 @@ printf '\n'
 echo "use -c" | hooks_utility_padding_centered '='
 
 echo "Some Purple Content to Terminal" |
-    hooks_utility_colorful_print "${ANSI_COLOR_PURPLE}"
+    hooks_utility_colorful_print -c "${ANSI_COLOR_PURPLE}"
 printf '\n'
 
 echo "Some Cyan Content to File" |
-    hooks_utility_colorful_print "${ANSI_COLOR_CYAN}" 2>"${tmp}"
+    hooks_utility_colorful_print -c "${ANSI_COLOR_CYAN}" 2>"${tmp}"
 cat "${tmp}"
 printf '\n'
 
@@ -48,10 +48,10 @@ printf '\n'
 echo "use -C" | hooks_utility_padding_centered '='
 
 echo "Some Red Content to Terminal" |
-    hooks_utility_colorful_print "${ANSI_COLOR_RED}"
+    hooks_utility_colorful_print -C "${ANSI_COLOR_RED}"
 printf '\n'
 
 echo "Some Green Content to File" |
-    hooks_utility_colorful_print "${ANSI_COLOR_GREEN}" 2>"${tmp}"
+    hooks_utility_colorful_print -C "${ANSI_COLOR_GREEN}" 2>"${tmp}"
 cat "${tmp}"
 printf '\n'
