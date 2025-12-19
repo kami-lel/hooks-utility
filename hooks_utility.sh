@@ -820,7 +820,7 @@ hooks_utility_ensure_file_modification() {
     fi
 
     # proceed ensuring  ----------------------------------------------------
-    local result="(git diff -cached -- ${filename})"
+    local result="(git diff --cached --diff-filter=M -- ${filename})"
     if [[ -n $result ]]; then
         printf '%s' "${filename}" |
             hooks_utility_pass "${EFM_DISPLAY_NAME}"
