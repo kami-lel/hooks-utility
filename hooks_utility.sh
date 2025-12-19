@@ -226,14 +226,18 @@ _colorful_print_with_target_fd() {
 #   -C      never use ANSI coloring
 #
 # OUTPUT:
-#   print the formatted message to stdout;
-#   utilizing ANSI coloring if stdout is a console
+#   print the formatted message to:
+#
+#   - stdout: debug, enter, info, pass
+#   - stderr: warning, error, fail, critical
+#
+#   utilizing ANSI coloring if it is a console
 #
 # RETURN:
 #   0       success
 #
 # EXAMPLE:
-#   echo "some debug information" | hooks_utility_debug
+#   echo "some information" | hooks_utility_info
 #   echo "some debug information" | hooks_utility_debug -dt  "Main Component"
 hooks_utility_debug() {
     _print_log_message 10 "$@"
@@ -303,7 +307,7 @@ _print_log_message() {
     # parse inputs  ------------------------------------------------------------
     # consider configurations
     local target_fd=1
-    ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge 40 ]] && target_fd=2
+    ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge 30 ]] && target_fd=2
 
     local message_arg
     message_arg=$(cat -) # read from stdin
