@@ -14,21 +14,21 @@ echo "colorful print smart color test" | hooks_utility_padding_centered '#'
 # default to terminal  =========================================================
 echo "default to terminal" | hooks_utility_padding_centered '='
 
-echo "Some Red Content" | _colorful_print "${ANSI_COLOR_RED}" 1
+echo "Some Red Content" | hooks_utility_colorful_print "${ANSI_COLOR_RED}"
 printf '\n'
 
-echo "Some Green Content" | _colorful_print "${ANSI_COLOR_GREEN}" 1
+echo "Some Green Content" | hooks_utility_colorful_print "${ANSI_COLOR_GREEN}"
 printf '\n'
 
 # default to file  =============================================================
 echo "default to file" | hooks_utility_padding_centered '='
 
 echo "Some Yellow Content" |
-    _colorful_print "${ANSI_COLOR_YELLOW}" 1 2>"${tmp}"
+    hooks_utility_colorful_print "${ANSI_COLOR_YELLOW}" 1>"${tmp}"
 cat "${tmp}"
 printf '\n'
 
-echo "Some Blue Content" | _colorful_print "${ANSI_COLOR_BLUE}" 1 2>"${tmp}"
+echo "Some Blue Content" | hooks_utility_colorful_print "${ANSI_COLOR_BLUE}" 1>"${tmp}"
 cat "${tmp}"
 printf '\n'
 
@@ -36,11 +36,11 @@ printf '\n'
 echo "use -c" | hooks_utility_padding_centered '='
 
 echo "Some Purple Content to Terminal" |
-    _colorful_print "${ANSI_COLOR_PURPLE}" 1
+    hooks_utility_colorful_print "${ANSI_COLOR_PURPLE}"
 printf '\n'
 
 echo "Some Cyan Content to File" |
-    _colorful_print "${ANSI_COLOR_CYAN}" 1 2>"${tmp}"
+    hooks_utility_colorful_print "${ANSI_COLOR_CYAN}" 2>"${tmp}"
 cat "${tmp}"
 printf '\n'
 
@@ -48,10 +48,10 @@ printf '\n'
 echo "use -C" | hooks_utility_padding_centered '='
 
 echo "Some Red Content to Terminal" |
-    _colorful_print "${ANSI_COLOR_RED}" 1
+    hooks_utility_colorful_print "${ANSI_COLOR_RED}"
 printf '\n'
 
 echo "Some Green Content to File" |
-    _colorful_print "${ANSI_COLOR_GREEN}" 1 2>"${tmp}"
+    hooks_utility_colorful_print "${ANSI_COLOR_GREEN}" 2>"${tmp}"
 cat "${tmp}"
 printf '\n'

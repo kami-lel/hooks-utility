@@ -63,17 +63,34 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 # EXAMPLE:
 #   echo "content in red" | hooks_utility_colorful_print "\e[0;31m"
 hooks_utility_colorful_print() {
-    local color message
 
-    message=$(cat -) # read from stdin
-    color="${1}"
+    # HACK
+    # local color message
 
-    printf "%b" "${color}${message}${ANSI_RESET}"
+    # message=$(cat -) # read from stdin
+    # color="${1}"
 
-    return 0
+    # printf "%b" "${color}${message}${ANSI_RESET}"
 
-    # FIXME use calling
-    _colorful_print "${1}" 1 1 "$@"
+    # return 0
+
+    # parse opn  ---------------------------------------------------------------
+    local -i lc_c_flag=0 uc_c_flag=0
+    OPTIND=1
+    while getopts ":cC" opt; do
+        case "$opt" in
+        c) lc_c_flag=1 ;;
+        C) uc_c_flag=1 ;;
+        \?) ;; # ignore invalid options
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    # parse args  --------------------------------------------------------------
+    local color="${1}"
+
+    # perform by calling internal  ---------------------------------------------
+    _colorful_print_with_target_fd "${1}" 1 "${lc_c_flag}" "${uc_c_flag}"
     return "$?"
 }
 
@@ -149,42 +166,35 @@ ANSI_COLOR_WHITE='\e[0;37m'
 ANSI_RESET='\e[0m'
 
 # helper methods  ==============================================================
-_colorful_print() {
-    local target_fd message color
-
+_colorful_print_with_target_fd() {
+    local color
+    local -i target_fd lc_c_flag uc_c_flag
     color="${1}"
     target_fd="${2}"
-    shift 2
+    lc_c_flag="${3}"
+    uc_c_flag="${4}"
 
-    # BUG it doesn't disable color when print to file
-
-    # decide if use color by config
+    # decide color by config  --------------------------------------------------
     local use_color=0
     ((ENABLE_ANSI_COLOR)) && [[ -t "$target_fd" ]] && use_color=1
-
-    if [[ -t "$target_fd" ]]; then
-        is_tty=1
-    else
-        is_tty=0
+    if ((lc_c_flag)); then
+        use_color=1
+    elif ((uc_c_flag)); then
+        use_color=0
     fi
-    printf 'color=%d target_fd=%d is_term=%s\n' "${use_color}" "${target_fd}" "${is_tty}" # HACK
-
-    # parse  -c and -C
-    # TODO parse use color
-    OPTIND=1
-    while getopts ":cC" opt; do
-        case "$opt" in
-        c) use_color=1 ;;
-        C) use_color=0 ;;
-        \?) ;; # ignore invalid options
-        esac
-    done
-    shift $((OPTIND - 1))
 
     message=$(cat -) # read from stdin
 
-    local content="${color}${message}${ANSI_RESET}"
+    # decide print color  ------------------------------------------------------
+    local content
+    # decide if coloring
+    if ((use_color)); then
+        content="${color}${message}${ANSI_RESET}"
+    else
+        content="${message}"
+    fi
     printf "%b" "$content"
+
     return 0
 }
 
@@ -286,6 +296,7 @@ TIME_FORMAT="%H:%M:%S"
 # Fixme no ":" when message is empty
 # helper functions  ============================================================
 _print_log_message() {
+    # FIXME utilize _colorful_print()
     # filtering by log level
     local -i level="$1"
     local -a pass_opn=()
@@ -299,7 +310,6 @@ _print_log_message() {
     # consider configurations
     local target_fd=1 use_color=0
     ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge 40 ]] && target_fd=2
-    # FIXME rm this
     ((ENABLE_ANSI_COLOR)) && [[ -t "$target_fd" ]] && use_color=1
 
     if [[ -t "$target_fd" ]]; then
@@ -371,7 +381,6 @@ _print_log_message() {
     esac
 
     # create prefix part w/ coloring
-    # FIXME pass -c/-C to smart color
     if ((use_color)); then
         prefix="$(printf '%s' "${prefix_tag}" |
             hooks_utility_colorful_print "${prefix_color}")"
@@ -392,7 +401,6 @@ _print_log_message() {
     fi
 
     # create date/time part w/ coloring
-    # FIXME pass -c/-C to smart color
     if ((use_color)); then
         date_time_format="$(printf '%s' "${date_time_format}" |
             hooks_utility_print_in_black)"
