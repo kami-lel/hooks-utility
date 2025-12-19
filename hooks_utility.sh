@@ -183,8 +183,8 @@ _colorful_print() {
 
     message=$(cat -) # read from stdin
 
-    printf "%b" "${color}${message}${ANSI_RESET}"
-
+    local content="${color}${message}${ANSI_RESET}"
+    printf "%b" "$content"
     return 0
 }
 
