@@ -899,7 +899,7 @@ hooks_utility_ensure_version_updated() {
     pattern="${2}"
 
     hooks_utility_ensure_file_modified "${1}" \
-        'merge-binary-finish_feature' \
+        'merge-binary-release' \
         'must record changes of this feature branch' \
         "${pattern}"
 
