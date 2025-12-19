@@ -37,7 +37,6 @@ DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
 HOOKS_UTILITY_DISPLAY_NAME="HU"
 
 # ANSI colorful print  #########################################################
-# FIXME add -cC and terminal decision progress
 
 # generic print colorful function  =============================================
 # hooks_utility_colorful_print()
@@ -63,17 +62,6 @@ HOOKS_UTILITY_DISPLAY_NAME="HU"
 # EXAMPLE:
 #   echo "content in red" | hooks_utility_colorful_print "\e[0;31m"
 hooks_utility_colorful_print() {
-
-    # HACK
-    # local color message
-
-    # message=$(cat -) # read from stdin
-    # color="${1}"
-
-    # printf "%b" "${color}${message}${ANSI_RESET}"
-
-    # return 0
-
     # parse opn  ---------------------------------------------------------------
     local -i lc_c_flag=0 uc_c_flag=0
     OPTIND=1
