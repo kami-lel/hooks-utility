@@ -415,7 +415,6 @@ hooks_utility_padding_centered() {
 
 # constants  ===================================================================
 PADDING_MARGIN=2 # number of spaces surround the message text
-PADDING_PRINT_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:padding print"
 
 # helper functions  ============================================================
 # print space character,  as margin b/t padding & message to stdout
