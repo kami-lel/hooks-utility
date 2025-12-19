@@ -580,6 +580,7 @@ _parse_adding_padding() {
     return 0
 }
 
+# Todo need test
 # branch protection  ###########################################################
 # abbr. BP
 
@@ -792,7 +793,7 @@ hooks_utility_ensure_file_modification() {
         hooks_utility_error "${ENSURE_FILE_CHANGED_DISPLAY_NAME}"
     return 1
 
-    # Todo print as log
+    # todo print as log
 }
 
 # hooks_utility_ensure_line_modification()
@@ -820,29 +821,31 @@ hooks_utility_ensure_file_modification() {
 #           'merge-binary-finish_feature' \
 #           'must change algorithm per commit' \
 hooks_utility_ensure_line_modification() {
-    # TODO
+    # Todo write
     # Todo print as log
     return 1
 }
 
 # hooks_utility_ensure_changelog_edited()
 #
-# in pre-commit, ensure README file
+# in pre-commit, when merge to finish a feature branch,
+# ensure CHANGELOG file is edited to reflect
 #
 # USAGE:
-#   hooks_utility_ensure_changelog_edited FILE
+#   hooks_utility_ensure_changelog_edited CHANGELOG_FILE
+#
 #
 # ARGUMENT:
-#   README_FILE     file path of README file,
-#                   relative path to repo root
+#   CHANGELOG_FILE  file path of CHANGELOG file, relative path to repo root
 #
 # RETURN:
 #   0       success
 #   1       failure
 #
 # EXAMPLE:
-#   hooks_utility_ensure_changelog_edited 'README.md'
+#   hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 hooks_utility_ensure_changelog_edited() {
+    # Todo need test
     hooks_utility_ensure_file_modification "${1}" \
         'merge-binary-finish_feature' \
         "record changes of this feature branch"
@@ -869,6 +872,7 @@ hooks_utility_ensure_changelog_edited() {
 # EXAMPLE:
 #   hooks_utility_ensure_version_updated 'project.ini' 5
 hooks_utility_ensure_version_updated() {
+    # Todo need test
     local filename line
     filename="${1}"
     line="${2}"

@@ -10,12 +10,12 @@ printf '%s' "$(hooks_utility_colorful_print_pass) pre-commit" |
 
 exit 0
 
+# Fixme enable
+
 # perform branch protection
-# Todo need test
 hooks_utility_protect_branch
 
 # ensure CHANGELOG is edited
-# Todo need test
 hooks_utility_ensure_changelog_edited "CHANGELOG.md"
 
 # ensure project version number is updated
