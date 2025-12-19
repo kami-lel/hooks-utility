@@ -652,9 +652,6 @@ get_commit_type_at_pre_commit() {
 
 # perform git diff --cached, find all AMs, print to stdout
 _search_am_from_git_diff_cached() {
-
-    # BUG not printing correct content
-    # TODO highlighting
     local -i am_class="$1" # 1:primary AM, 2:secondary, 3: tertiary
 
     # decide which pattern to use
@@ -675,6 +672,9 @@ _search_am_from_git_diff_cached() {
         if [[ -n ${lines} ]]; then
             # print file name
             printf '%s' "${filename}" | hooks_utility_padding_left_just -c '-'
+            printf '%s' "${lines}"
+
+            # TODO print line w/ highlighting
         fi
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 }
