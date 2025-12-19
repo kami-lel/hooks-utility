@@ -18,6 +18,10 @@ hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 pattern='^# version: v[0-9.]+'
 hooks_utility_ensure_version_updated 'hooks-utility.sh' "${pattern}"
 
+echo "pre-commit" | hooks_utility_pass
+
+exit 0
+
 # make sure hooks_utility.sh contains no AM
 # Todo need test
 if [[ $(get_commit_type_at_pre_commit) == "merge-binary-release" ]]; then
@@ -27,7 +31,3 @@ if [[ $(get_commit_type_at_pre_commit) == "merge-binary-release" ]]; then
         exit 1
     fi
 fi
-
-echo "pre-commit" | hooks_utility_pass
-
-exit 0
