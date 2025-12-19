@@ -811,12 +811,8 @@ hooks_utility_ensure_file_modified() {
 
     commit_type=$(get_commit_type_at_pre_commit)
 
-    # print debug infor
-    printf 'args:\nfilename=%s\n' \
-        'commit_type_arg=%s\n' \
-        'commit_type=%s\n' \
-        'message=%s\n' \
-        'pattern=%s' \
+    # print debug info
+    printf 'args:\nfilename=%s\ncommit_type_arg=%s\ncommit_type=%s\nmessage=%s\npattern=%s' \
         "${filename}" \
         "${commit_type_arg}" \
         "${commit_type}" \
