@@ -21,8 +21,8 @@ hooks_utility_ensure_file_modification "CHANGELOG.md" \
     "merge-binary-release" \
     "must record CHANGELOG when publish a new release"
 
-# Todo example for line mods
-# Todo example for ensure file change for Version file
+# TODO example for line mods
+# TODO example for ensure file change for Version file
 
 printf '%s' "$(hooks_utility_colorful_print_pass) pre-commit" |
     hooks_utility_info
