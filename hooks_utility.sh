@@ -231,6 +231,7 @@ PREFIX_ERROR_FAIL="FAIL "
 DATE_FORMAT="%Y-%m-%d"
 TIME_FORMAT="%H:%M:%S"
 
+# Fixme no ":" when message is empty
 # helper functions  ============================================================
 _print_log_message() {
     # filtering by log level
@@ -550,7 +551,7 @@ _parse_adding_padding() {
 #   0   success: pass or skip checks
 #   1   failure: undesired AM detected
 hooks_utility_protect_branch() {
-    echo 'branch protection' | hooks_utility_enter "${BP_DISPLAY_NAME}"
+    echo "${BP_DISPLAY_NAME}" | hooks_utility_enter ''
 
     local commit_type
     commit_type=$(get_commit_type_at_pre_commit)
@@ -580,14 +581,13 @@ $(_search_am_from_git_diff_cached 2)"
             hooks_utility_fail "${BP_DISPLAY_NAME}"
         return 1
     else
-        echo 'branch protection' |
-            hooks_utility_pass "${BP_DISPLAY_NAME}"
+        echo "${BP_DISPLAY_NAME}" | hooks_utility_pass ''
         return 0
     fi
 }
 
 # constants  ===================================================================
-BP_DISPLAY_NAME="${HOOKS_UTILITY_DISPLAY_NAME}:BP"
+BP_DISPLAY_NAME='branch protection'
 
 PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
 SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
