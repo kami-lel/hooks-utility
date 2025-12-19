@@ -10,7 +10,7 @@
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
-echo 'log style message, basic tests' | hooks_utility_padding_left_just '#'
+echo 'log style message, basic tests' | hooks_utility_padding_centered '#'
 
 echo "Some Debugging Message Content" | hooks_utility_debug
 echo "Content of Informational Message" | hooks_utility_info

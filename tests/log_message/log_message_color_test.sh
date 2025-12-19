@@ -19,6 +19,8 @@ echo "Some Error Message Content" | hooks_utility_error
 # default to file  -------------------------------------------------------------
 echo "default to file" | hooks_utility_padding_centered '-'
 
+# BUG bad color
+# TODO write more / complete examples
 echo "Some Error Message Content" | hooks_utility_error 1>"${tmp}"
 cat "${tmp}"
 
