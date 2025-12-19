@@ -602,7 +602,6 @@ AM_TYPE_FIXME='fixme'
 AM_TYPE_HACK='hack'
 
 # helper functions  ============================================================
-# TODO organize order
 
 # get_commit_type_at_pre_commit()
 #
@@ -660,17 +659,6 @@ get_commit_type_at_pre_commit() {
     return 0
 }
 
-# convert AM class index [1~3] to pattern
-_am_class_index2pattern() {
-    local am_class="${1}"
-
-    case "${am_class}" in
-    1) echo "${PRIMARY_AM_PATTERN}" ;;
-    2) echo "${SECONDARY_AM_PATTERN}" ;;
-    3) echo "${TERTIARY_AM_PATTERN}" ;;
-    esac
-}
-
 # perform git diff --cached, find all AMs, print to stdout
 _search_am_from_git_diff_cached() {
     local -i am_class="$1" # 1:primary AM, 2:secondary, 3: tertiary
@@ -699,20 +687,15 @@ _search_am_from_git_diff_cached() {
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 }
 
-# add coloring of AM based on types
-_highlight_am_by_types() {
-    local am am_lc color
-    am="${1}"
-    am_lc="${am,,}" # make lower case
+# convert AM class index [1~3] to pattern
+_am_class_index2pattern() {
+    local am_class="${1}"
 
-    case "${am_lc}" in
-    "${AM_TYPE_TODO}") color="${ANSI_COLOR_GREEN_BG}" ;;
-    "${AM_TYPE_BUG}") color="${ANSI_COLOR_RED_BG}" ;;
-    "${AM_TYPE_FIXME}") color="${ANSI_COLOR_YELLOW_BG}" ;;
-    "${AM_TYPE_HACK}") color="${ANSI_COLOR_BLUE_BG}" ;;
+    case "${am_class}" in
+    1) echo "${PRIMARY_AM_PATTERN}" ;;
+    2) echo "${SECONDARY_AM_PATTERN}" ;;
+    3) echo "${TERTIARY_AM_PATTERN}" ;;
     esac
-
-    printf '%s' "${am}" | hooks_utility_colorful_print "${color}"
 }
 
 _highlight_am_line_in_git_diff_cached() {
@@ -729,6 +712,22 @@ _highlight_am_line_in_git_diff_cached() {
     else
         printf '%s\n' "${line}" # fallback
     fi
+}
+
+# add coloring of AM based on types
+_highlight_am_by_types() {
+    local am am_lc color
+    am="${1}"
+    am_lc="${am,,}" # make lower case
+
+    case "${am_lc}" in
+    "${AM_TYPE_TODO}") color="${ANSI_COLOR_GREEN_BG}" ;;
+    "${AM_TYPE_BUG}") color="${ANSI_COLOR_RED_BG}" ;;
+    "${AM_TYPE_FIXME}") color="${ANSI_COLOR_YELLOW_BG}" ;;
+    "${AM_TYPE_HACK}") color="${ANSI_COLOR_BLUE_BG}" ;;
+    esac
+
+    printf '%s' "${am}" | hooks_utility_colorful_print "${color}"
 }
 
 # ensure file modification  ####################################################
