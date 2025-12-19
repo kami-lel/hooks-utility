@@ -655,7 +655,7 @@ AM_TYPE_HACK='hack'
 # OUTPUT:
 #   commit type printed to stdout:
 #
-#   - 'normal': regular commit, and other non-merge commit
+#   - '': regular commit, and other non-merge commit
 #   - 'merge-binary': binary merge commit of 2 branches
 #
 #       - 'merge-binary-finish_feature': any branch (except main) -> dev branch
@@ -806,7 +806,7 @@ hooks_utility_ensure_file_modification() {
     commit_type_arg="$2"
     message="$3"
 
-    printf 're %s' "${filename}" | hooks_utility_enter "${EFM_DISPLAY_NAME}"
+    printf '%s' "${filename}" | hooks_utility_enter "${EFM_DISPLAY_NAME}"
 
     commit_type=$(get_commit_type_at_pre_commit)
     printf '\nfilename=%s\ncommit_type_arg=%s\ncommit_type=%s' \
@@ -827,10 +827,11 @@ hooks_utility_ensure_file_modification() {
                 hooks_utility_pass "${EFM_DISPLAY_NAME}"
             return 0
         fi
+        echo "${changed_file}" # HACK
     done < <(git diff --cached --name-only --diff-filter=M)
 
     # fail to find filename in changed file list
-    printf 're %s:%s' "${filename}" "${message}" |
+    printf 're %s: %s' "${filename}" "${message}" |
         hooks_utility_fail "${EFM_DISPLAY_NAME}"
     return 1
 }

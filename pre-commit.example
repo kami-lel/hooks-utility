@@ -17,6 +17,8 @@ hooks_utility_protect_branch
 # examples for ensure file modifications  --------------------------------------
 # make sure CHANGELOG.md is edited
 
+# example for Ensure File Modification  ----------------------------------------
+
 echo "pre-commit" | hooks_utility_pass
 
 exit 0
