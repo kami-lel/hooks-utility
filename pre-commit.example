@@ -19,7 +19,7 @@ hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 
 # make sure version is bumped when finish feature branch
 # a pattern that will match the line containing project version info
-version_line_pattern='"version"[[:space:]]*:[[:space:]]*"[0-9]+(\.[0-9]+)*'
+version_line_pattern='"version" : "[0-9.]+"'
 hooks_utility_ensure_version_updated 'proj.json' "${version_line_pattern}"
 
 echo "pre-commit" | hooks_utility_pass

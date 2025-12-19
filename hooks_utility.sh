@@ -828,8 +828,10 @@ hooks_utility_ensure_file_modified() {
 
     # proceed ensuring  ----------------------------------------------------
     local result
-    result="$(git diff --cached --unified=0 --no-color --diff-filter=M -- "${filename}")"
     local -i pass=0
+
+    result="$(git diff --cached --unified=0 --no-color --diff-filter=M -- "${filename}")"
+
     if [[ -n $result ]]; then
         printf 'find file modification:\n%s' "${result}" |
             hooks_utility_debug "${EFM_DISPLAY_NAME}"
@@ -845,7 +847,7 @@ hooks_utility_ensure_file_modified() {
         fi
     fi
 
-    if [[ $pass ]]; then
+    if ((pass)); then
         printf '%s' "${filename}" |
             hooks_utility_pass "${EFM_DISPLAY_NAME}"
         return 0
