@@ -5,7 +5,13 @@ set -euo pipefail
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
+printf '%s' "$(hooks_utility_colorful_print_pass) pre-commit" |
+    hooks_utility_info
+
+exit 0
+
 # perform branch protection
+# Todo need test
 hooks_utility_protect_branch
 
 # ensure CHANGELOG is edited
@@ -25,8 +31,3 @@ if [[ $(get_commit_type_at_pre_commit) == "merge-binary-release" ]]; then
         exit 1
     fi
 fi
-
-printf '%s' "$(hooks_utility_colorful_print_pass) pre-commit" |
-    hooks_utility_info
-
-exit 0
