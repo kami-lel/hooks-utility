@@ -166,8 +166,10 @@ KEYWORD_FAIL="FAIL"
 # hooks_utility_debug()
 # hooks_utility_enter()
 # hooks_utility_info()
+# hooks_utility_pass()
 # hooks_utility_warning()
 # hooks_utility_error()
+# hooks_utility_fail()
 # hooks_utility_critical()
 #
 # print message from stdin in log style message, prefixed with:
