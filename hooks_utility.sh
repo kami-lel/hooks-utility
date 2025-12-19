@@ -835,7 +835,7 @@ hooks_utility_ensure_file_modified() {
             hooks_utility_debug "${EFM_DISPLAY_NAME}"
 
         if [[ -n $pattern ]]; then # test for pattern
-            if printf '%s\n' "$result" | grep -E -x -q -- "$pattern"; then
+            if printf '%s\n' "$result" | grep -E -q -- "$pattern"; then
                 # BUG fail to find line
                 # pass test for file modified + pattern matched
                 fail=0
