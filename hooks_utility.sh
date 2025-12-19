@@ -772,42 +772,52 @@ _highlight_am_by_types() {
     printf '%s' "${am}" | hooks_utility_colorful_print -c "${color}"
 }
 
-# ensure file modification  ####################################################
+# ensure file modified  ####################################################
 #
 # abbr. EFM
 
-# hooks_utility_ensure_file_modification()
+# hooks_utility_ensure_file_modified()
 #
 # in pre-commit, ensure certain file(s) must be modified
 #
 # USAGE:
-#   hooks_utility_ensure_file_modification FILE COMMIT_TYPE MESSAGE
+#   hooks_utility_ensure_file_modified FILE COMMIT_TYPE MESSAGE [PATTERN]
 #
 # ARGUMENT:
 #   FILE            file which is required to be changed,
 #                   relative path to repo root
 #   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
 #   MESSAGE         reason to give when failing the test
+#   [LINE_PATTERN]  if provided, perform additional tests;
+#                   ensure at least one line from: git diff --cached FILENAME
+#                   will match this pattern, in Extended RE
 #
 # RETURN:
 #   0       success, FILE is edited; or skip b/c irrelevant COMMIT_TYPE
-#   1       failure, FILE hasn't been edited
+#   1       failure, FILE hasn't been edited or failed LINE_PATTERN
 #
 # EXAMPLE:
-#   hooks_utility_ensure_file_modification 'CHANGELOG.md' \
+#   hooks_utility_ensure_file_modified 'CHANGELOG.md' \
 #           'merge-binary-finish_feature' \
 #           'must record CHANGELOG when finish a feature branch' \
-hooks_utility_ensure_file_modification() {
+hooks_utility_ensure_file_modified() {
     local filename commit_type_arg message
     filename="$1"
     commit_type_arg="$2"
     message="$3"
+    pattern="${4:-}"
 
     printf '%s' "${filename}" | hooks_utility_enter "${EFM_DISPLAY_NAME}"
 
     commit_type=$(get_commit_type_at_pre_commit)
-    printf '\nfilename=%s\ncommit_type_arg=%s\ncommit_type=%s' \
-        "${filename}" "${commit_type_arg}" "${commit_type}" |
+
+    # print debug info
+    printf 'args:\nfilename=%s\ncommit_type_arg=%s\ncommit_type=%s\nmessage=%s\npattern=%s' \
+        "${filename}" \
+        "${commit_type_arg}" \
+        "${commit_type}" \
+        "${message}" \
+        "${pattern}" |
         hooks_utility_debug "${EFM_DISPLAY_NAME}"
 
     if [[ "${commit_type}" != ${commit_type_arg}* ]]; then
@@ -818,8 +828,24 @@ hooks_utility_ensure_file_modification() {
 
     # proceed ensuring  ----------------------------------------------------
     local result
-    result="$(git diff --cached --diff-filter=M -- "${filename}")"
+    result="$(git diff --cached --unified=0 --no-color --diff-filter=M -- "${filename}")"
+    local -i pass=0
     if [[ -n $result ]]; then
+        printf 'find file modification:\n%s' "${result}" |
+            hooks_utility_debug "${EFM_DISPLAY_NAME}"
+
+        if [[ -n $pattern ]]; then # test for pattern
+            if printf '%s' "$result" | grep -E -q -- "$pattern"; then
+                # pass test for file modified + pattern matched
+                pass=1
+            fi
+        else
+            # pass test for file modified
+            pass=1
+        fi
+    fi
+
+    if [[ $pass ]]; then
         printf '%s' "${filename}" |
             hooks_utility_pass "${EFM_DISPLAY_NAME}"
         return 0
@@ -828,35 +854,6 @@ hooks_utility_ensure_file_modification() {
             hooks_utility_fail "${EFM_DISPLAY_NAME}"
         return 1
     fi
-}
-
-# hooks_utility_ensure_line_modification()
-#
-# in pre-commit, ensure certain line(s) must be modified
-#
-# USAGE:
-#   hooks_utility_ensure_line_modification FILE START_LINE END_LINE \
-#           COMMIT_TYPE MESSAGE [PATTERN]
-#
-# ARGUMENT:
-#   FILE            file which is required to be changed,
-#                   relative path to repo root
-#   START_LINE      line number of start of check range in FILE
-#   END_LINE        line number of end of check range in FILE
-#   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
-#   MESSAGE         reason of failing this test
-#
-# RETURN:
-#   0       success, range in FILE is edited; or skip b/c irrelevant COMMIT_TYPE
-#   1       failure, range in FILE hasn't been edited
-#
-# EXAMPLE:
-#   hooks_utility_ensure_line_modification "code.py" 1 5 \
-#           'merge-binary-finish_feature' \
-#           'must change algorithm per commit' \
-hooks_utility_ensure_line_modification() {
-    # Todo write
-    return 1
 }
 
 # hooks_utility_ensure_changelog_edited()
@@ -878,7 +875,7 @@ hooks_utility_ensure_line_modification() {
 # EXAMPLE:
 #   hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 hooks_utility_ensure_changelog_edited() {
-    hooks_utility_ensure_file_modification "${1}" \
+    hooks_utility_ensure_file_modified "${1}" \
         'merge-binary-finish_feature' \
         "must record changes of this feature branch"
 
@@ -895,7 +892,8 @@ hooks_utility_ensure_changelog_edited() {
 # ARGUMENT:
 #   FILE            file which is required to be changed,
 #                   relative path to repo root
-#   LINE            line (in FILE) which version should be found
+#   LINE_PATTERN    an pattern that match the line containing the version,
+#                   in extended re
 #
 # RETURN:
 #   0       success
@@ -904,19 +902,18 @@ hooks_utility_ensure_changelog_edited() {
 # EXAMPLE:
 #   hooks_utility_ensure_version_updated 'project.ini' 5
 hooks_utility_ensure_version_updated() {
-    # Todo use ensure_line_modification() instead
 
     local filename line
     filename="${1}"
-    line="${2}"
+    pattern="${2}"
 
-    hooks_utility_ensure_line_modification \
-        "${filename}" "${line}" "${line}" \
+    hooks_utility_ensure_file_modified "${1}" \
         'merge-binary-release' \
-        "must update project version"
+        'must bump project version when release' \
+        "${pattern}"
 
     return "$?"
 }
 
 # constants  ===================================================================
-EFM_DISPLAY_NAME='Ensure File Modification'
+EFM_DISPLAY_NAME='Ensure File Modified'

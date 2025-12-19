@@ -10,17 +10,13 @@ echo "pre-commit" | hooks_utility_enter
 # perform branch protection
 hooks_utility_protect_branch
 
-echo "pre-commit" | hooks_utility_pass
+# ensure file modification  ----------------------------------------------------
+# make sure CHANGELOG.md is edited when finish feature branch
+hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 
-exit 0
-
-# Fixme enable
-
-# ensure CHANGELOG is edited
-hooks_utility_ensure_changelog_edited "CHANGELOG.md"
-
-# ensure project version number is updated
-hooks_utility_ensure_version_updated "hooks_utility.sh" 10
+# make sure version is bumped when finish feature branch
+pattern='^# version: v[0-9.]+'
+hooks_utility_ensure_version_updated 'hooks-utility.sh' "${pattern}"
 
 # make sure hooks_utility.sh contains no AM
 # Todo need test
@@ -31,3 +27,7 @@ if [[ $(get_commit_type_at_pre_commit) == "merge-binary-release" ]]; then
         exit 1
     fi
 fi
+
+echo "pre-commit" | hooks_utility_pass
+
+exit 0

@@ -196,7 +196,7 @@ it will be rejected if incoming branch contains disallowed AM.
 
 
 
-### ensure file modification
+### ensure file modified
 
 In `pre-commit`, ensure some file is edited.
 

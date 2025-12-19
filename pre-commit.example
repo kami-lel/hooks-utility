@@ -7,17 +7,20 @@ source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility/hooks_utility.sh"
 
 echo "pre-commit" | hooks_utility_enter
 
-printf "start pre-commit" | hooks_utility_debug
-
 # perform branch protection
 hooks_utility_protect_branch
 
-# Todo write example & demonstration, or mpv example
+# ensure file modification  ----------------------------------------------------
+# make sure working_note.txt is edited in all commit
+hooks_utility_ensure_file_modified 'working_note.txt' '' "remember to take note"
 
-# examples for ensure file modifications  --------------------------------------
-# make sure CHANGELOG.md is edited
+# make sure CHANGELOG.md is edited when finish feature branch
+hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 
-# example for Ensure File Modification  ----------------------------------------
+# make sure version is bumped when finish feature branch
+# a pattern that will match the line containing project version info
+version_line_pattern='"version"[[:space:]]*:[[:space:]]*"[0-9]+(\.[0-9]+)*'
+hooks_utility_ensure_version_updated 'proj.json' "${version_line_pattern}"
 
 echo "pre-commit" | hooks_utility_pass
 
