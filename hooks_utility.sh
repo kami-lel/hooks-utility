@@ -472,20 +472,15 @@ _print_padding_margin() {
 
 # print padding of the given count, to stdout
 _print_padding_of_count() {
-    local padding="$1"
-    local -i cnt="$2" use_color="$3"
+    local padding="${1}"
+    local -i cnt="${2}" lc_c_flag="${3}" uc_c_flag="${4}"
 
     # generating padding by cnt
     result=$(printf '%*s' "${cnt}" '' | tr ' ' "${padding}")
 
-    if ((use_color)); then
-        result="$(printf '%s' "${result}" |
-            hooks_utility_print_in_black)"
-        # TODO change
-
-    fi
-
-    printf '%b' "${result}"
+    printf '%s' "${result}" |
+        _colorful_print_with_target_fd \
+            "${ANSI_COLOR_BLACK}" 1 "${lc_c_flag}" "${uc_c_flag}"
 }
 
 # main logic for padding print
@@ -493,21 +488,17 @@ _parse_adding_padding() {
     local -i type="$1"
     shift
 
-    # consider configurations
-    local use_color=0
-    ((ENABLE_ANSI_COLOR)) && [[ -t 1 ]] && use_color=1
-
     # parse inputs  ------------------------------------------------------------
     local message
     message=$(cat --) # read from stdin
 
-    local -i nn_flag=0
+    local -i nn_flag=0 lc_c_flag=0 uc_c_flag=0
     # parse options
     OPTIND=1
     while getopts ":cCN" opt; do
         case "$opt" in
-        c) use_color=1 ;;
-        C) use_color=0 ;;
+        c) lc_c_flag=1 ;;
+        C) uc_c_flag=1 ;;
         N) nn_flag=1 ;;
         \?) ;; # ignore invalid options
         esac
@@ -549,22 +540,22 @@ _parse_adding_padding() {
             printf '%s' "${message}"
             _print_padding_margin
             _print_padding_of_count \
-                "${padding}" "${long_cnt}" "${use_color}"
+                "${padding}" "${long_cnt}" "${lc_c_flag}" "${uc_c_flag}"
             ;;
         1)
             _print_padding_of_count \
-                "${padding}" "${long_cnt}" "${use_color}"
+                "${padding}" "${long_cnt}" "${lc_c_flag}" "${uc_c_flag}"
             _print_padding_margin
             printf '%s' "${message}"
             ;;
         2)
             _print_padding_of_count \
-                "${padding}" "${short_cnt}" "${use_color}"
+                "${padding}" "${short_cnt}" "${lc_c_flag}" "${uc_c_flag}"
             _print_padding_margin
             printf '%s' "${message}"
             _print_padding_margin
             _print_padding_of_count \
-                "${padding}" "${long_cnt}" "${use_color}"
+                "${padding}" "${long_cnt}" "${lc_c_flag}" "${uc_c_flag}"
             ;;
         esac
     fi

@@ -4,7 +4,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility.sh"
 
 echo \
-"tests: padding print, basic  #################################################\
+    "tests: padding print, basic  #################################################\
 ##"
 
 echo "left just w/ #:"
@@ -20,7 +20,7 @@ echo "centered w/ odd width:"
 echo "Centering Heading" | hooks_utility_padding_centered "-"
 
 echo \
-"very long message  ===========================================================\
+    "very long message  ===========================================================\
 =="
 
 # left but message too long
@@ -43,48 +43,48 @@ eaibr" | hooks_utility_padding_left_just "-"
 echo "Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibu \
 ex" | hooks_utility_padding_centered "="
 
-
 echo \
-"test coloring  ===============================================================\
+    "test coloring  ===============================================================\
 =="
 
 tmp=$(mktemp)
 title='Title Name'
 
 echo \
-"default behavior to terminal  ------------------------------------------------\
+    "default behavior to terminal  ------------------------------------------------\
 --"
 
 echo "${title}" | hooks_utility_padding_left_just '#'
 
 echo \
-"default behavior to file  ----------------------------------------------------\
+    "default behavior to file  ----------------------------------------------------\
 --"
 
-echo "${title}" | hooks_utility_padding_right_just '#' 1> "${tmp}"
+echo "${title}" | hooks_utility_padding_right_just '#' 1>"${tmp}"
 cat "${tmp}"
 
 echo \
-"use -c  ----------------------------------------------------------------------\
+    "use -c  ----------------------------------------------------------------------\
 --"
 
 echo "${title}" | hooks_utility_padding_centered -c '#'
-echo "${title}" | hooks_utility_padding_centered -c '#' 1> "${tmp}"
+echo "${title}" | hooks_utility_padding_centered -c '#' 1>"${tmp}"
 cat "${tmp}"
 
 echo \
-"use -C  ----------------------------------------------------------------------\
+    "use -C  ----------------------------------------------------------------------\
 --"
 
 echo "${title}" | hooks_utility_padding_centered -C '#'
-echo "${title}" | hooks_utility_padding_centered -C '#' 1> "${tmp}"
+echo "${title}" | hooks_utility_padding_centered -C '#' 1>"${tmp}"
 cat "${tmp}"
 
-
 echo \
-"test -N  =====================================================================\
+    "test -N  =====================================================================\
 =="
 
 printf "BEFORE"
 echo "Title" | hooks_utility_padding_centered -N '-'
 printf "AFTER\n"
+
+# HACK split
