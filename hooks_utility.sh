@@ -794,7 +794,7 @@ _highlight_am_by_types() {
 #
 # RETURN:
 #   0       success, FILE is edited; or skip b/c irrelevant COMMIT_TYPE
-#   1       failure, FILE hasn't been edited
+#   1       failure, FILE hasn't been edited or failed LINE_PATTERN
 #
 # EXAMPLE:
 #   hooks_utility_ensure_file_modified 'CHANGELOG.md' \
@@ -829,7 +829,7 @@ hooks_utility_ensure_file_modified() {
     # proceed ensuring  ----------------------------------------------------
     local result
     result="$(git diff --cached --unified=0 --no-color --diff-filter=M -- "${filename}")"
-    local -i fail=1
+    local -i pass=0
     if [[ -n $result ]]; then
         printf 'find file modification:\n%s' "${result}" |
             hooks_utility_debug "${EFM_DISPLAY_NAME}"
@@ -837,23 +837,23 @@ hooks_utility_ensure_file_modified() {
         if [[ -n $pattern ]]; then # test for pattern
             if printf '%s' "$result" | grep -E -q -- "$pattern"; then
                 # pass test for file modified + pattern matched
-                fail=0
+                pass=1
             fi
         else
             # pass test for file modified
-            fail=0
+            pass=1
         fi
     fi
 
-    if [[ $fail ]]; then
-        printf '%s\n%s' "${filename}" "${message}" |
-            hooks_utility_fail "${EFM_DISPLAY_NAME}"
-    else
+    if [[ $pass ]]; then
         printf '%s' "${filename}" |
             hooks_utility_pass "${EFM_DISPLAY_NAME}"
+        return 0
+    else
+        printf '%s\n%s' "${filename}" "${message}" |
+            hooks_utility_fail "${EFM_DISPLAY_NAME}"
+        return 1
     fi
-
-    return "${fail}"
 }
 
 # hooks_utility_ensure_changelog_edited()
