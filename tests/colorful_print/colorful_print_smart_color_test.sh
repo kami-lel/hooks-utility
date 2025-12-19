@@ -13,8 +13,8 @@ echo "colorful print smart color test" | hooks_utility_padding_centered '#'
 # ENABLE_ANSI_COLOR=1  =========================================================
 enable_ansi_color_default="${ENABLE_ANSI_COLOR}"
 export ENABLE_ANSI_COLOR=1
-
 echo "ENABLE_ANSI_COLOR=1" | hooks_utility_padding_centered '='
+
 # default to terminal  ---------------------------------------------------------
 echo "default to terminal" | hooks_utility_padding_centered '-'
 
