@@ -837,10 +837,22 @@ hooks_utility_ensure_file_modified() {
             hooks_utility_debug "${EFM_DISPLAY_NAME}"
 
         if [[ -n $pattern ]]; then # test for pattern
-            if printf '%s' "$result" | grep -E -q -- "$pattern"; then
-                # pass test for file modified + pattern matched
-                pass=1
-            fi
+            while IFS= read -r line; do
+                case "$line" in
+                +*)
+                    l="${line#+}" # remove leading +
+                    # search the line for the pattern
+                    if [[ $l =~ $pattern ]]; then
+                        pass=1
+                        break
+                    fi
+                    ;;
+                *)
+                    # not a + line, skip
+                    continue
+                    ;;
+                esac
+            done <<<"$result"
         else
             # pass test for file modified
             pass=1
