@@ -17,3 +17,8 @@ hooks_utility_ensure_file_modification 'CHANGELOG.md' \
 hooks_utility_ensure_file_modification "CHANGELOG.md" \
     "merge-binary-release" \
     "must record CHANGELOG when publish a new release"
+
+printf '%s' "$(hooks_utility_colorful_print_pass) pre-commit" |
+    hooks_utility_info
+
+exit 0
