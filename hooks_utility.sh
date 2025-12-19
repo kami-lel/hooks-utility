@@ -378,7 +378,8 @@ _print_log_message() {
 
     # create date/time part w/ coloring
     if ((use_color)); then
-        date_time_format="${ANSI_COLOR_GREY}${date_time_format}${ANSI_RESET}"
+        date_time_format="$(printf '%s' "${date_time_format}" |
+            hooks_utility_print_in_black)"
     fi
 
     # populate format w/ current time
@@ -478,7 +479,9 @@ _print_padding_of_count() {
     result=$(printf '%*s' "${cnt}" '' | tr ' ' "${padding}")
 
     if ((use_color)); then
-        result="${ANSI_COLOR_GREY}${result}${ANSI_RESET}"
+        result="$(printf '%s' "${result}" |
+            hooks_utility_print_in_black)"
+
     fi
 
     printf '%b' "${result}"
