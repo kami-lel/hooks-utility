@@ -601,6 +601,7 @@ AM_TYPE_FIXME='fixme'
 AM_TYPE_HACK='hack'
 
 # helper functions  ============================================================
+# TODO organize order
 
 # get_commit_type_at_pre_commit()
 #
@@ -675,7 +676,7 @@ _search_am_from_git_diff_cached() {
 
     # decide which pattern to use
     local pattern
-    pattern="$(_am_index2pattern "${am_class}")"
+    pattern="$(_am_class_index2pattern "${am_class}")"
 
     # iterate each added & modified files
     while IFS= read -r -d '' filename; do
@@ -690,7 +691,7 @@ _search_am_from_git_diff_cached() {
 
             # print lines with AMs
             while IFS= read -r line || [ -n "$line" ]; do
-                _highlight_am_in_git_diff_line "${line}" "${pattern}"
+                _highlight_am_line_in_git_diff_cached "${line}" "${pattern}"
             done <<<"$lines"
 
         fi
@@ -713,17 +714,19 @@ _highlight_am_by_types() {
     printf '%s' "${am}" | hooks_utility_colorful_print "${color}"
 }
 
-_highlight_am_in_git_diff_line() {
-    local line pattern split_pattern
+_highlight_am_line_in_git_diff_cached() {
+    local line pattern split_pattern am_colored
     line="${1}"
     pattern="${2}"
 
     split_pattern="^(.*)(${pattern})(.*)$"
 
     if [[ $line =~ $split_pattern ]]; then
-        printf '%s\n%s\n%s\n' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "${BASH_REMATCH[3]}"
+        am_colored="$(_highlight_am_by_types "${BASH_REMATCH[2]}")"
+        printf '%s%s%s' \
+            "${BASH_REMATCH[1]}" "${am_colored}" "${BASH_REMATCH[3]}"
     else
-        printf '%s' "${line}"
+        printf '%s' "${line}" # fallback
     fi
 }
 
