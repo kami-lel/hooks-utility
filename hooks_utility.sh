@@ -527,7 +527,7 @@ _parse_adding_padding() {
     return 0
 }
 
-# TODO need complete
+# TODO need complete test
 # branch protection  ###########################################################
 # abbr. BP
 
@@ -576,7 +576,7 @@ $(_search_am_from_git_diff_cached 2)"
 
     # decide whether check is passed
     if [[ -n "${result}" ]]; then
-        # FIXME better working
+        # FIXME better wording
         # BUG not printing correct content
         printf 'undesired AM(s) in incoming branch:\n%s' "${result}" |
             hooks_utility_fail "${BP_DISPLAY_NAME}"
