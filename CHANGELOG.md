@@ -19,7 +19,10 @@
 ### Added
 
 - consolidate module *get commit types* with new conditional commands
-- *log style message*: `-D` flag
+- *log style message*:
+
+  - `-D` flag
+  - `hooks_utility_skip` function
 
 ### Changed
 
