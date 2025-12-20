@@ -648,8 +648,30 @@ hooks_utility_get_commit_type() {
     return 0
 }
 
-# TODO when ....
+# hooks_utility_is_binary_merge_commit()
+# hooks_utility_is_finish_feature_merge_commit()
+# hooks_utility_is_release_merge_commit()
+#
+# return whether the commit is a specific merge type
+#
+# USAGE:
+#   hooks_utility_is_binary_merge_commit
+#   hooks_utility_is_finish_feature_merge_commit
+#   hooks_utility_is_release_merge_commit
+#
+# RETURN:
+#   0   current commit is the specific merge type
+#   1   elsewise
+#
+# EXAMPLE:
+#   hooks_utility_is_binary_merge_commit && perform_some_function
+#
+# EXAMPLE:
+#   if hooks_utility_is_binary_merge_commit; then
+#       ~
+#   fi
 hooks_utility_is_binary_merge_commit() {
+    # TODO when ....
     return 0
 }
 
