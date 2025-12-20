@@ -198,6 +198,7 @@ _colorful_print_with_target_fd() {
 
 # hooks_utility_debug()
 # hooks_utility_enter()
+# hooks_utility_skip()
 # hooks_utility_info()
 # hooks_utility_pass()
 # hooks_utility_warning()
@@ -207,7 +208,7 @@ _colorful_print_with_target_fd() {
 #
 # print message from stdin in log style message, prefixed with:
 #
-# - "DEBUG" or "ENTER"
+# - "DEBUG" or "ENTER" or "SKIP "
 # - "INFO " or "PASS "
 # - "WARN "
 # - "ERROR" or "FAIL "
@@ -247,6 +248,11 @@ hooks_utility_debug() {
 
 hooks_utility_enter() {
     _print_log_message "${LOGGING_LEVEL_ENTER}" "$@"
+    return "$?"
+}
+
+hooks_utility_skip() {
+    _print_log_message "${LOGGING_LEVEL_SKIP}" "$@"
     return "$?"
 }
 

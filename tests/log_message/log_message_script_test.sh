@@ -14,6 +14,7 @@ echo 'log style message, test enter/pass/fail' |
 echo 'basic' | hooks_utility_padding_centered '='
 
 echo "Enter Some Script" | hooks_utility_enter
+echo "Skip Some Test" | hooks_utility_skip
 echo "Finish Some Script" | hooks_utility_pass
 echo "Fail Some Script" | hooks_utility_fail
 
