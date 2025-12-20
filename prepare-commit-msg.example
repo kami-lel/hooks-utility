@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# shellcheck source=/dev/null
+source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility/hooks_utility.sh"
+
+# start prepare-commit-msg  #####################################################
+echo "prepare-commit-msg" | hooks_utility_enter
+
+# finish prepare-commit-msg  ###################################################
+echo "prepare-commit-msg" | hooks_utility_pass
+
+exit 0
