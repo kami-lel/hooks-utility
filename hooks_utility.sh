@@ -586,12 +586,12 @@ _parse_adding_padding() {
 
 # get commit type  #############################################################
 
-# get_commit_type_at_pre_commit()
+# hooks_utility_get_commit_type()
 #
 # decide type of the commit
 #
 # USAGE:
-#   get_commit_type_at_pre_commit
+#   hooks_utility_get_commit_type
 #
 # PREREQUISITE:
 #   invoked within the `pre-commit` Git hook
@@ -608,8 +608,8 @@ _parse_adding_padding() {
 #   - 'merge-octopus': octopus merge commit of 3+ branches
 #
 # EXAMPLE:
-#   if [[ $( get_commit_type_at_pre_commit ) == "merge-binary" ]]
-get_commit_type_at_pre_commit() {
+#   if [[ $( hooks_utility_get_commit_type ) == "merge-binary" ]]
+hooks_utility_get_commit_type() {
     # FIXME add prefix hooks_utility & refactor
     local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
 
@@ -687,7 +687,7 @@ hooks_utility_protect_branch() {
     echo "${BP_DISPLAY_NAME}" | hooks_utility_enter ''
 
     local commit_type
-    commit_type=$(get_commit_type_at_pre_commit)
+    commit_type=$(hooks_utility_get_commit_type)
     printf 'commit_type=%s' "${commit_type}" |
         hooks_utility_debug "${BP_DISPLAY_NAME}"
 
@@ -825,7 +825,7 @@ _highlight_am_by_types() {
 # ARGUMENT:
 #   FILE            file which is required to be changed,
 #                   relative path to repo root
-#   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
+#   COMMIT_TYPE     when to perform check, q.v. hooks_utility_get_commit_type()
 #   MESSAGE         reason to give when failing the test
 #   [LINE_PATTERN]  if provided, perform additional tests;
 #                   ensure at least one line from: git diff --cached FILENAME
@@ -848,7 +848,7 @@ hooks_utility_ensure_file_modified() {
 
     printf '%s' "${filename}" | hooks_utility_enter "${EFM_DISPLAY_NAME}"
 
-    commit_type=$(get_commit_type_at_pre_commit)
+    commit_type=$(hooks_utility_get_commit_type)
 
     # print debug info
     printf 'args:\nfilename=%s\ncommit_type_arg=%s\ncommit_type=%s\nmessage=%s\npattern=%s' \
