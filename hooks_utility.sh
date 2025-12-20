@@ -255,6 +255,7 @@ hooks_utility_info() {
 }
 
 hooks_utility_pass() {
+    # TODO differentiate b/t info pass and debug pass
     _print_log_message "${LOGGING_LEVEL_PASS}" "$@"
     return "$?"
 }
