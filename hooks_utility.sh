@@ -1020,10 +1020,18 @@ ENSURE_VERSION_UPDATED_MSG='must Bump project Version'
 
 # hooks_utility_improve_commit_message()
 #
+# USAGE:
+#   hooks_utility_improve_commit_message COMMIT_EDITMSG_PATH
+#
+# PREREQUISITE:
+#   invoked within Git Hooks: prepare-commit-msg
 #
 # ARGUMENT:
-#   COMMIT_EDITMSG_PATH path of .git/COMMIT_EDITMSG
-#                       often provided as ${1} of prepare-commit-msg
+#   COMMIT_EDITMSG_PATH     path of .git/COMMIT_EDITMSG
+#                           often provided as ${1} to prepare-commit-msg
+#
+# EXAMPLE:
+#   hooks_utility_improve_commit_message "${1}"
 hooks_utility_improve_commit_message() {
     local commit_editmsg_path="${1}"
 
