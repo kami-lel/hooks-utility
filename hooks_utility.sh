@@ -1016,5 +1016,21 @@ ENSURE_VERSION_UPDATED_MSG='must Bump project Version'
 #   COMMIT_EDITMSG_PATH path of .git/COMMIT_EDITMSG
 #                       often provided as ${1} of prepare-commit-msg
 hooks_utility_improve_commit_message() {
+    local commit_editmsg_path="${1}"
+
     return 0 # TODO
+}
+
+_improve_commit_message_finish_feature() {
+    local default_msg
+    default_msg=$(cat -) # read from stdin
+
+    # TODO perform improvement
+    printf '%s' "${default_msg}"
+}
+
+_improve_commit_message_release() {
+    local default_msg=$(cat -) # read from stdin
+    # TODO perform improvement
+    printf '%s' "${default_msg}"
 }
