@@ -5,6 +5,7 @@ set -euo pipefail
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility/hooks_utility.sh"
 
+# start pre-commit checks  #####################################################
 echo "pre-commit" | hooks_utility_enter
 
 # perform branch protection
@@ -22,6 +23,7 @@ hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 version_line_pattern='"version" : "[0-9.]+"'
 hooks_utility_ensure_version_updated 'proj.json' "${version_line_pattern}"
 
+# finish pre-commit checks  ####################################################
 echo "pre-commit" | hooks_utility_pass
 
 exit 0
