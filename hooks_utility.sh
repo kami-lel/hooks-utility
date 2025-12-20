@@ -672,15 +672,15 @@ hooks_utility_get_commit_type() {
 #       ~
 #   fi
 hooks_utility_is_binary_merge_commit() {
-    [[ "$(get_commit_type_at_pre_commit)" =~ "merge-binary"* ]]
+    [[ "$(hooks_utility_get_commit_type)" =~ "merge-binary"* ]]
 }
 
 hooks_utility_is_finish_feature_merge_commit() {
-    [[ "$(get_commit_type_at_pre_commit)" == "merge-binary-finish_feature" ]]
+    [[ "$(hooks_utility_get_commit_type)" == "merge-binary-finish_feature" ]]
 }
 
 hooks_utility_is_release_merge_commit() {
-    [[ "$(get_commit_type_at_pre_commit)" == "merge-binary-release" ]]
+    [[ "$(hooks_utility_get_commit_type)" == "merge-binary-release" ]]
 }
 
 # branch protection  ###########################################################
