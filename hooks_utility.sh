@@ -792,10 +792,13 @@ _highlight_am_by_types() {
 
 # hooks_utility_ensure_file_modified()
 #
-# in pre-commit, ensure certain file(s) must be modified
+# ensure certain file(s) must be modified
 #
 # USAGE:
 #   hooks_utility_ensure_file_modified FILE COMMIT_TYPE MESSAGE [PATTERN]
+#
+# PREREQUISITE:
+#   invoked within the `pre-commit` Git hook
 #
 # ARGUMENT:
 #   FILE            file which is required to be changed,
@@ -886,12 +889,14 @@ hooks_utility_ensure_file_modified() {
 
 # hooks_utility_ensure_changelog_edited()
 #
-# in pre-commit, when merge to finish a feature branch,
+# when merge to finish a feature branch,
 # ensure CHANGELOG file is edited to reflect
 #
 # USAGE:
 #   hooks_utility_ensure_changelog_edited CHANGELOG_FILE
 #
+# PREREQUISITE:
+#   invoked within the `pre-commit` Git hook
 #
 # ARGUMENT:
 #   CHANGELOG_FILE  file path of CHANGELOG file, relative path to repo root
@@ -912,10 +917,13 @@ hooks_utility_ensure_changelog_edited() {
 
 # hooks_utility_ensure_version_updated()
 #
-# in pre-commit, ensure file containing version is updated when release
+# ensure file containing version is updated when release
 #
 # USAGE:
 #   hooks_utility_ensure_version_updated FILE LINE
+#
+# PREREQUISITE:
+#   invoked within the `pre-commit` Git hook
 #
 # ARGUMENT:
 #   FILE            file which is required to be changed,

@@ -18,6 +18,9 @@
 
 ### Added
 ### Changed
+
+- use `PREREQUISITE` in function documentations
+
 ### Deprecated
 ### Removed
 ### Fixed
