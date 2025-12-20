@@ -648,6 +648,7 @@ hooks_utility_get_commit_type() {
     return 0
 }
 
+# TODO tests
 # hooks_utility_is_binary_merge_commit()
 # hooks_utility_is_finish_feature_merge_commit()
 # hooks_utility_is_release_merge_commit()
