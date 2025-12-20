@@ -585,6 +585,64 @@ _parse_adding_padding() {
 }
 
 # get commit type  #############################################################
+
+# FIXME more docs
+# get_commit_type_at_pre_commit()
+#
+# in pre-commit, decide type of the commit
+#
+# OUTPUT:
+#   commit type printed to stdout:
+#
+#   - '': regular commit, and other non-merge commit
+#   - 'merge-binary': binary merge commit of 2 branches
+#
+#       - 'merge-binary-finish_feature': any branch (except main) -> dev branch
+#       - 'merge-binary-release': dev branch -> main branch
+#
+#   - 'merge-octopus': octopus merge commit of 3+ branches
+#
+# EXAMPLE:
+#   if [[ $( get_commit_type_at_pre_commit ) == "merge-binary" ]]
+get_commit_type_at_pre_commit() {
+    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
+
+    if ! [[ -f "${merge_head_dir}" ]]; then
+        # regular commit  ------------------------------------------------------
+        # include other non-merge commit types
+        printf ''
+    elif [[ $(wc -l <"${merge_head_dir}") -ne 1 ]]; then
+        # octopus merge  -------------------------------------------------------
+        printf 'merge-octopus'
+
+    else
+        # binary merge  --------------------------------------------------------
+
+        # find source_branch, i.e. branch which merge from
+        local source_sha source_branch
+        source_sha=$(cat "${merge_head_dir}")
+        source_branch=$(git name-rev --name-only "${source_sha}")
+
+        # find target_branch, i.e. branch which merge into
+        local target_branch
+        target_branch=$(git rev-parse --abbrev-ref HEAD)
+
+        # decide merge type
+        if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" &&
+            "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
+            printf 'merge-binary-finish_feature'
+
+        elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" &&
+            "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
+            printf 'merge-binary-release'
+        else
+            printf 'merge-binary'
+        fi
+    fi
+
+    return 0
+}
+
 # TODO when ....
 
 # branch protection  ###########################################################
@@ -661,65 +719,6 @@ AM_TYPE_FIXME='fixme'
 AM_TYPE_HACK='hack'
 
 # helper functions  ============================================================
-
-# FIXME more docs
-# get_commit_type_at_pre_commit()
-#
-# in pre-commit, decide type of the commit
-#
-# OUTPUT:
-#   commit type printed to stdout:
-#
-#   - '': regular commit, and other non-merge commit
-#   - 'merge-binary': binary merge commit of 2 branches
-#
-#       - 'merge-binary-finish_feature': any branch (except main) -> dev branch
-#       - 'merge-binary-release': dev branch -> main branch
-#
-#   - 'merge-octopus': octopus merge commit of 3+ branches
-#
-# EXAMPLE:
-#   if [[ $( get_commit_type_at_pre_commit ) == "merge-binary" ]]
-#
-# FIXME move
-get_commit_type_at_pre_commit() {
-    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
-
-    if ! [[ -f "${merge_head_dir}" ]]; then
-        # regular commit  ------------------------------------------------------
-        # include other non-merge commit types
-        printf ''
-    elif [[ $(wc -l <"${merge_head_dir}") -ne 1 ]]; then
-        # octopus merge  -------------------------------------------------------
-        printf 'merge-octopus'
-
-    else
-        # binary merge  --------------------------------------------------------
-
-        # find source_branch, i.e. branch which merge from
-        local source_sha source_branch
-        source_sha=$(cat "${merge_head_dir}")
-        source_branch=$(git name-rev --name-only "${source_sha}")
-
-        # find target_branch, i.e. branch which merge into
-        local target_branch
-        target_branch=$(git rev-parse --abbrev-ref HEAD)
-
-        # decide merge type
-        if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" &&
-            "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
-            printf 'merge-binary-finish_feature'
-
-        elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" &&
-            "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
-            printf 'merge-binary-release'
-        else
-            printf 'merge-binary'
-        fi
-    fi
-
-    return 0
-}
 
 # perform git diff --cached, find all AMs, print to stdout
 _search_am_from_git_diff_cached() {
