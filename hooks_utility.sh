@@ -1038,7 +1038,7 @@ hooks_utility_improve_commit_message() {
     return 0 # TODO
 }
 
-_improve_commit_message_finish_feature() {
+_improve_commit_msg_for_finish_feature() {
     local default_msg
     default_msg=$(cat -) # read from stdin
 
@@ -1046,7 +1046,7 @@ _improve_commit_message_finish_feature() {
     printf '%s' "${default_msg}"
 }
 
-_improve_commit_message_release() {
+_improve_commit_msg_for_release() {
     local default_msg
     default_msg=$(cat -) # read from stdin
 
