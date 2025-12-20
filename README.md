@@ -153,16 +153,15 @@ it will be rejected if incoming branch contains disallowed AM.
 
 ### ensure file modified
 
-In `pre-commit`, ensure some file is edited.
+Ensure some file is edited (entire file or certain lines) during commit.
 
 E.g., in `pre-commit`
 
 ```
-hooks_utility_ensure_file_edit 'CHANGELOG.md' 'merge-binary-finish_feature'
+hooks_utility_ensure_file_edit 'merge_note.txt' 'merge-binary'
 ```
 
-Ensure `CHANGELOG.md` is modified when finishing a feature branch
-and merge into `dev` branch.
+(Ensure `merge_note.txt` is modified when committing a binary merge.)
 
 
 
