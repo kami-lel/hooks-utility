@@ -168,7 +168,7 @@ and merge into `dev` branch.
 
 
 
-### improved commit message
+### improve commit message
 
 In `prepare-commit-msg`, %%%
 

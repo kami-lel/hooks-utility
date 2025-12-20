@@ -1007,5 +1007,8 @@ EFM_DISPLAY_NAME='Ensure File Modified'
 ENSURE_CHANGELOG_EDITED_MSG='must Record feature branch Implementation in changelog'
 ENSURE_VERSION_UPDATED_MSG='must Bump project Version'
 
-# improved commit message  #####################################################
+# improve commit message  ######################################################
+
+# hooks_utility_improve_commit_message()
+#
 # TODO
