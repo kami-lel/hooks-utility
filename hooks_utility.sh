@@ -1048,21 +1048,38 @@ ENSURE_VERSION_UPDATED_MSG='must Bump project Version'
 # EXAMPLE:
 #   hooks_utility_improve_commit_message "${1}"
 hooks_utility_improve_commit_message() {
-    local commit_editmsg_path="${1}"
-
     if hooks_utility_is_finish_feature_merge_commit; then
-        # TODO
+        _read_commit_msg "$@" |
+            _improve_commit_msg_for_finish_feature |
+            _write_commit_msg "$@"
         echo "${ICM_FEATURE_MESSAGE}" | hooks_utility_pass "${ICM_DISPLAY_NAME}"
         return 0
+
     elif hooks_utility_is_release_merge_commit; then
-        # TODO
+        _read_commit_msg "$@" |
+            _improve_commit_msg_for_release |
+            _write_commit_msg "$@"
+
         echo "${ICM_RELEASE_MESSAGE}" | hooks_utility_pass "${ICM_DISPLAY_NAME}"
         return 0
+
     else
-        # skip for trivial commit type  ========================================
+        # skip for trivial commit type
         echo "${ICM_TRIVIAL_MESSAGE}" | hooks_utility_skip "${ICM_DISPLAY_NAME}"
         return 0
     fi
+}
+
+_read_commit_msg() {
+    local commit_editmsg_path="${1}"
+    # TODO
+    printf "content"
+}
+
+_write_commit_msg() {
+    local commit_editmsg_path="${1}"
+    local improved
+    improved=$(cat -) # read from stdin
 }
 
 _improve_commit_msg_for_finish_feature() {
@@ -1071,6 +1088,8 @@ _improve_commit_msg_for_finish_feature() {
 
     # TODO perform improvement
     printf '%s' "${default_msg}"
+
+    return 0
 }
 
 _improve_commit_msg_for_release() {
@@ -1079,10 +1098,12 @@ _improve_commit_msg_for_release() {
 
     # TODO perform improvement
     printf '%s' "${default_msg}"
+
+    return 0
 }
 
 # constants  ===================================================================
 ICM_DISPLAY_NAME='Improve Commit Message'
 ICM_FEATURE_MESSAGE='for Finish Feature merge'
 ICM_RELEASE_MESSAGE='for Release merge'
-ICM_TRIVIAL_MESSAGE='for Release merge'
+ICM_TRIVIAL_MESSAGE='trivial commit type'
