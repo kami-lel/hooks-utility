@@ -97,33 +97,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility.sh"
 
 
 
-## Functionality
-
-### ANSI colorful print
-
-Utilize **ANSI color escape code** for printing:
-
-Use the generic function:
-
-```bash
-printf '%s' "Content in Red\n" | hooks_utility_colorful_print "\e[0;31m"
-```
-
-Use specific color:
-
-```bash
-printf '%s' "Content in Red\n" | hooks_utility_print_in_red
-```
-
-Print specific *keywords*:
-
-```bash
-hooks_utility_colorful_print_pass
-```
-
-
-
-
+## Main Functionalities
 
 ### log style message
 
@@ -140,26 +114,6 @@ Outputs:
 ```
 DEBUG:  Debug Message Content
 2025-10-12 16:23:16 WARN (MainScript):   Warning Message Content
-```
-
-
-
-
-
-### padding print
-
-Print the message from stdin with its right/left space filled with padding.
-
-E.g.:
-
-```bash
-echo "Book Title" | hooks_utility_padding_left_just '='
-```
-
-Output:
-
-```
-Book Title  ====================================================================
 ```
 
 
@@ -210,3 +164,88 @@ hooks_utility_ensure_file_edit 'CHANGELOG.md' 'merge-binary-finish_feature'
 Ensure `CHANGELOG.md` is modified when finishing a feature branch
 and merge into `dev` branch.
 
+
+
+
+
+
+
+
+
+
+
+
+
+## Auxiliary Functionalities
+
+### ANSI colorful print
+
+Utilize **ANSI color escape code** for printing:
+
+Use the generic function:
+
+```bash
+printf '%s' "Content in Red\n" | hooks_utility_colorful_print "\e[0;31m"
+```
+
+Use specific color:
+
+```bash
+printf '%s' "Content in Red\n" | hooks_utility_print_in_red
+```
+
+Print specific *keywords*:
+
+```bash
+hooks_utility_colorful_print_pass
+```
+
+
+
+
+
+
+
+
+
+
+
+### padding print
+
+Print the message from stdin with its right/left space filled with padding.
+
+E.g.:
+
+```bash
+echo "Book Title" | hooks_utility_padding_left_just '='
+```
+
+Output:
+
+```
+Book Title  ====================================================================
+```
+
+
+
+
+
+
+
+
+
+
+
+### get commit type
+
+Used in `pre-commit` hook, get commit type:
+
+```bash
+commit_type=$(hooks_utility_get_commit_type)
+```
+
+Or use a conditional command:
+
+```bash
+hooks_utility_is_binary_merge_commit && ~
+```

@@ -584,6 +584,107 @@ _parse_adding_padding() {
     return 0
 }
 
+# get commit type  #############################################################
+
+# hooks_utility_get_commit_type()
+#
+# decide type of the commit
+#
+# USAGE:
+#   hooks_utility_get_commit_type
+#
+# PREREQUISITE:
+#   invoked within the `pre-commit` Git hook
+#
+# OUTPUT:
+#   commit type printed to stdout:
+#
+#   - '': regular commit, and other non-merge commit
+#   - 'merge-binary': binary merge commit of 2 branches
+#
+#       - 'merge-binary-finish_feature': any branch (except main) -> dev branch
+#       - 'merge-binary-release': dev branch -> main branch
+#
+#   - 'merge-octopus': octopus merge commit of 3+ branches
+#
+# EXAMPLE:
+#   commit_type=$(hooks_utility_get_commit_type)
+hooks_utility_get_commit_type() {
+    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
+
+    if ! [[ -f "${merge_head_dir}" ]]; then
+        # regular commit  ------------------------------------------------------
+        # include other non-merge commit types
+        printf ''
+    elif [[ $(wc -l <"${merge_head_dir}") -ne 1 ]]; then
+        # octopus merge  -------------------------------------------------------
+        printf 'merge-octopus'
+
+    else
+        # binary merge  --------------------------------------------------------
+
+        # find source_branch, i.e. branch which merge from
+        local source_sha source_branch
+        source_sha=$(cat "${merge_head_dir}")
+        source_branch=$(git name-rev --name-only "${source_sha}")
+
+        # find target_branch, i.e. branch which merge into
+        local target_branch
+        target_branch=$(git rev-parse --abbrev-ref HEAD)
+
+        # decide merge type
+        if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" &&
+            "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
+            printf 'merge-binary-finish_feature'
+
+        elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" &&
+            "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
+            printf 'merge-binary-release'
+        else
+            printf 'merge-binary'
+        fi
+    fi
+
+    return 0
+}
+
+# hooks_utility_is_binary_merge_commit()
+# hooks_utility_is_finish_feature_merge_commit()
+# hooks_utility_is_release_merge_commit()
+#
+# return whether the commit is a specific merge type
+#
+# USAGE:
+#   hooks_utility_is_binary_merge_commit
+#   hooks_utility_is_finish_feature_merge_commit
+#   hooks_utility_is_release_merge_commit
+#
+# PREREQUISITE:
+#   invoked within the `pre-commit` Git hook
+#
+# RETURN:
+#   0   current commit is the specific merge type
+#   1   elsewise
+#
+# EXAMPLE:
+#   hooks_utility_is_binary_merge_commit && perform_some_function
+#
+# EXAMPLE:
+#   if hooks_utility_is_binary_merge_commit; then
+#       ~
+#   fi
+hooks_utility_is_binary_merge_commit() {
+    [[ "$(hooks_utility_get_commit_type)" =~ "merge-binary"* ]]
+}
+
+hooks_utility_is_finish_feature_merge_commit() {
+    [[ "$(hooks_utility_get_commit_type)" == "merge-binary-finish_feature" ]]
+}
+
+hooks_utility_is_release_merge_commit() {
+    [[ "$(hooks_utility_get_commit_type)" == "merge-binary-release" ]]
+}
+
 # branch protection  ###########################################################
 # abbr. BP
 
@@ -609,7 +710,7 @@ hooks_utility_protect_branch() {
     echo "${BP_DISPLAY_NAME}" | hooks_utility_enter ''
 
     local commit_type
-    commit_type=$(get_commit_type_at_pre_commit)
+    commit_type=$(hooks_utility_get_commit_type)
     printf 'commit_type=%s' "${commit_type}" |
         hooks_utility_debug "${BP_DISPLAY_NAME}"
 
@@ -658,62 +759,6 @@ AM_TYPE_FIXME='fixme'
 AM_TYPE_HACK='hack'
 
 # helper functions  ============================================================
-
-# get_commit_type_at_pre_commit()
-#
-# in pre-commit, decide type of the commit
-#
-# OUTPUT:
-#   commit type printed to stdout:
-#
-#   - '': regular commit, and other non-merge commit
-#   - 'merge-binary': binary merge commit of 2 branches
-#
-#       - 'merge-binary-finish_feature': any branch (except main) -> dev branch
-#       - 'merge-binary-release': dev branch -> main branch
-#
-#   - 'merge-octopus': octopus merge commit of 3+ branches
-#
-# EXAMPLE:
-#   if [[ $( get_commit_type_at_pre_commit ) == "merge-binary" ]]
-get_commit_type_at_pre_commit() {
-    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
-
-    if ! [[ -f "${merge_head_dir}" ]]; then
-        # regular commit  ------------------------------------------------------
-        # include other non-merge commit types
-        printf ''
-    elif [[ $(wc -l <"${merge_head_dir}") -ne 1 ]]; then
-        # octopus merge  -------------------------------------------------------
-        printf 'merge-octopus'
-
-    else
-        # binary merge  --------------------------------------------------------
-
-        # find source_branch, i.e. branch which merge from
-        local source_sha source_branch
-        source_sha=$(cat "${merge_head_dir}")
-        source_branch=$(git name-rev --name-only "${source_sha}")
-
-        # find target_branch, i.e. branch which merge into
-        local target_branch
-        target_branch=$(git rev-parse --abbrev-ref HEAD)
-
-        # decide merge type
-        if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" &&
-            "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
-            printf 'merge-binary-finish_feature'
-
-        elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" &&
-            "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
-            printf 'merge-binary-release'
-        else
-            printf 'merge-binary'
-        fi
-    fi
-
-    return 0
-}
 
 # perform git diff --cached, find all AMs, print to stdout
 _search_am_from_git_diff_cached() {
@@ -803,7 +848,7 @@ _highlight_am_by_types() {
 # ARGUMENT:
 #   FILE            file which is required to be changed,
 #                   relative path to repo root
-#   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
+#   COMMIT_TYPE     when to perform check, q.v. hooks_utility_get_commit_type()
 #   MESSAGE         reason to give when failing the test
 #   [LINE_PATTERN]  if provided, perform additional tests;
 #                   ensure at least one line from: git diff --cached FILENAME
@@ -826,7 +871,7 @@ hooks_utility_ensure_file_modified() {
 
     printf '%s' "${filename}" | hooks_utility_enter "${EFM_DISPLAY_NAME}"
 
-    commit_type=$(get_commit_type_at_pre_commit)
+    commit_type=$(hooks_utility_get_commit_type)
 
     # print debug info
     printf 'args:\nfilename=%s\ncommit_type_arg=%s\ncommit_type=%s\nmessage=%s\npattern=%s' \
