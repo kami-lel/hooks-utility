@@ -214,7 +214,7 @@ _colorful_print_with_target_fd() {
 # - "CRIT "
 #
 # USAGE:
-#   hooks_utility_* [-d] [-t] [-c|-C] [SOURCE]
+#   hooks_utility_* [-d] [-t] [-c|-C] [-D] [SOURCE]
 #
 # ARGUMENT:
 #   SOURCE      indicate reason/source of the message, as part of the message
@@ -224,6 +224,7 @@ _colorful_print_with_target_fd() {
 #   -t      contains current time
 #   -c      always use ANSI coloring
 #   -C      never use ANSI coloring
+#   -D      invoke with logging level of DEBUG, but display respective prefix
 #
 # OUTPUT:
 #   print the formatted message to:
@@ -255,7 +256,6 @@ hooks_utility_info() {
 }
 
 hooks_utility_pass() {
-    # TODO differentiate b/t info pass and debug pass
     _print_log_message "${LOGGING_LEVEL_PASS}" "$@"
     return "$?"
 }
@@ -305,33 +305,28 @@ TIME_FORMAT="%H:%M:%S"
 
 # helper functions  ============================================================
 _print_log_message() {
-    local -i level="$1"
-    shift
-
-    # filtering (skip) by log level
-    if [[ level -lt LOGGING_LEVEL ]]; then
-        # this message is filtered out
-        return 0
-    fi
-
-    # parse inputs  ------------------------------------------------------------
     # consider configurations
     local target_fd=1
     ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge ${LOGGING_LEVEL_ERROR} ]] &&
         target_fd=2
 
+    # parse inputs  ------------------------------------------------------------
+    local -i level="$1"
+    shift
+
     local message_arg
     message_arg=$(cat -) # read from stdin
 
     # parse opn
-    local -i d_flag=0 t_flag=0 lc_c_flag=0 uc_c_flag=0
+    local -i lc_d_flag=0 t_flag=0 lc_c_flag=0 uc_c_flag=0 uc_d_flag=0
     OPTIND=1
-    while getopts ":dtcC" opt; do
+    while getopts ":dtcCD" opt; do
         case "$opt" in
-        d) d_flag=1 ;;
+        d) lc_d_flag=1 ;;
         t) t_flag=1 ;;
         c) lc_c_flag=1 ;;
         C) uc_c_flag=1 ;;
+        D) uc_d_flag=1 ;;
         \?) ;; # ignore invalid options
         esac
     done
@@ -340,11 +335,19 @@ _print_log_message() {
     # parse args
     local source_arg="${1-}"
 
+    # filtering (skip) by log level  -------------------------------------------
+    if [[ level -lt LOGGING_LEVEL ]]; then
+        # this message is filtered out
+        return 0
+    fi
+
+    # TODO use uc_d_flag
+
     # print date/time part  ---------------------------------------------------
     local date_time_format=""
-    if ((d_flag && t_flag)); then
+    if ((lc_d_flag && t_flag)); then
         date_time_format="${DATE_FORMAT} ${TIME_FORMAT} "
-    elif ((d_flag)); then
+    elif ((lc_d_flag)); then
         date_time_format="${DATE_FORMAT} "
     elif ((t_flag)); then
         date_time_format="${TIME_FORMAT} "
