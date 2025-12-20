@@ -17,6 +17,9 @@
 ## [Unreleased]
 
 ### Added
+
+- consolidate module *get commit types* with new functions
+
 ### Changed
 
 - use `PREREQUISITE` in function documentations
