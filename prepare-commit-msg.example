@@ -7,8 +7,10 @@ COMMIT_MSG_PATH="${1}"
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility/hooks_utility.sh"
 
-# start prepare-commit-msg  #####################################################
+# start prepare-commit-msg  ####################################################
 echo "prepare-commit-msg" | hooks_utility_enter
+
+# TODO
 
 # finish prepare-commit-msg  ###################################################
 echo "prepare-commit-msg" | hooks_utility_pass
