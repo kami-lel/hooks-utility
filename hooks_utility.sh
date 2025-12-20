@@ -1011,4 +1011,10 @@ ENSURE_VERSION_UPDATED_MSG='must Bump project Version'
 
 # hooks_utility_improve_commit_message()
 #
-# TODO
+#
+# ARGUMENT:
+#   COMMIT_EDITMSG_PATH path of .git/COMMIT_EDITMSG
+#                       often provided as ${1} of prepare-commit-msg
+hooks_utility_improve_commit_message() {
+    return 0 # TODO
+}
