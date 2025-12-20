@@ -1070,16 +1070,28 @@ hooks_utility_improve_commit_message() {
     fi
 }
 
+# read COMMIT_EDITMSG and print non # lines to stdout
 _read_commit_msg() {
-    local commit_editmsg_path="${1}"
-    # TODO
-    printf "content"
+    # TODO req tests
+    local line trimmed
+    while IFS= read -r line || [ -n "$line" ]; do
+        # remove leading whitespace for comment detection
+        trimmed="${line#"${line%%[![:space:]]*}"}"
+        # if the first non-space character is '#', skip the line
+        if [ -n "$trimmed" ] && [ "${trimmed:0:1}" = "#" ]; then
+            continue
+        fi
+        printf '%s\n' "$line"
+    done <"${1}"
 }
 
+# read from stdin and write to COMMIT_EDITMSG
 _write_commit_msg() {
     local commit_editmsg_path="${1}"
     local improved
     improved=$(cat -) # read from stdin
+
+    # TODO
 }
 
 _improve_commit_msg_for_finish_feature() {
