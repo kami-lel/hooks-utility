@@ -14,6 +14,7 @@ echo 'log style message, test enter/pass/fail' |
 echo 'basic' | hooks_utility_padding_centered '='
 
 echo "Enter Some Script" | hooks_utility_enter
+echo "Skip Some Test" | hooks_utility_skip
 echo "Finish Some Script" | hooks_utility_pass
 echo "Fail Some Script" | hooks_utility_fail
 
@@ -23,6 +24,7 @@ echo "combined" | hooks_utility_padding_centered '='
 # source & date  ---------------------------------------------------------------
 echo "source & date" | hooks_utility_padding_centered '-'
 echo "Enter Some Script" | hooks_utility_enter -d "MainComponent"
+echo "Skip Some Test" | hooks_utility_skip -d "MainComponent"
 echo "Pass Some Script" | hooks_utility_pass -d "MainComponent"
 echo "Fail Some Script" | hooks_utility_fail -d "MainComponent"
 
@@ -31,6 +33,8 @@ echo "source & date-time" | hooks_utility_padding_centered '-'
 
 echo "Enter Some Script" |
     hooks_utility_enter -dt "Information Test Component from Main Script"
+echo "Skip Some Test" |
+    hooks_utility_skip -dt "Information Test Component from Main Script"
 echo "Pass Some Script" |
     hooks_utility_pass -dt "Information Test Component from Main Script"
 echo "Fail Some Script" |
@@ -41,6 +45,8 @@ echo "source & date & colors" | hooks_utility_padding_centered '-'
 
 echo "Enter Some Script" |
     hooks_utility_enter -dc "MainComponent"
+echo "Skip Some Test" |
+    hooks_utility_skip -dc "MainComponent"
 echo "Pass Some Script" |
     hooks_utility_pass -dc "MainComponent"
 echo "Fail Some Script" |

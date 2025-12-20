@@ -198,6 +198,7 @@ _colorful_print_with_target_fd() {
 
 # hooks_utility_debug()
 # hooks_utility_enter()
+# hooks_utility_skip()
 # hooks_utility_info()
 # hooks_utility_pass()
 # hooks_utility_warning()
@@ -207,7 +208,7 @@ _colorful_print_with_target_fd() {
 #
 # print message from stdin in log style message, prefixed with:
 #
-# - "DEBUG" or "ENTER"
+# - "DEBUG" or "ENTER" or "SKIP "
 # - "INFO " or "PASS "
 # - "WARN "
 # - "ERROR" or "FAIL "
@@ -250,6 +251,11 @@ hooks_utility_enter() {
     return "$?"
 }
 
+hooks_utility_skip() {
+    _print_log_message "${LOGGING_LEVEL_SKIP}" "$@"
+    return "$?"
+}
+
 hooks_utility_info() {
     _print_log_message "${LOGGING_LEVEL_INFO}" "$@"
     return "$?"
@@ -284,6 +290,7 @@ hooks_utility_critical() {
 # note: all of length 5
 PREFIX_ERROR_DEBUG="DEBUG"
 PREFIX_ERROR_INFO="INFO "
+PREFIX_ERROR_SKIP="SKIP "
 PREFIX_ERROR_WARNING="WARN "
 PREFIX_ERROR_ERROR="ERROR"
 PREFIX_ERROR_CRITICAL="CRIT "
@@ -293,6 +300,7 @@ PREFIX_ERROR_FAIL="FAIL "
 
 LOGGING_LEVEL_DEBUG=10
 LOGGING_LEVEL_ENTER=11
+LOGGING_LEVEL_SKIP=12
 LOGGING_LEVEL_INFO=20
 LOGGING_LEVEL_PASS=21
 LOGGING_LEVEL_WARNING=30
@@ -374,6 +382,10 @@ _print_log_message() {
         ;;
     "$LOGGING_LEVEL_ENTER")
         prefix_tag="$PREFIX_ERROR_ENTER"
+        prefix_color="$ANSI_COLOR_BLUE_BOLD"
+        ;;
+    "$LOGGING_LEVEL_SKIP")
+        prefix_tag="$PREFIX_ERROR_SKIP"
         prefix_color="$ANSI_COLOR_BLUE_BOLD"
         ;;
     "$LOGGING_LEVEL_INFO")
@@ -745,8 +757,8 @@ hooks_utility_protect_branch() {
         fi
         ;;
     *)
-        echo "skipped, trivial commit type" |
-            hooks_utility_debug "${BP_DISPLAY_NAME}"
+        echo "trivial commit type" |
+            hooks_utility_skip "${BP_DISPLAY_NAME}"
         return 0
         ;;
     esac
@@ -898,8 +910,8 @@ hooks_utility_ensure_file_modified() {
         hooks_utility_debug "${EFM_DISPLAY_NAME}"
 
     if [[ "${commit_type}" != ${commit_type_arg}* ]]; then
-        printf 'skipped, irrelevant commit type' |
-            hooks_utility_debug "${EFM_DISPLAY_NAME}"
+        printf 'irrelevant commit type' |
+            hooks_utility_skip "${EFM_DISPLAY_NAME}"
         return 0
     fi
 
