@@ -2,7 +2,8 @@
 
 a collections of utility functions for **git hooks**
 
-<!-- todo auto generate better commit/merge message -->
+<!-- Todo finish feature merge auto commit message -->
+<!-- Todo release auto commit message -->
 <!-- bug branch protection: \n in line get interpreted -->
 
 
