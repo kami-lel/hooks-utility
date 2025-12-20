@@ -751,8 +751,8 @@ hooks_utility_protect_branch() {
         fi
         ;;
     *)
-        echo "skipped, trivial commit type" |
-            hooks_utility_debug "${BP_DISPLAY_NAME}"
+        echo "trivial commit type" |
+            hooks_utility_skip "${BP_DISPLAY_NAME}"
         return 0
         ;;
     esac
@@ -904,8 +904,8 @@ hooks_utility_ensure_file_modified() {
         hooks_utility_debug "${EFM_DISPLAY_NAME}"
 
     if [[ "${commit_type}" != ${commit_type_arg}* ]]; then
-        printf 'skipped, irrelevant commit type' |
-            hooks_utility_debug "${EFM_DISPLAY_NAME}"
+        printf 'irrelevant commit type' |
+            hooks_utility_skip "${EFM_DISPLAY_NAME}"
         return 0
     fi
 
