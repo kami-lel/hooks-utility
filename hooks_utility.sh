@@ -586,10 +586,15 @@ _parse_adding_padding() {
 
 # get commit type  #############################################################
 
-# FIXME more docs
 # get_commit_type_at_pre_commit()
 #
-# in pre-commit, decide type of the commit
+# decide type of the commit
+#
+# USAGE:
+#   get_commit_type_at_pre_commit
+#
+# PREREQUISITE:
+#   invoked within the `pre-commit` Git hook
 #
 # OUTPUT:
 #   commit type printed to stdout:
