@@ -610,7 +610,6 @@ _parse_adding_padding() {
 # EXAMPLE:
 #   if [[ $( hooks_utility_get_commit_type ) == "merge-binary" ]]
 hooks_utility_get_commit_type() {
-    # FIXME add prefix hooks_utility & refactor
     local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
 
     if ! [[ -f "${merge_head_dir}" ]]; then
