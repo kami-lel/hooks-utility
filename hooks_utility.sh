@@ -910,7 +910,7 @@ hooks_utility_ensure_file_modified() {
 hooks_utility_ensure_changelog_edited() {
     hooks_utility_ensure_file_modified "${1}" \
         'merge-binary-finish_feature' \
-        "must record changes of this feature branch"
+        "${ENSURE_CHANGELOG_EDITED_MSG}"
 
     return "$?"
 }
@@ -945,7 +945,7 @@ hooks_utility_ensure_version_updated() {
 
     hooks_utility_ensure_file_modified "${1}" \
         'merge-binary-release' \
-        'must bump project version when release' \
+        "${ENSURE_VERSION_UPDATED_MSG}" \
         "${pattern}"
 
     return "$?"
@@ -953,3 +953,5 @@ hooks_utility_ensure_version_updated() {
 
 # constants  ===================================================================
 EFM_DISPLAY_NAME='Ensure File Modified'
+ENSURE_CHANGELOG_EDITED_MSG='must Record feature branch Implementation in changelog'
+ENSURE_VERSION_UPDATED_MSG='must Bump project Version'
