@@ -18,7 +18,7 @@
 
 ### Added
 
-- consolidate module *get commit types* with new functions
+- consolidate module *get commit types* with new conditional commands
 
 ### Changed
 
