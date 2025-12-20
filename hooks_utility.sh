@@ -1060,8 +1060,7 @@ hooks_utility_improve_commit_message() {
         return 0
     else
         # skip for trivial commit type  ========================================
-
-        echo "${ICM_TRIVIAL_MESSAGE}" | hooks_utility_debug "${ICM_DISPLAY_NAME}"
+        echo "${ICM_TRIVIAL_MESSAGE}" | hooks_utility_skip "${ICM_DISPLAY_NAME}"
         return 0
     fi
 }
