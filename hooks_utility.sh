@@ -305,14 +305,15 @@ TIME_FORMAT="%H:%M:%S"
 
 # helper functions  ============================================================
 _print_log_message() {
-    # consider configurations
-    local target_fd=1
-    ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge ${LOGGING_LEVEL_ERROR} ]] &&
-        target_fd=2
 
     # parse inputs  ------------------------------------------------------------
     local -i level="$1"
     shift
+
+    # consider configurations
+    local target_fd=1
+    ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge ${LOGGING_LEVEL_ERROR} ]] &&
+        target_fd=2
 
     local message_arg
     message_arg=$(cat -) # read from stdin
