@@ -610,6 +610,7 @@ _parse_adding_padding() {
 # EXAMPLE:
 #   if [[ $( get_commit_type_at_pre_commit ) == "merge-binary" ]]
 get_commit_type_at_pre_commit() {
+    # FIXME add prefix hooks_utility & refactor
     local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
 
     if ! [[ -f "${merge_head_dir}" ]]; then
@@ -649,6 +650,17 @@ get_commit_type_at_pre_commit() {
 }
 
 # TODO when ....
+hooks_utility_is_binary_merge_commit() {
+    return 0
+}
+
+hooks_utility_is_finish_feature_merge_commit() {
+    return 0
+}
+
+hooks_utility_is_release_merge_commit() {
+    return 0
+}
 
 # branch protection  ###########################################################
 # abbr. BP
