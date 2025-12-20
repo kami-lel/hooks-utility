@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+COMMIT_MSG_PATH="${1}"
+
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility/hooks_utility.sh"
 
