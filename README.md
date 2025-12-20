@@ -238,4 +238,14 @@ Book Title  ====================================================================
 
 ### get commit type
 
-<!-- TODO -->
+Used in `pre-commit` hook, get commit type:
+
+```bash
+commit_type=$(hooks_utility_get_commit_type)
+```
+
+Or use a conditional command:
+
+```bash
+hooks_utility_is_binary_merge_commit && ~
+```

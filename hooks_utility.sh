@@ -608,7 +608,7 @@ _parse_adding_padding() {
 #   - 'merge-octopus': octopus merge commit of 3+ branches
 #
 # EXAMPLE:
-#   if [[ $( hooks_utility_get_commit_type ) == "merge-binary" ]]
+#   commit_type=$(hooks_utility_get_commit_type)
 hooks_utility_get_commit_type() {
     local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
 
@@ -658,6 +658,9 @@ hooks_utility_get_commit_type() {
 #   hooks_utility_is_binary_merge_commit
 #   hooks_utility_is_finish_feature_merge_commit
 #   hooks_utility_is_release_merge_commit
+#
+# PREREQUISITE:
+#   invoked within the `pre-commit` Git hook
 #
 # RETURN:
 #   0   current commit is the specific merge type
