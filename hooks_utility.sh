@@ -584,6 +584,9 @@ _parse_adding_padding() {
     return 0
 }
 
+# get commit type  #############################################################
+# TODO when ....
+
 # branch protection  ###########################################################
 # abbr. BP
 
@@ -659,6 +662,7 @@ AM_TYPE_HACK='hack'
 
 # helper functions  ============================================================
 
+# FIXME more docs
 # get_commit_type_at_pre_commit()
 #
 # in pre-commit, decide type of the commit
@@ -676,6 +680,8 @@ AM_TYPE_HACK='hack'
 #
 # EXAMPLE:
 #   if [[ $( get_commit_type_at_pre_commit ) == "merge-binary" ]]
+#
+# FIXME move
 get_commit_type_at_pre_commit() {
     local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
 
