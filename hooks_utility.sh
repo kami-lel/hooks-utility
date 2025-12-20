@@ -305,14 +305,13 @@ TIME_FORMAT="%H:%M:%S"
 
 # helper functions  ============================================================
 _print_log_message() {
-
-    # parse inputs  ------------------------------------------------------------
-    local -i level="$1"
+    # parse inputs
+    local -i level_arg="$1"
     shift
 
     # consider configurations
     local target_fd=1
-    ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge ${LOGGING_LEVEL_ERROR} ]] &&
+    ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level_arg -ge ${LOGGING_LEVEL_ERROR} ]] &&
         target_fd=2
 
     local message_arg
@@ -336,13 +335,18 @@ _print_log_message() {
     # parse args
     local source_arg="${1-}"
 
-    # filtering (skip) by log level  -------------------------------------------
-    if [[ level -lt LOGGING_LEVEL ]]; then
+    # filtering (skip) by log level_arg  ---------------------------------------
+    local -i effective_level
+    if ((uc_d_flag)); then
+        effective_level="$LOGGING_LEVEL_DEBUG"
+    else
+        effective_level="$level_arg"
+    fi
+
+    if [[ effective_level -lt LOGGING_LEVEL ]]; then
         # this message is filtered out
         return 0
     fi
-
-    # TODO use uc_d_flag
 
     # print date/time part  ---------------------------------------------------
     local date_time_format=""
@@ -363,7 +367,7 @@ _print_log_message() {
 
     # print prefix part  -------------------------------------------------------
     local prefix_color
-    case "$level" in
+    case "$level_arg" in
     "$LOGGING_LEVEL_DEBUG")
         prefix_tag="$PREFIX_ERROR_DEBUG"
         prefix_color="$ANSI_COLOR_BLUE"
