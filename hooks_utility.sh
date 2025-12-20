@@ -1030,7 +1030,9 @@ _improve_commit_message_finish_feature() {
 }
 
 _improve_commit_message_release() {
-    local default_msg=$(cat -) # read from stdin
+    local default_msg
+    default_msg=$(cat -) # read from stdin
+
     # TODO perform improvement
     printf '%s' "${default_msg}"
 }
