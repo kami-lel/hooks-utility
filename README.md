@@ -168,6 +168,21 @@ and merge into `dev` branch.
 
 
 
+### improved commit message
+
+In `prepare-commit-msg`, %%%
+
+E.g., in `prepare-commit-msg`:
+
+```
+```
+
+<!-- TODO finish docs -->
+
+
+
+
+
 
 
 
