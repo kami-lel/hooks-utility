@@ -621,11 +621,11 @@ _parse_adding_padding() {
 # PREREQUISITE:
 #   invoked within Git Hooks:
 #
-# USAGE:
-#   hooks_utility_get_commit_type
-#
 #   - pre-commit
 #   - prepare-commit-msg
+#
+# USAGE:
+#   hooks_utility_get_commit_type
 #
 # OUTPUT:
 #   commit type printed to stdout:
@@ -896,7 +896,7 @@ _highlight_am_by_types() {
 # ensure certain file(s) must be modified
 #
 # PREREQUISITE:
-#   invoked within Git Hooks pre-commit
+#   - invoked within Git Hook: pre-commit
 #
 # USAGE:
 #   hooks_utility_ensure_file_modified FILE COMMIT_TYPE MESSAGE [PATTERN]
@@ -994,7 +994,7 @@ hooks_utility_ensure_file_modified() {
 # ensure CHANGELOG file is edited to reflect
 #
 # PREREQUISITE:
-#   invoked within Git Hooks: pre-commit
+#   - invoked within Git Hook: pre-commit
 #
 # USAGE:
 #   hooks_utility_ensure_changelog_edited CHANGELOG_FILE
@@ -1021,8 +1021,11 @@ hooks_utility_ensure_changelog_edited() {
 # ensure file containing version is updated when release
 #
 # PREREQUISITE:
-#   invoked within the `pre-commit` Git hook, and both environmental variable:
-#   PROJECT_VERSION_FILE and PROJECT_VERSION_LINE_PATTERN are set properly
+#   - invoked within Git Hook: pre-commit
+#   - environmental variables set:
+#
+#     - PROJECT_VERSION_FILE
+#     - PROJECT_VERSION_LINE_PATTERN are set properly
 #
 # USAGE:
 #   hooks_utility_ensure_version_updated FILE LINE
@@ -1175,3 +1178,4 @@ _improve_commit_msg_for_release() {
 
 # constants  ===================================================================
 ICM_DISPLAY_NAME='Improve Commit Message'
+ENSURE_VERSION_UPDATED_MSG='must bump Project Version'
