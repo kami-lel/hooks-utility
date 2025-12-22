@@ -1060,7 +1060,7 @@ hooks_utility_improve_commit_message() {
         branch=2
     fi
 
-    if $branch; then # skip for trivial commit type
+    if [[ $branch ]]; then # skip for trivial commit type
         echo "trivial commit type" |
             hooks_utility_skip "${ICM_DISPLAY_NAME}"
         return 0
@@ -1068,7 +1068,8 @@ hooks_utility_improve_commit_message() {
 
     # get git default message  ------------------------=------------------------
     # i.e. read from COMMIT_EDITMSG & get non # lines
-    local content_lines comment_lines
+    local content_lines=''
+    local comment_lines
 
     local line trimmed
     while IFS= read -r line || [ -n "$line" ]; do # loop per line
