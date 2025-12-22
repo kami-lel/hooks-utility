@@ -167,14 +167,13 @@ hooks_utility_ensure_file_edit 'merge_note.txt' 'merge-binary'
 
 ### improve commit message
 
-In `prepare-commit-msg`, %%%
+Provide automated improved commit message for specific types of merges.
 
 E.g., in `prepare-commit-msg`:
 
 ```
+hooks_utility_improve_commit_message "${1}"
 ```
-
-<!-- TODO finish docs -->
 
 
 
