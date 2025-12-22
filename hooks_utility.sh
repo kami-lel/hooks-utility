@@ -1172,15 +1172,19 @@ _improve_commit_msg_for_release() {
     local default_msg="${1}"
     default_msg=$(cat -) # read from stdin
 
-    # verify environment variable  ---------------------------------------------
-    # TODO
-
-    # find current project version  --------------------------------------------
     local version=''
-    # search each line in file
-    while IFS= read -r line; do
-        noop # HACK
-    done <<<"$result"
+    # find current project version  --------------------------------------------
+    if [[ -f "${PROJECT_VERSION_FILE}" ]]; then
+        while IFS= read -r line || [ -n "$line" ]; do
+            # search each line in file
+            if [[ $line =~ $PROJECT_VERSION_LINE_PATTERN ]]; then
+                version="${BASH_REMATCH[1]}"
+                echo "version found: ${version}" |
+                    hooks_utility_debug "${ICM_DISPLAY_NAME}"
+                break
+            fi
+        done <"${PROJECT_VERSION_FILE}"
+    fi
 
     # create commit msg  -------------------------------------------------------
     if [[ -n $version ]]; then
