@@ -29,6 +29,13 @@ ENABLE_SPLIT_OUTPUT_STREAM="${ENABLE_SPLIT_OUTPUT_STREAM:-1}"
 # 1=message of level >= 40 is sent to stderr, while rest is sent to stdout
 # 0=all messages are sent to stdout
 
+# file which contains version information of the project
+# relative to project root
+PROJECT_VERSION_FILE="${PROJECT_VERSION_FILE-}"
+# a Extended RE pattern which search in version file
+# with 1st capture group match the exact version information (w/o 'v' prefix)
+PROJECT_VERSION_LINE_PATTERN="${PROJECT_VERSION_LINE_PATTERN-}"
+
 # branch protection config  ----------------------------------------------------
 MAIN_BRANCH_NAME="${MAIN_BRANCH_NAME:-main}"
 DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
@@ -985,17 +992,12 @@ hooks_utility_ensure_changelog_edited() {
 #
 # ensure file containing version is updated when release
 #
+# PREREQUISITE:
+#   invoked within the `pre-commit` Git hook, and both environmental variable:
+#   PROJECT_VERSION_FILE and PROJECT_VERSION_LINE_PATTERN are set properly
+#
 # USAGE:
 #   hooks_utility_ensure_version_updated FILE LINE
-#
-# PREREQUISITE:
-#   invoked within the `pre-commit` Git hook
-#
-# ARGUMENT:
-#   FILE            file which is required to be changed,
-#                   relative path to repo root
-#   LINE_PATTERN    an pattern that match the line containing the version,
-#                   in extended re
 #
 # RETURN:
 #   0       success
@@ -1004,15 +1006,11 @@ hooks_utility_ensure_changelog_edited() {
 # EXAMPLE:
 #   hooks_utility_ensure_version_updated 'project.ini' 5
 hooks_utility_ensure_version_updated() {
-
-    local filename line
-    filename="${1}"
-    pattern="${2}"
-
-    hooks_utility_ensure_file_modified "${1}" \
+    hooks_utility_ensure_file_modified \
+        "${PROJECT_VERSION_FILE}" \
         'merge-binary-release' \
         "${ENSURE_VERSION_UPDATED_MSG}" \
-        "${pattern}"
+        "${PROJECT_VERSION_LINE_PATTERN}"
 
     return "$?"
 }

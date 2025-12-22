@@ -27,6 +27,7 @@
 ### Changed
 
 - use `PREREQUISITE` in function documentations
+- function of ensure version updated utilize environment variable
 
 ### Deprecated
 ### Removed
