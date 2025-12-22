@@ -1050,7 +1050,9 @@ ENSURE_VERSION_UPDATED_MSG='must Bump project Version'
 hooks_utility_improve_commit_message() {
     hooks_utility_enter "${ICM_DISPLAY_NAME}"
 
-    # decide branch by commit type  ============================================
+    local -r commit_editmsg_path="${1}"
+
+    # decide branch by commit type  --------------------------------------------
     local -i branch=0
     if hooks_utility_is_finish_feature_merge_commit; then
         branch=1
@@ -1058,34 +1060,59 @@ hooks_utility_improve_commit_message() {
         branch=2
     fi
 
-    #
+    if $branch; then # skip for trivial commit type
+        echo "trivial commit type" |
+            hooks_utility_skip "${ICM_DISPLAY_NAME}"
+        return 0
+    fi
 
-    # TODO return b/c pass
+    # get git default message  ------------------------=------------------------
+    # i.e. read from COMMIT_EDITMSG & get non # lines
+    local content_lines comment_lines
 
-    # subcommand branching  ====================================================
-    local default_msg
-
-    # actual branching  ========================================================
-}
-
-# read COMMIT_EDITMSG and print non # lines to stdout
-_read_commit_msg() {
-    # TODO req tests
     local line trimmed
-    while IFS= read -r line || [ -n "$line" ]; do
+    while IFS= read -r line || [ -n "$line" ]; do # loop per line
         # remove leading whitespace for comment detection
         trimmed="${line#"${line%%[![:space:]]*}"}"
-        # if the first non-space character is '#', skip the line
+
         if [ -n "$trimmed" ] && [ "${trimmed:0:1}" = "#" ]; then
-            continue
+            # append to comment_lines (preserve original line)
+            if [ -z "$comment_lines" ]; then
+                comment_lines="$line"
+            else
+                comment_lines="$comment_lines\n$line"
+            fi
+        else
+            # append to content_lines (preserve original line)
+            if [ -z "$content_lines" ]; then
+                content_lines="$line"
+            else
+                content_lines="$content_lines\n$line"
+            fi
         fi
-        printf '%s\n' "$line"
-    done <"${1}"
+    done <"${commit_editmsg_path}"
+
+    # actual branching  --------------------------------------------------------
+    case "${branch}" in
+    1)
+        _improve_commit_msg_for_finish_feature \
+            "${content_lines}" | _write_commit_msg "${comment_lines}"
+        echo 'for Finish Feature merge' |
+            hooks_utility_pass "${ICM_DISPLAY_NAME}"
+
+        ;;
+    2)
+        _improve_commit_msg_for_release \
+            "${content_lines}" | _write_commit_msg "${comment_lines}"
+        echo 'for Release merge' | hooks_utility_pass "${ICM_DISPLAY_NAME}"
+        ;;
+    esac
+
+    return 0
 }
 
 # read from stdin and write to COMMIT_EDITMSG
 _write_commit_msg() {
-    local commit_editmsg_path="${1}"
     local improved
     improved=$(cat -) # read from stdin
 
@@ -1114,6 +1141,3 @@ _improve_commit_msg_for_release() {
 
 # constants  ===================================================================
 ICM_DISPLAY_NAME='Improve Commit Message'
-ICM_FEATURE_MESSAGE='for Finish Feature merge'
-ICM_RELEASE_MESSAGE='for Release merge'
-ICM_TRIVIAL_MESSAGE='trivial commit type'
