@@ -18,6 +18,7 @@
 
 ### Added
 
+- module *get commit type*: provide automated improved commit message for specific types of merges
 - consolidate module *get commit types* with new conditional commands
 - *log style message*:
 
