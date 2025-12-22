@@ -29,6 +29,12 @@ ENABLE_SPLIT_OUTPUT_STREAM="${ENABLE_SPLIT_OUTPUT_STREAM:-1}"
 # 1=message of level >= 40 is sent to stderr, while rest is sent to stdout
 # 0=all messages are sent to stdout
 
+# file which contains version information of the project
+PROJECT_VERSION_FILE="${PROJECT_VERSION_FILE-}"
+# a Extended RE pattern which search in version file
+# with 1st capture group match the exact version information (w/o 'v' prefix)
+PROJECT_VERSION_LINE_PATTERN="${PROJECT_VERSION_LINE_PATTERN-}"
+
 # branch protection config  ----------------------------------------------------
 MAIN_BRANCH_NAME="${MAIN_BRANCH_NAME:-main}"
 DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
@@ -1010,6 +1016,8 @@ hooks_utility_ensure_changelog_edited() {
 }
 
 # hooks_utility_ensure_version_updated()
+#
+# Fixme use PROJECT_VERSION_FILE and PROJECT_VERSION_LINE_PATTERN
 #
 # ensure file containing version is updated when release
 #
