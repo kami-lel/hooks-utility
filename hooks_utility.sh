@@ -7,7 +7,7 @@ set -euo pipefail
 # a collections of utility functions for git hooks
 #
 # author:  kamiLeL
-# version: v2.0.0
+# version: v2.1.0
 ################################################################################
 
 # configurations  ##############################################################
@@ -28,6 +28,13 @@ LOGGING_LEVEL="${LOGGING_LEVEL:-20}"
 ENABLE_SPLIT_OUTPUT_STREAM="${ENABLE_SPLIT_OUTPUT_STREAM:-1}"
 # 1=message of level >= 40 is sent to stderr, while rest is sent to stdout
 # 0=all messages are sent to stdout
+
+# file which contains version information of the project
+# relative to project root
+PROJECT_VERSION_FILE="${PROJECT_VERSION_FILE-}"
+# a Extended RE pattern which search in version file
+# with 1st capture group match the exact version information (w/o 'v' prefix)
+PROJECT_VERSION_LINE_PATTERN="${PROJECT_VERSION_LINE_PATTERN-}"
 
 # branch protection config  ----------------------------------------------------
 MAIN_BRANCH_NAME="${MAIN_BRANCH_NAME:-main}"
@@ -198,6 +205,7 @@ _colorful_print_with_target_fd() {
 
 # hooks_utility_debug()
 # hooks_utility_enter()
+# hooks_utility_skip()
 # hooks_utility_info()
 # hooks_utility_pass()
 # hooks_utility_warning()
@@ -207,14 +215,14 @@ _colorful_print_with_target_fd() {
 #
 # print message from stdin in log style message, prefixed with:
 #
-# - "DEBUG" or "ENTER"
+# - "DEBUG" or "ENTER" or "SKIP "
 # - "INFO " or "PASS "
 # - "WARN "
 # - "ERROR" or "FAIL "
 # - "CRIT "
 #
 # USAGE:
-#   hooks_utility_* [-d] [-t] [-c|-C] [SOURCE]
+#   hooks_utility_* [-d] [-t] [-c|-C] [-D] [SOURCE]
 #
 # ARGUMENT:
 #   SOURCE      indicate reason/source of the message, as part of the message
@@ -224,6 +232,7 @@ _colorful_print_with_target_fd() {
 #   -t      contains current time
 #   -c      always use ANSI coloring
 #   -C      never use ANSI coloring
+#   -D      invoke with logging level of DEBUG, but display respective prefix
 #
 # OUTPUT:
 #   print the formatted message to:
@@ -246,6 +255,11 @@ hooks_utility_debug() {
 
 hooks_utility_enter() {
     _print_log_message "${LOGGING_LEVEL_ENTER}" "$@"
+    return "$?"
+}
+
+hooks_utility_skip() {
+    _print_log_message "${LOGGING_LEVEL_SKIP}" "$@"
     return "$?"
 }
 
@@ -283,6 +297,7 @@ hooks_utility_critical() {
 # note: all of length 5
 PREFIX_ERROR_DEBUG="DEBUG"
 PREFIX_ERROR_INFO="INFO "
+PREFIX_ERROR_SKIP="SKIP "
 PREFIX_ERROR_WARNING="WARN "
 PREFIX_ERROR_ERROR="ERROR"
 PREFIX_ERROR_CRITICAL="CRIT "
@@ -292,6 +307,7 @@ PREFIX_ERROR_FAIL="FAIL "
 
 LOGGING_LEVEL_DEBUG=10
 LOGGING_LEVEL_ENTER=11
+LOGGING_LEVEL_SKIP=12
 LOGGING_LEVEL_INFO=20
 LOGGING_LEVEL_PASS=21
 LOGGING_LEVEL_WARNING=30
@@ -304,33 +320,28 @@ TIME_FORMAT="%H:%M:%S"
 
 # helper functions  ============================================================
 _print_log_message() {
-    local -i level="$1"
+    # parse inputs
+    local -i level_arg="$1"
     shift
 
-    # filtering (skip) by log level
-    if [[ level -lt LOGGING_LEVEL ]]; then
-        # this message is filtered out
-        return 0
-    fi
-
-    # parse inputs  ------------------------------------------------------------
     # consider configurations
     local target_fd=1
-    ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level -ge ${LOGGING_LEVEL_ERROR} ]] &&
+    ((ENABLE_SPLIT_OUTPUT_STREAM)) && [[ level_arg -ge ${LOGGING_LEVEL_ERROR} ]] &&
         target_fd=2
 
     local message_arg
     message_arg=$(cat -) # read from stdin
 
     # parse opn
-    local -i d_flag=0 t_flag=0 lc_c_flag=0 uc_c_flag=0
+    local -i lc_d_flag=0 t_flag=0 lc_c_flag=0 uc_c_flag=0 uc_d_flag=0
     OPTIND=1
-    while getopts ":dtcC" opt; do
+    while getopts ":dtcCD" opt; do
         case "$opt" in
-        d) d_flag=1 ;;
+        d) lc_d_flag=1 ;;
         t) t_flag=1 ;;
         c) lc_c_flag=1 ;;
         C) uc_c_flag=1 ;;
+        D) uc_d_flag=1 ;;
         \?) ;; # ignore invalid options
         esac
     done
@@ -339,11 +350,24 @@ _print_log_message() {
     # parse args
     local source_arg="${1-}"
 
+    # filtering (skip) by log level_arg  ---------------------------------------
+    local -i effective_level
+    if ((uc_d_flag)); then
+        effective_level="$LOGGING_LEVEL_DEBUG"
+    else
+        effective_level="$level_arg"
+    fi
+
+    if [[ effective_level -lt LOGGING_LEVEL ]]; then
+        # this message is filtered out
+        return 0
+    fi
+
     # print date/time part  ---------------------------------------------------
     local date_time_format=""
-    if ((d_flag && t_flag)); then
+    if ((lc_d_flag && t_flag)); then
         date_time_format="${DATE_FORMAT} ${TIME_FORMAT} "
-    elif ((d_flag)); then
+    elif ((lc_d_flag)); then
         date_time_format="${DATE_FORMAT} "
     elif ((t_flag)); then
         date_time_format="${TIME_FORMAT} "
@@ -358,13 +382,17 @@ _print_log_message() {
 
     # print prefix part  -------------------------------------------------------
     local prefix_color
-    case "$level" in
+    case "$level_arg" in
     "$LOGGING_LEVEL_DEBUG")
         prefix_tag="$PREFIX_ERROR_DEBUG"
         prefix_color="$ANSI_COLOR_BLUE"
         ;;
     "$LOGGING_LEVEL_ENTER")
         prefix_tag="$PREFIX_ERROR_ENTER"
+        prefix_color="$ANSI_COLOR_BLUE_BOLD"
+        ;;
+    "$LOGGING_LEVEL_SKIP")
+        prefix_tag="$PREFIX_ERROR_SKIP"
         prefix_color="$ANSI_COLOR_BLUE_BOLD"
         ;;
     "$LOGGING_LEVEL_INFO")
@@ -584,6 +612,135 @@ _parse_adding_padding() {
     return 0
 }
 
+# get commit type  #############################################################
+
+# hooks_utility_get_commit_type()
+#
+# decide type of the commit
+#
+# PREREQUISITE:
+#   invoked within Git Hooks:
+#
+#   - pre-commit
+#   - prepare-commit-msg
+#
+# USAGE:
+#   hooks_utility_get_commit_type
+#
+# OUTPUT:
+#   commit type printed to stdout:
+#
+#   - '': regular commit, and other non-merge commit
+#   - 'merge-binary': binary merge commit of 2 branches
+#
+#       - 'merge-binary-finish_feature': any branch (except main) -> dev branch
+#       - 'merge-binary-release': dev branch -> main branch
+#
+#   - 'merge-octopus': octopus merge commit of 3+ branches
+#
+# EXAMPLE:
+#   commit_type=$(hooks_utility_get_commit_type)
+hooks_utility_get_commit_type() {
+    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
+
+    if ! [[ -f "${merge_head_dir}" ]]; then
+        # regular commit  ------------------------------------------------------
+        # include other non-merge commit types
+        printf ''
+    elif [[ $(wc -l <"${merge_head_dir}") -ne 1 ]]; then
+        # octopus merge  -------------------------------------------------------
+        printf 'merge-octopus'
+
+    else
+        # binary merge  --------------------------------------------------------
+
+        local source_branch target_branch
+        # find source_branch
+        source_branch="$(_get_incoming_branch_name)"
+        # find target_branch, i.e. branch which merge into
+        target_branch=$(git rev-parse --abbrev-ref HEAD)
+
+        # decide merge type
+        if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" &&
+            "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
+            printf 'merge-binary-finish_feature'
+
+        elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" &&
+            "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
+            printf 'merge-binary-release'
+        else
+            printf 'merge-binary'
+        fi
+    fi
+
+    return 0
+}
+
+# hooks_utility_is_binary_merge_commit()
+# hooks_utility_is_finish_feature_merge_commit()
+# hooks_utility_is_release_merge_commit()
+#
+# return whether the commit is a specific merge type
+#
+# PREREQUISITE:
+#   invoked within Git Hooks:
+#
+#   - pre-commit
+#   - prepare-commit-msg
+#
+# USAGE:
+#   hooks_utility_is_binary_merge_commit
+#   hooks_utility_is_finish_feature_merge_commit
+#   hooks_utility_is_release_merge_commit
+#
+# RETURN:
+#   0   current commit is the specific merge type
+#   1   elsewise
+#
+# EXAMPLE:
+#   hooks_utility_is_binary_merge_commit && perform_some_function
+#
+# EXAMPLE:
+#   if hooks_utility_is_binary_merge_commit; then
+#       ~
+#   fi
+hooks_utility_is_binary_merge_commit() {
+    [[ "$(hooks_utility_get_commit_type)" =~ "merge-binary"* ]]
+}
+
+hooks_utility_is_finish_feature_merge_commit() {
+    [[ "$(hooks_utility_get_commit_type)" == "merge-binary-finish_feature" ]]
+}
+
+hooks_utility_is_release_merge_commit() {
+    [[ "$(hooks_utility_get_commit_type)" == "merge-binary-release" ]]
+}
+
+# helper method  ===============================================================
+
+# _get_incoming_branch_name()
+#
+# get name of incoming/source branch (branch which merge from)
+# during a merge commit
+#
+# PREREQUISITE:
+#   invoked within Git Hooks:
+#
+#   - pre-commit
+#   - prepare-commit-msg
+#
+#   and when it is a binary merge
+#
+# OUTPUT:
+#   print result to stdout
+_get_incoming_branch_name() {
+    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
+    local source_sha
+    source_sha=$(cat "${merge_head_dir}")
+    git name-rev --name-only "${source_sha}"
+    return "$?"
+}
+
 # branch protection  ###########################################################
 # abbr. BP
 
@@ -609,7 +766,7 @@ hooks_utility_protect_branch() {
     echo "${BP_DISPLAY_NAME}" | hooks_utility_enter ''
 
     local commit_type
-    commit_type=$(get_commit_type_at_pre_commit)
+    commit_type=$(hooks_utility_get_commit_type)
     printf 'commit_type=%s' "${commit_type}" |
         hooks_utility_debug "${BP_DISPLAY_NAME}"
 
@@ -629,8 +786,8 @@ hooks_utility_protect_branch() {
         fi
         ;;
     *)
-        echo "skipped, trivial commit type" |
-            hooks_utility_debug "${BP_DISPLAY_NAME}"
+        echo "trivial commit type" |
+            hooks_utility_skip "${BP_DISPLAY_NAME}"
         return 0
         ;;
     esac
@@ -658,62 +815,6 @@ AM_TYPE_FIXME='fixme'
 AM_TYPE_HACK='hack'
 
 # helper functions  ============================================================
-
-# get_commit_type_at_pre_commit()
-#
-# in pre-commit, decide type of the commit
-#
-# OUTPUT:
-#   commit type printed to stdout:
-#
-#   - '': regular commit, and other non-merge commit
-#   - 'merge-binary': binary merge commit of 2 branches
-#
-#       - 'merge-binary-finish_feature': any branch (except main) -> dev branch
-#       - 'merge-binary-release': dev branch -> main branch
-#
-#   - 'merge-octopus': octopus merge commit of 3+ branches
-#
-# EXAMPLE:
-#   if [[ $( get_commit_type_at_pre_commit ) == "merge-binary" ]]
-get_commit_type_at_pre_commit() {
-    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
-
-    if ! [[ -f "${merge_head_dir}" ]]; then
-        # regular commit  ------------------------------------------------------
-        # include other non-merge commit types
-        printf ''
-    elif [[ $(wc -l <"${merge_head_dir}") -ne 1 ]]; then
-        # octopus merge  -------------------------------------------------------
-        printf 'merge-octopus'
-
-    else
-        # binary merge  --------------------------------------------------------
-
-        # find source_branch, i.e. branch which merge from
-        local source_sha source_branch
-        source_sha=$(cat "${merge_head_dir}")
-        source_branch=$(git name-rev --name-only "${source_sha}")
-
-        # find target_branch, i.e. branch which merge into
-        local target_branch
-        target_branch=$(git rev-parse --abbrev-ref HEAD)
-
-        # decide merge type
-        if [[ "${source_branch}" != "${MAIN_BRANCH_NAME}" &&
-            "${target_branch}" == "${DEV_BRANCH_NAME}" ]]; then
-            printf 'merge-binary-finish_feature'
-
-        elif [[ "${source_branch}" == "${DEV_BRANCH_NAME}" &&
-            "${target_branch}" == "${MAIN_BRANCH_NAME}" ]]; then
-            printf 'merge-binary-release'
-        else
-            printf 'merge-binary'
-        fi
-    fi
-
-    return 0
-}
 
 # perform git diff --cached, find all AMs, print to stdout
 _search_am_from_git_diff_cached() {
@@ -792,7 +893,10 @@ _highlight_am_by_types() {
 
 # hooks_utility_ensure_file_modified()
 #
-# in pre-commit, ensure certain file(s) must be modified
+# ensure certain file(s) must be modified
+#
+# PREREQUISITE:
+#   - invoked within Git Hook: pre-commit
 #
 # USAGE:
 #   hooks_utility_ensure_file_modified FILE COMMIT_TYPE MESSAGE [PATTERN]
@@ -800,7 +904,7 @@ _highlight_am_by_types() {
 # ARGUMENT:
 #   FILE            file which is required to be changed,
 #                   relative path to repo root
-#   COMMIT_TYPE     when to perform check, q.v. get_commit_type_at_pre_commit()
+#   COMMIT_TYPE     when to perform check, q.v. hooks_utility_get_commit_type()
 #   MESSAGE         reason to give when failing the test
 #   [LINE_PATTERN]  if provided, perform additional tests;
 #                   ensure at least one line from: git diff --cached FILENAME
@@ -823,7 +927,7 @@ hooks_utility_ensure_file_modified() {
 
     printf '%s' "${filename}" | hooks_utility_enter "${EFM_DISPLAY_NAME}"
 
-    commit_type=$(get_commit_type_at_pre_commit)
+    commit_type=$(hooks_utility_get_commit_type)
 
     # print debug info
     printf 'args:\nfilename=%s\ncommit_type_arg=%s\ncommit_type=%s\nmessage=%s\npattern=%s' \
@@ -835,8 +939,8 @@ hooks_utility_ensure_file_modified() {
         hooks_utility_debug "${EFM_DISPLAY_NAME}"
 
     if [[ "${commit_type}" != ${commit_type_arg}* ]]; then
-        printf 'skipped, irrelevant commit type' |
-            hooks_utility_debug "${EFM_DISPLAY_NAME}"
+        printf 'irrelevant commit type' |
+            hooks_utility_skip "${EFM_DISPLAY_NAME}"
         return 0
     fi
 
@@ -886,42 +990,45 @@ hooks_utility_ensure_file_modified() {
 
 # hooks_utility_ensure_changelog_edited()
 #
-# in pre-commit, when merge to finish a feature branch,
+# when merge to finish a feature branch,
 # ensure CHANGELOG file is edited to reflect
+#
+# PREREQUISITE:
+#   - invoked within Git Hook: pre-commit
 #
 # USAGE:
 #   hooks_utility_ensure_changelog_edited CHANGELOG_FILE
-#
 #
 # ARGUMENT:
 #   CHANGELOG_FILE  file path of CHANGELOG file, relative path to repo root
 #
 # RETURN:
-#   0       success
-#   1       failure
+#   0   success
+#   1   failure
 #
 # EXAMPLE:
 #   hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 hooks_utility_ensure_changelog_edited() {
     hooks_utility_ensure_file_modified "${1}" \
         'merge-binary-finish_feature' \
-        "must record changes of this feature branch"
+        "${ENSURE_CHANGELOG_EDITED_MSG}"
 
     return "$?"
 }
 
 # hooks_utility_ensure_version_updated()
 #
-# in pre-commit, ensure file containing version is updated when release
+# ensure file containing version is updated when release
+#
+# PREREQUISITE:
+#   - invoked within Git Hook: pre-commit
+#   - environmental variables set:
+#
+#     - PROJECT_VERSION_FILE
+#     - PROJECT_VERSION_LINE_PATTERN
 #
 # USAGE:
 #   hooks_utility_ensure_version_updated FILE LINE
-#
-# ARGUMENT:
-#   FILE            file which is required to be changed,
-#                   relative path to repo root
-#   LINE_PATTERN    an pattern that match the line containing the version,
-#                   in extended re
 #
 # RETURN:
 #   0       success
@@ -930,18 +1037,167 @@ hooks_utility_ensure_changelog_edited() {
 # EXAMPLE:
 #   hooks_utility_ensure_version_updated 'project.ini' 5
 hooks_utility_ensure_version_updated() {
-
-    local filename line
-    filename="${1}"
-    pattern="${2}"
-
-    hooks_utility_ensure_file_modified "${1}" \
+    hooks_utility_ensure_file_modified \
+        "${PROJECT_VERSION_FILE}" \
         'merge-binary-release' \
-        'must bump project version when release' \
-        "${pattern}"
+        "${ENSURE_VERSION_UPDATED_MSG}" \
+        "${PROJECT_VERSION_LINE_PATTERN}"
 
     return "$?"
 }
 
 # constants  ===================================================================
 EFM_DISPLAY_NAME='Ensure File Modified'
+ENSURE_CHANGELOG_EDITED_MSG='must record Feature Branch changes'
+ENSURE_VERSION_UPDATED_MSG='must bump Project Version'
+
+# improve commit message  ######################################################
+
+# hooks_utility_improve_commit_message()
+#
+# PREREQUISITE:
+#   - invoked within Git Hook: prepare-commit-msg
+#   - environmental variables set:
+#
+#     - PROJECT_VERSION_FILE
+#     - PROJECT_VERSION_LINE_PATTERN
+#
+# USAGE:
+#   hooks_utility_improve_commit_message COMMIT_EDITMSG_PATH
+#
+# ARGUMENT:
+#   COMMIT_EDITMSG_PATH     path of .git/COMMIT_EDITMSG
+#                           often provided as ${1} to prepare-commit-msg
+#
+# RETURN:
+#   0       success: message improved or skipped
+#   else    failure
+#
+# EXAMPLE:
+#   hooks_utility_improve_commit_message "${1}"
+hooks_utility_improve_commit_message() {
+    hooks_utility_enter "${ICM_DISPLAY_NAME}"
+
+    local -r commit_editmsg_path="${1}"
+
+    # decide branch by commit type  --------------------------------------------
+    local -i branch=0
+    if hooks_utility_is_finish_feature_merge_commit; then
+        branch=1
+    elif hooks_utility_is_release_merge_commit; then
+        branch=2
+    fi
+
+    echo "branch=${branch}" | hooks_utility_debug
+
+    if ((!branch)); then # skip for trivial commit type
+        echo "trivial commit type" |
+            hooks_utility_skip "${ICM_DISPLAY_NAME}"
+        return 0
+    fi
+
+    # get git default message  ------------------------=------------------------
+    # i.e. read from COMMIT_EDITMSG & get non # lines
+    local content_lines='' comment_lines='' line trimmed target
+    while IFS= read -r line || [ -n "$line" ]; do
+        # remove leading whitespace for comment detection
+        trimmed="${line#"${line%%[![:space:]]*}"}"
+
+        # choose which accumulator to use
+        if [ -n "$trimmed" ] && [ "${trimmed:0:1}" = "#" ]; then
+            target=comment_lines
+        else
+            target=content_lines
+        fi
+
+        # append preserving original line; insert \n between entries
+        if [ -z "${!target}" ]; then
+            printf -v "$target" '%s' "$line"
+        else
+            printf -v "$target" '%s\n%s' "${!target}" "$line"
+        fi
+    done <"${commit_editmsg_path}"
+    echo "${content_lines}" | hooks_utility_debug 'content_lines'
+
+    # actual branching  --------------------------------------------------------
+    local improved_lines
+    case "${branch}" in
+    1)
+        improved_lines="$(_improve_commit_msg_for_finish_feature "${content_lines}")"
+        ;;
+    2)
+        improved_lines="$(_improve_commit_msg_for_release "${content_lines}")"
+        ;;
+    esac
+    echo "${improved_lines}" | hooks_utility_debug 'improved_lines'
+
+    # write COMMIT_EDITMSG  ----------------------------------------------------
+    # create a tmp file
+    dir="$(dirname -- "$commit_editmsg_path")"
+    tmp="$(mktemp --tmpdir="$dir" commit-msg.XXXXXX)" || tmp="$dir/commit-msg.$(date +%s).$$"
+
+    printf '%s\n%s' "${improved_lines}" "${comment_lines}" >"$tmp"
+
+    # atomically move the temp file over the commit message file
+    mv -- "$tmp" "$commit_editmsg_path"
+
+    # report success improvement  ----------------------------------------------
+    case "${branch}" in
+    1)
+        echo 'for Finish Feature merge' |
+            hooks_utility_pass "${ICM_DISPLAY_NAME}"
+        ;;
+    2)
+        echo 'for Release merge' | hooks_utility_pass "${ICM_DISPLAY_NAME}"
+        ;;
+    esac
+
+    return 0
+}
+
+_improve_commit_msg_for_finish_feature() {
+    local default_msg="${1}"
+
+    local source_branch
+    source_branch="$(_get_incoming_branch_name)"
+
+    # print improved syntax, followed by original default msg
+    printf 'finish Feature: %s\n\n%s' \
+        "${source_branch}" "${default_msg}"
+
+    return 0
+}
+
+_improve_commit_msg_for_release() {
+    local default_msg="${1}"
+
+    local version=''
+    # find current project version  --------------------------------------------
+    if [[ -f "${PROJECT_VERSION_FILE}" &&
+        -n $PROJECT_VERSION_LINE_PATTERN ]]; then
+        while IFS= read -r line || [ -n "$line" ]; do
+            # search each line in file
+            if [[ $line =~ $PROJECT_VERSION_LINE_PATTERN ]]; then
+                version="${BASH_REMATCH[1]}"
+                break
+            fi
+        done <"${PROJECT_VERSION_FILE}"
+    fi
+
+    # create commit msg  -------------------------------------------------------
+    if [[ -n $version ]]; then
+        printf 'Release Version: %s' "${version}"
+    else
+        # fall back
+        printf 'Release'
+    fi
+
+    # followed by original default msg
+    printf '\n\n%s' "${default_msg}"
+
+    return 0
+}
+
+# constants  ===================================================================
+ICM_DISPLAY_NAME='Improve Commit Message'
+ENSURE_VERSION_UPDATED_MSG='must bump Project Version'

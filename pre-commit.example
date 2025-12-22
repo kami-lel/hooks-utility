@@ -2,13 +2,15 @@
 
 set -euo pipefail
 
+# set environment variable for ensure version updated
+export PROJECT_VERSION_FILE='proj.json'
+export PROJECT_VERSION_LINE_PATTERN='"version" : "[0-9.]+"'
+
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility/hooks_utility.sh"
 
+# start pre-commit checks  #####################################################
 echo "pre-commit" | hooks_utility_enter
-
-# perform branch protection
-hooks_utility_protect_branch
 
 # ensure file modification  ----------------------------------------------------
 # make sure working_note.txt is edited in all commit
@@ -18,10 +20,12 @@ hooks_utility_ensure_file_modified 'working_note.txt' '' "remember to take note"
 hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 
 # make sure version is bumped when finish feature branch
-# a pattern that will match the line containing project version info
-version_line_pattern='"version" : "[0-9.]+"'
-hooks_utility_ensure_version_updated 'proj.json' "${version_line_pattern}"
+hooks_utility_ensure_version_updated
 
+# perform branch protection  ---------------------------------------------------
+hooks_utility_protect_branch
+
+# finish pre-commit checks  ####################################################
 echo "pre-commit" | hooks_utility_pass
 
 exit 0

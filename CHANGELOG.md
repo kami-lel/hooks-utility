@@ -34,6 +34,35 @@
 
 
 
+## [2.1.0] - 2025-12-22
+
+### Added
+
+- module *get commit type*: provide automated improved commit message for specific types of merges
+- consolidate module *get commit types* with new conditional commands
+- *log style message*:
+
+  - `-D` flag
+  - `hooks_utility_skip` function
+
+### Changed
+
+- use `PREREQUISITE` in function documentations
+- function of ensure version updated utilize environment variable
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## [2.0.0] - 2025-12-19
 
 ### Added
@@ -133,7 +162,8 @@
 
 
 
-[unreleased]: https://github.com/kami-lel/kami-log-py/compare/v2.0.0...dev
+[unreleased]: https://github.com/kami-lel/kami-log-py/compare/v2.1.0...dev
+[2.1.0]: https://github.com/kami-lel/kami-log-py/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/kami-lel/kami-log-py/compare/v1.1.1...v2.0.0
 [1.1.1]: https://github.com/kami-lel/kami-log-py/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/kami-lel/kami-log-py/compare/v1.0.0...v1.1.0

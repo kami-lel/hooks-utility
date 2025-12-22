@@ -1,0 +1,8 @@
+{
+    "todo-tree.filtering.excludeGlobs": [
+        "tests/branch_protection/highlight_am_line_test.sh"
+    ],
+    "cSpell.words": [
+        "ACMR","EDITMSG"
+    ]
+}

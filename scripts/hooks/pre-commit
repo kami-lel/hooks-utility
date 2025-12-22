@@ -3,12 +3,12 @@
 set -euo pipefail
 
 # shellcheck source=/dev/null
+source "$(dirname "${BASH_SOURCE[0]}")/set_environment_variable.sh"
+# shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
+# start pre-commit  ############################################################
 echo "pre-commit" | hooks_utility_enter
-
-# perform branch protection
-hooks_utility_protect_branch
 
 # ensure file modification  ----------------------------------------------------
 # make sure CHANGELOG.md is edited when finish feature branch
@@ -19,7 +19,7 @@ pattern='^# version: *v[0-9.]+'
 hooks_utility_ensure_version_updated 'hooks_utility.sh' "${pattern}"
 
 # make sure hooks_utility.sh contains no AM
-if [[ $(get_commit_type_at_pre_commit) == "merge-binary-release" ]]; then
+if hooks_utility_is_release_merge_commit; then
     PATTERN="${PRIMARY_AM_PATTERN}|${SECONDARY_AM_PATTERN}|${TERTIARY_AM_PATTERN}"
     if git diff --cached --unified=0 --no-color hooks_utility.sh |
         grep -E -q -- "$PATTERN"; then
@@ -28,6 +28,10 @@ if [[ $(get_commit_type_at_pre_commit) == "merge-binary-release" ]]; then
     fi
 fi
 
+# perform branch protection  ---------------------------------------------------
+hooks_utility_protect_branch
+
+# finish pre-commit  ###########################################################
 echo "pre-commit" | hooks_utility_pass
 
 exit 0

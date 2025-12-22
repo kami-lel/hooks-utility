@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# set environment variable for improve_commit_message
+export PROJECT_VERSION_FILE='proj.json'
+export PROJECT_VERSION_LINE_PATTERN='"version" : "[0-9.]+"'
+
+# shellcheck source=/dev/null
+source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility/hooks_utility.sh"
+
+# start prepare-commit-msg  ####################################################
+echo "prepare-commit-msg" | hooks_utility_enter
+
+# improve auto-generated commit message
+hooks_utility_improve_commit_message "${1}"
+
+# finish prepare-commit-msg  ###################################################
+echo "prepare-commit-msg" | hooks_utility_pass
+
+exit 0

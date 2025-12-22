@@ -2,7 +2,6 @@
 
 a collections of utility functions for **git hooks**
 
-<!-- todo auto generate better commit/merge message -->
 <!-- bug branch protection: \n in line get interpreted -->
 
 
@@ -96,33 +95,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility.sh"
 
 
 
-## Functionality
-
-### ANSI colorful print
-
-Utilize **ANSI color escape code** for printing:
-
-Use the generic function:
-
-```bash
-printf '%s' "Content in Red\n" | hooks_utility_colorful_print "\e[0;31m"
-```
-
-Use specific color:
-
-```bash
-printf '%s' "Content in Red\n" | hooks_utility_print_in_red
-```
-
-Print specific *keywords*:
-
-```bash
-hooks_utility_colorful_print_pass
-```
-
-
-
-
+## Main Functionalities
 
 ### log style message
 
@@ -139,26 +112,6 @@ Outputs:
 ```
 DEBUG:  Debug Message Content
 2025-10-12 16:23:16 WARN (MainScript):   Warning Message Content
-```
-
-
-
-
-
-### padding print
-
-Print the message from stdin with its right/left space filled with padding.
-
-E.g.:
-
-```bash
-echo "Book Title" | hooks_utility_padding_left_just '='
-```
-
-Output:
-
-```
-Book Title  ====================================================================
 ```
 
 
@@ -198,14 +151,112 @@ it will be rejected if incoming branch contains disallowed AM.
 
 ### ensure file modified
 
-In `pre-commit`, ensure some file is edited.
+Ensure some file is edited (entire file or certain lines) during commit.
 
 E.g., in `pre-commit`
 
 ```
-hooks_utility_ensure_file_edit 'CHANGELOG.md' 'merge-binary-finish_feature'
+hooks_utility_ensure_file_edit 'merge_note.txt' 'merge-binary'
 ```
 
-Ensure `CHANGELOG.md` is modified when finishing a feature branch
-and merge into `dev` branch.
+(Ensure `merge_note.txt` is modified when committing a binary merge.)
 
+
+
+
+
+### improve commit message
+
+Provide automated improved commit message for specific types of merges.
+
+E.g., in `prepare-commit-msg`:
+
+```
+hooks_utility_improve_commit_message "${1}"
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Auxiliary Functionalities
+
+### ANSI colorful print
+
+Utilize **ANSI color escape code** for printing:
+
+Use the generic function:
+
+```bash
+printf '%s' "Content in Red\n" | hooks_utility_colorful_print "\e[0;31m"
+```
+
+Use specific color:
+
+```bash
+printf '%s' "Content in Red\n" | hooks_utility_print_in_red
+```
+
+Print specific *keywords*:
+
+```bash
+hooks_utility_colorful_print_pass
+```
+
+
+
+
+
+
+
+
+
+
+
+### padding print
+
+Print the message from stdin with its right/left space filled with padding.
+
+E.g.:
+
+```bash
+echo "Book Title" | hooks_utility_padding_left_just '='
+```
+
+Output:
+
+```
+Book Title  ====================================================================
+```
+
+
+
+
+
+
+
+
+
+
+
+### get commit type
+
+Used in `pre-commit` hook, get commit type:
+
+```bash
+commit_type=$(hooks_utility_get_commit_type)
+```
+
+Or use a conditional command:
+
+```bash
+hooks_utility_is_binary_merge_commit && ~
+```
