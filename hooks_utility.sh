@@ -1170,7 +1170,6 @@ _improve_commit_msg_for_finish_feature() {
 
 _improve_commit_msg_for_release() {
     local default_msg="${1}"
-    default_msg=$(cat -) # read from stdin
 
     local version=''
     # find current project version  --------------------------------------------
