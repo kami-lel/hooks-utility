@@ -727,6 +727,7 @@ hooks_utility_is_release_merge_commit() {
 # OUTPUT:
 #   print result to stdout
 _get_incoming_branch_name() {
+    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
     local source_sha
     source_sha=$(cat "${merge_head_dir}")
     git name-rev --name-only "${source_sha}"
@@ -1122,6 +1123,7 @@ hooks_utility_improve_commit_message() {
         improved_lines="$(_improve_commit_msg_for_release "${content_lines}")"
         ;;
     esac
+    # BUG can not do mux lines
     echo "${improved_lines}" | hooks_utility_debug 'improved_lines'
 
     # write COMMIT_EDITMSG  ----------------------------------------------------
@@ -1155,8 +1157,8 @@ _improve_commit_msg_for_finish_feature() {
     local source_branch
     source_branch="$(_get_incoming_branch_name)"
 
-    # BUG not showing anything
-    printf 'Finish Feature branch: %s' "${source_branch}"
+    printf 'Finish Feature branch: %s\n\n%s' \
+        "${source_branch}" "${default_msg}"
 
     return 0
 }
@@ -1166,7 +1168,6 @@ _improve_commit_msg_for_release() {
     default_msg=$(cat -) # read from stdin
 
     printf '%s' "${default_msg}" # HACK
-
     return 0
 }
 
