@@ -1070,7 +1070,8 @@ ENSURE_VERSION_UPDATED_MSG='must Bump project Version'
 #                           often provided as ${1} to prepare-commit-msg
 #
 # RETURN:
-#   0   success: message improved or skipped
+#   0       success: message improved or skipped
+#   else    failure
 #
 # EXAMPLE:
 #   hooks_utility_improve_commit_message "${1}"
@@ -1161,7 +1162,7 @@ _improve_commit_msg_for_finish_feature() {
     source_branch="$(_get_incoming_branch_name)"
 
     # print improved syntax, followed by original default msg
-    printf 'Finish Feature branch: %s\n\n%s' \
+    printf 'Merge to Finish Feature branch: %s\n\n%s' \
         "${source_branch}" "${default_msg}"
 
     return 0
@@ -1169,10 +1170,29 @@ _improve_commit_msg_for_finish_feature() {
 
 _improve_commit_msg_for_release() {
     local default_msg="${1}"
-
     default_msg=$(cat -) # read from stdin
 
-    printf '%s' "${default_msg}" # HACK
+    # verify environment variable  ---------------------------------------------
+    # TODO
+
+    # find current project version  --------------------------------------------
+    local version=''
+    # search each line in file
+    while IFS= read -r line; do
+        noop # HACK
+    done <<<"$result"
+
+    # create commit msg  -------------------------------------------------------
+    if [[ -n $version ]]; then
+        printf 'Merge to Release Version: %s' "${version}"
+    else
+        # fall back
+        printf 'Merge to Release'
+    fi
+
+    # followed by original default msg
+    printf '\n\n%s' "${default_msg}"
+
     return 0
 }
 
