@@ -1060,7 +1060,9 @@ hooks_utility_improve_commit_message() {
         branch=2
     fi
 
-    if [[ $branch ]]; then # skip for trivial commit type
+    echo "branch=${branch}" | hooks_utility_debug
+
+    if ((!branch)); then # skip for trivial commit type
         echo "trivial commit type" |
             hooks_utility_skip "${ICM_DISPLAY_NAME}"
         return 0
@@ -1068,43 +1070,56 @@ hooks_utility_improve_commit_message() {
 
     # get git default message  ------------------------=------------------------
     # i.e. read from COMMIT_EDITMSG & get non # lines
-    local content_lines=''
-    local comment_lines
-
-    local line trimmed
-    while IFS= read -r line || [ -n "$line" ]; do # loop per line
+    local content_lines='' comment_lines='' line trimmed target
+    while IFS= read -r line || [ -n "$line" ]; do
         # remove leading whitespace for comment detection
         trimmed="${line#"${line%%[![:space:]]*}"}"
 
+        # choose which accumulator to use
         if [ -n "$trimmed" ] && [ "${trimmed:0:1}" = "#" ]; then
-            # append to comment_lines (preserve original line)
-            if [ -z "$comment_lines" ]; then
-                comment_lines="$line"
-            else
-                comment_lines="$comment_lines\n$line"
-            fi
+            target=comment_lines
         else
-            # append to content_lines (preserve original line)
-            if [ -z "$content_lines" ]; then
-                content_lines="$line"
-            else
-                content_lines="$content_lines\n$line"
-            fi
+            target=content_lines
+        fi
+
+        # append preserving original line; insert \n between entries
+        if [ -z "${!target}" ]; then
+            printf -v "$target" '%s' "$line"
+        else
+            printf -v "$target" '%s\n%s' "${!target}" "$line"
         fi
     done <"${commit_editmsg_path}"
 
     # actual branching  --------------------------------------------------------
+    local improved_lines
     case "${branch}" in
     1)
-        _improve_commit_msg_for_finish_feature \
-            "${content_lines}" | _write_commit_msg "${comment_lines}"
-        echo 'for Finish Feature merge' |
-            hooks_utility_pass "${ICM_DISPLAY_NAME}"
-
+        improved_lines="$(_improve_commit_msg_for_finish_feature "${content_lines}")"
         ;;
     2)
-        _improve_commit_msg_for_release \
-            "${content_lines}" | _write_commit_msg "${comment_lines}"
+        improved_lines="$(_improve_commit_msg_for_release "${content_lines}")"
+        ;;
+    esac
+
+    # write COMMIT_EDITMSG  ----------------------------------------------------
+    # create a tmp file
+    dir="$(dirname -- "$commit_editmsg_path")"
+    tmp="$(mktemp --tmpdir="$dir" commit-msg.XXXXXX)" || tmp="$dir/commit-msg.$(date +%s).$$"
+
+    printf '%s' "${improved_lines}" >"$tmp"
+    printf '#' >>"$tmp"
+    printf '%s' "${comment_lines}" >>"$tmp"
+
+    # atomically move the temp file over the commit message file
+    mv -- "$tmp" "$commit_editmsg_path"
+
+    # report success improvement  ----------------------------------------------
+    case "${branch}" in
+    1)
+        echo 'for Finish Feature merge' |
+            hooks_utility_pass "${ICM_DISPLAY_NAME}"
+        ;;
+    2)
         echo 'for Release merge' | hooks_utility_pass "${ICM_DISPLAY_NAME}"
         ;;
     esac
@@ -1112,22 +1127,11 @@ hooks_utility_improve_commit_message() {
     return 0
 }
 
-# read from stdin and write to COMMIT_EDITMSG
-_write_commit_msg() {
-    local improved
-    improved=$(cat -) # read from stdin
-    local comment_lines="${1}"
-
-    # HACK
-    echo "${improved}" | hooks_utility_debug 'improved'
-    echo "${comment_lines}" | hooks_utility_debug 'commentary lines'
-}
-
 _improve_commit_msg_for_finish_feature() {
     local default_msg
     default_msg=$(cat -) # read from stdin
 
-    printf '%s' "${default_msg}" # HACK
+    echo "hi\nthis is the message" # HACK
 
     return 0
 }
