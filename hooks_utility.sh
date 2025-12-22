@@ -1025,7 +1025,7 @@ hooks_utility_ensure_changelog_edited() {
 #   - environmental variables set:
 #
 #     - PROJECT_VERSION_FILE
-#     - PROJECT_VERSION_LINE_PATTERN are set properly
+#     - PROJECT_VERSION_LINE_PATTERN
 #
 # USAGE:
 #   hooks_utility_ensure_version_updated FILE LINE
@@ -1060,7 +1060,7 @@ ENSURE_VERSION_UPDATED_MSG='must Bump project Version'
 #   - environmental variables set:
 #
 #     - PROJECT_VERSION_FILE
-#     - PROJECT_VERSION_LINE_PATTERN are set properly
+#     - PROJECT_VERSION_LINE_PATTERN
 #
 # USAGE:
 #   hooks_utility_improve_commit_message COMMIT_EDITMSG_PATH
