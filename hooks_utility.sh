@@ -1106,9 +1106,7 @@ hooks_utility_improve_commit_message() {
     dir="$(dirname -- "$commit_editmsg_path")"
     tmp="$(mktemp --tmpdir="$dir" commit-msg.XXXXXX)" || tmp="$dir/commit-msg.$(date +%s).$$"
 
-    printf '%s' "${improved_lines}" >"$tmp"
-    printf '#' >>"$tmp"
-    printf '%s' "${comment_lines}" >>"$tmp"
+    printf '%s\n%s' "${improved_lines}" "${comment_lines}" >"$tmp"
 
     # atomically move the temp file over the commit message file
     mv -- "$tmp" "$commit_editmsg_path"
