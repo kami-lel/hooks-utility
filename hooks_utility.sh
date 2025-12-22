@@ -1174,11 +1174,12 @@ _improve_commit_msg_for_release() {
 
     local version=''
     # find current project version  --------------------------------------------
-    if [[ -f "${PROJECT_VERSION_FILE}" ]]; then
+    if [[ -f "${PROJECT_VERSION_FILE}" &&
+        -n $PROJECT_VERSION_LINE_PATTERN ]]; then
         while IFS= read -r line || [ -n "$line" ]; do
             # search each line in file
             if [[ $line =~ $PROJECT_VERSION_LINE_PATTERN ]]; then
-                version="${BASH_REMATCH[1]}"
+                version="${BASH_REMATCH[1]}" # BUG
                 echo "version found: ${version}" |
                     hooks_utility_debug "${ICM_DISPLAY_NAME}"
                 break
