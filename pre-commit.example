@@ -27,3 +27,5 @@ hooks_utility_ensure_version_updated 'proj.json' "${version_line_pattern}"
 echo "pre-commit" | hooks_utility_pass
 
 exit 0
+
+# BUG write example for new version system
