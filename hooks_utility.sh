@@ -1017,8 +1017,6 @@ hooks_utility_ensure_changelog_edited() {
 
 # hooks_utility_ensure_version_updated()
 #
-# Fixme use PROJECT_VERSION_FILE and PROJECT_VERSION_LINE_PATTERN
-#
 # ensure file containing version is updated when release
 #
 # PREREQUISITE:
