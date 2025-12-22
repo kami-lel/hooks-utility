@@ -611,11 +611,11 @@ _parse_adding_padding() {
 #
 # decide type of the commit
 #
-# USAGE:
-#   hooks_utility_get_commit_type
-#
 # PREREQUISITE:
 #   invoked within Git Hooks:
+#
+# USAGE:
+#   hooks_utility_get_commit_type
 #
 #   - pre-commit
 #   - prepare-commit-msg
@@ -678,16 +678,16 @@ hooks_utility_get_commit_type() {
 #
 # return whether the commit is a specific merge type
 #
-# USAGE:
-#   hooks_utility_is_binary_merge_commit
-#   hooks_utility_is_finish_feature_merge_commit
-#   hooks_utility_is_release_merge_commit
-#
 # PREREQUISITE:
 #   invoked within Git Hooks:
 #
 #   - pre-commit
 #   - prepare-commit-msg
+#
+# USAGE:
+#   hooks_utility_is_binary_merge_commit
+#   hooks_utility_is_finish_feature_merge_commit
+#   hooks_utility_is_release_merge_commit
 #
 # RETURN:
 #   0   current commit is the specific merge type
@@ -866,11 +866,11 @@ _highlight_am_by_types() {
 #
 # ensure certain file(s) must be modified
 #
-# USAGE:
-#   hooks_utility_ensure_file_modified FILE COMMIT_TYPE MESSAGE [PATTERN]
-#
 # PREREQUISITE:
 #   invoked within Git Hooks pre-commit
+#
+# USAGE:
+#   hooks_utility_ensure_file_modified FILE COMMIT_TYPE MESSAGE [PATTERN]
 #
 # ARGUMENT:
 #   FILE            file which is required to be changed,
@@ -964,18 +964,18 @@ hooks_utility_ensure_file_modified() {
 # when merge to finish a feature branch,
 # ensure CHANGELOG file is edited to reflect
 #
-# USAGE:
-#   hooks_utility_ensure_changelog_edited CHANGELOG_FILE
-#
 # PREREQUISITE:
 #   invoked within Git Hooks: pre-commit
+#
+# USAGE:
+#   hooks_utility_ensure_changelog_edited CHANGELOG_FILE
 #
 # ARGUMENT:
 #   CHANGELOG_FILE  file path of CHANGELOG file, relative path to repo root
 #
 # RETURN:
-#   0       success
-#   1       failure
+#   0   success
+#   1   failure
 #
 # EXAMPLE:
 #   hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
@@ -991,11 +991,11 @@ hooks_utility_ensure_changelog_edited() {
 #
 # ensure file containing version is updated when release
 #
-# USAGE:
-#   hooks_utility_ensure_version_updated FILE LINE
-#
 # PREREQUISITE:
 #   invoked within Git Hooks: pre-commit
+#
+# USAGE:
+#   hooks_utility_ensure_version_updated FILE LINE
 #
 # ARGUMENT:
 #   FILE            file which is required to be changed,
@@ -1032,11 +1032,11 @@ ENSURE_VERSION_UPDATED_MSG='must Bump project Version'
 
 # hooks_utility_improve_commit_message()
 #
-# USAGE:
-#   hooks_utility_improve_commit_message COMMIT_EDITMSG_PATH
-#
 # PREREQUISITE:
 #   invoked within Git Hooks: prepare-commit-msg
+#
+# USAGE:
+#   hooks_utility_improve_commit_message COMMIT_EDITMSG_PATH
 #
 # ARGUMENT:
 #   COMMIT_EDITMSG_PATH     path of .git/COMMIT_EDITMSG
@@ -1057,6 +1057,8 @@ hooks_utility_improve_commit_message() {
     elif hooks_utility_is_release_merge_commit; then
         branch=2
     fi
+
+    #
 
     # TODO return b/c pass
 
