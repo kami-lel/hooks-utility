@@ -12,9 +12,6 @@ source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility/hooks_utility.sh"
 # start pre-commit checks  #####################################################
 echo "pre-commit" | hooks_utility_enter
 
-# perform branch protection
-hooks_utility_protect_branch
-
 # ensure file modification  ----------------------------------------------------
 # make sure working_note.txt is edited in all commit
 hooks_utility_ensure_file_modified 'working_note.txt' '' "remember to take note"
@@ -24,6 +21,9 @@ hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 
 # make sure version is bumped when finish feature branch
 hooks_utility_ensure_version_updated
+
+# perform branch protection  ---------------------------------------------------
+hooks_utility_protect_branch
 
 # finish pre-commit checks  ####################################################
 echo "pre-commit" | hooks_utility_pass

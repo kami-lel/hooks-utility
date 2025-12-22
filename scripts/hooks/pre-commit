@@ -10,9 +10,6 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 # start pre-commit  ############################################################
 echo "pre-commit" | hooks_utility_enter
 
-# perform branch protection
-hooks_utility_protect_branch
-
 # ensure file modification  ----------------------------------------------------
 # make sure CHANGELOG.md is edited when finish feature branch
 hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
@@ -30,6 +27,9 @@ if hooks_utility_is_release_merge_commit; then
         exit 1
     fi
 fi
+
+# perform branch protection  ---------------------------------------------------
+hooks_utility_protect_branch
 
 # finish pre-commit  ###########################################################
 echo "pre-commit" | hooks_utility_pass
