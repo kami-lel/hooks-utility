@@ -1048,26 +1048,22 @@ ENSURE_VERSION_UPDATED_MSG='must Bump project Version'
 # EXAMPLE:
 #   hooks_utility_improve_commit_message "${1}"
 hooks_utility_improve_commit_message() {
+    hooks_utility_enter "${ICM_DISPLAY_NAME}"
+
+    # decide branch by commit type  ============================================
+    local -i branch=0
     if hooks_utility_is_finish_feature_merge_commit; then
-        _read_commit_msg "$@" |
-            _improve_commit_msg_for_finish_feature |
-            _write_commit_msg "$@"
-        echo "${ICM_FEATURE_MESSAGE}" | hooks_utility_pass "${ICM_DISPLAY_NAME}"
-        return 0
-
+        branch=1
     elif hooks_utility_is_release_merge_commit; then
-        _read_commit_msg "$@" |
-            _improve_commit_msg_for_release |
-            _write_commit_msg "$@"
-
-        echo "${ICM_RELEASE_MESSAGE}" | hooks_utility_pass "${ICM_DISPLAY_NAME}"
-        return 0
-
-    else
-        # skip for trivial commit type
-        echo "${ICM_TRIVIAL_MESSAGE}" | hooks_utility_skip "${ICM_DISPLAY_NAME}"
-        return 0
+        branch=2
     fi
+
+    # TODO return b/c pass
+
+    # subcommand branching  ====================================================
+    local default_msg
+
+    # actual branching  ========================================================
 }
 
 # read COMMIT_EDITMSG and print non # lines to stdout
