@@ -647,13 +647,10 @@ hooks_utility_get_commit_type() {
     else
         # binary merge  --------------------------------------------------------
 
-        # find source_branch, i.e. branch which merge from
-        local source_sha source_branch
-        source_sha=$(cat "${merge_head_dir}")
-        source_branch=$(git name-rev --name-only "${source_sha}")
-
+        local source_branch target_branch
+        # find source_branch
+        source_branch="$(_get_incoming_branch_name)"
         # find target_branch, i.e. branch which merge into
-        local target_branch
         target_branch=$(git rev-parse --abbrev-ref HEAD)
 
         # decide merge type
@@ -710,6 +707,30 @@ hooks_utility_is_finish_feature_merge_commit() {
 
 hooks_utility_is_release_merge_commit() {
     [[ "$(hooks_utility_get_commit_type)" == "merge-binary-release" ]]
+}
+
+# helper method  ===============================================================
+
+# _get_incoming_branch_name()
+#
+# get name of incoming/source branch (branch which merge from)
+# during a merge commit
+#
+# PREREQUISITE:
+#   invoked within Git Hooks:
+#
+#   - pre-commit
+#   - prepare-commit-msg
+#
+#   and when it is a binary merge
+#
+# OUTPUT:
+#   print result to stdout
+_get_incoming_branch_name() {
+    local source_sha
+    source_sha=$(cat "${merge_head_dir}")
+    git name-rev --name-only "${source_sha}"
+    return "$?"
 }
 
 # branch protection  ###########################################################
@@ -1131,7 +1152,11 @@ _improve_commit_msg_for_finish_feature() {
     local default_msg
     default_msg=$(cat -) # read from stdin
 
-    echo "hi\nthis is the message" # HACK
+    local source_branch
+    source_branch="$(_get_incoming_branch_name)"
+
+    # BUG not showing anything
+    printf 'Finish Feature branch: %s' "${source_branch}"
 
     return 0
 }
