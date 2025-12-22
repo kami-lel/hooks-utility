@@ -1089,6 +1089,7 @@ hooks_utility_improve_commit_message() {
             printf -v "$target" '%s\n%s' "${!target}" "$line"
         fi
     done <"${commit_editmsg_path}"
+    echo "${content_lines}" | hooks_utility_debug 'content_lines'
 
     # actual branching  --------------------------------------------------------
     local improved_lines
@@ -1100,6 +1101,7 @@ hooks_utility_improve_commit_message() {
         improved_lines="$(_improve_commit_msg_for_release "${content_lines}")"
         ;;
     esac
+    echo "${improved_lines}" | hooks_utility_debug 'improved_lines'
 
     # write COMMIT_EDITMSG  ----------------------------------------------------
     # create a tmp file
