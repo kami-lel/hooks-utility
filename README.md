@@ -2,8 +2,6 @@
 
 a collections of utility functions for **git hooks**
 
-<!-- Todo finish feature merge auto commit message -->
-<!-- Todo release auto commit message -->
 <!-- bug branch protection: \n in line get interpreted -->
 
 
@@ -162,6 +160,20 @@ hooks_utility_ensure_file_edit 'merge_note.txt' 'merge-binary'
 ```
 
 (Ensure `merge_note.txt` is modified when committing a binary merge.)
+
+
+
+
+
+### improve commit message
+
+Provide automated improved commit message for specific types of merges.
+
+E.g., in `prepare-commit-msg`:
+
+```
+hooks_utility_improve_commit_message "${1}"
+```
 
 
 

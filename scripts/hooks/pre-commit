@@ -3,8 +3,11 @@
 set -euo pipefail
 
 # shellcheck source=/dev/null
+source "$(dirname "${BASH_SOURCE[0]}")/set_environment_variable.sh"
+# shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
+# start pre-commit  ############################################################
 echo "pre-commit" | hooks_utility_enter
 
 # perform branch protection
@@ -28,6 +31,7 @@ if hooks_utility_is_release_merge_commit; then
     fi
 fi
 
+# finish pre-commit  ###########################################################
 echo "pre-commit" | hooks_utility_pass
 
 exit 0

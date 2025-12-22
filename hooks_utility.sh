@@ -618,11 +618,14 @@ _parse_adding_padding() {
 #
 # decide type of the commit
 #
+# PREREQUISITE:
+#   invoked within Git Hooks:
+#
+#   - pre-commit
+#   - prepare-commit-msg
+#
 # USAGE:
 #   hooks_utility_get_commit_type
-#
-# PREREQUISITE:
-#   - invoked within Git Hook: pre-commit
 #
 # OUTPUT:
 #   commit type printed to stdout:
@@ -651,13 +654,10 @@ hooks_utility_get_commit_type() {
     else
         # binary merge  --------------------------------------------------------
 
-        # find source_branch, i.e. branch which merge from
-        local source_sha source_branch
-        source_sha=$(cat "${merge_head_dir}")
-        source_branch=$(git name-rev --name-only "${source_sha}")
-
+        local source_branch target_branch
+        # find source_branch
+        source_branch="$(_get_incoming_branch_name)"
         # find target_branch, i.e. branch which merge into
-        local target_branch
         target_branch=$(git rev-parse --abbrev-ref HEAD)
 
         # decide merge type
@@ -682,13 +682,16 @@ hooks_utility_get_commit_type() {
 #
 # return whether the commit is a specific merge type
 #
+# PREREQUISITE:
+#   invoked within Git Hooks:
+#
+#   - pre-commit
+#   - prepare-commit-msg
+#
 # USAGE:
 #   hooks_utility_is_binary_merge_commit
 #   hooks_utility_is_finish_feature_merge_commit
 #   hooks_utility_is_release_merge_commit
-#
-# PREREQUISITE:
-#   - invoked within Git Hook: pre-commit
 #
 # RETURN:
 #   0   current commit is the specific merge type
@@ -711,6 +714,31 @@ hooks_utility_is_finish_feature_merge_commit() {
 
 hooks_utility_is_release_merge_commit() {
     [[ "$(hooks_utility_get_commit_type)" == "merge-binary-release" ]]
+}
+
+# helper method  ===============================================================
+
+# _get_incoming_branch_name()
+#
+# get name of incoming/source branch (branch which merge from)
+# during a merge commit
+#
+# PREREQUISITE:
+#   invoked within Git Hooks:
+#
+#   - pre-commit
+#   - prepare-commit-msg
+#
+#   and when it is a binary merge
+#
+# OUTPUT:
+#   print result to stdout
+_get_incoming_branch_name() {
+    local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
+    local source_sha
+    source_sha=$(cat "${merge_head_dir}")
+    git name-rev --name-only "${source_sha}"
+    return "$?"
 }
 
 # branch protection  ###########################################################
@@ -867,11 +895,11 @@ _highlight_am_by_types() {
 #
 # ensure certain file(s) must be modified
 #
-# USAGE:
-#   hooks_utility_ensure_file_modified FILE COMMIT_TYPE MESSAGE [PATTERN]
-#
 # PREREQUISITE:
 #   - invoked within Git Hook: pre-commit
+#
+# USAGE:
+#   hooks_utility_ensure_file_modified FILE COMMIT_TYPE MESSAGE [PATTERN]
 #
 # ARGUMENT:
 #   FILE            file which is required to be changed,
@@ -965,18 +993,18 @@ hooks_utility_ensure_file_modified() {
 # when merge to finish a feature branch,
 # ensure CHANGELOG file is edited to reflect
 #
-# USAGE:
-#   hooks_utility_ensure_changelog_edited CHANGELOG_FILE
-#
 # PREREQUISITE:
 #   - invoked within Git Hook: pre-commit
+#
+# USAGE:
+#   hooks_utility_ensure_changelog_edited CHANGELOG_FILE
 #
 # ARGUMENT:
 #   CHANGELOG_FILE  file path of CHANGELOG file, relative path to repo root
 #
 # RETURN:
-#   0       success
-#   1       failure
+#   0   success
+#   1   failure
 #
 # EXAMPLE:
 #   hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
@@ -997,7 +1025,7 @@ hooks_utility_ensure_changelog_edited() {
 #   - environmental variables set:
 #
 #     - PROJECT_VERSION_FILE
-#     - PROJECT_VERSION_LINE_PATTERN are set properly
+#     - PROJECT_VERSION_LINE_PATTERN
 #
 # USAGE:
 #   hooks_utility_ensure_version_updated FILE LINE
@@ -1020,5 +1048,156 @@ hooks_utility_ensure_version_updated() {
 
 # constants  ===================================================================
 EFM_DISPLAY_NAME='Ensure File Modified'
-ENSURE_CHANGELOG_EDITED_MSG='must Record feature branch Implementation in changelog'
+ENSURE_CHANGELOG_EDITED_MSG='must record Feature Branch changes'
+ENSURE_VERSION_UPDATED_MSG='must bump Project Version'
+
+# improve commit message  ######################################################
+
+# hooks_utility_improve_commit_message()
+#
+# PREREQUISITE:
+#   - invoked within Git Hook: prepare-commit-msg
+#   - environmental variables set:
+#
+#     - PROJECT_VERSION_FILE
+#     - PROJECT_VERSION_LINE_PATTERN
+#
+# USAGE:
+#   hooks_utility_improve_commit_message COMMIT_EDITMSG_PATH
+#
+# ARGUMENT:
+#   COMMIT_EDITMSG_PATH     path of .git/COMMIT_EDITMSG
+#                           often provided as ${1} to prepare-commit-msg
+#
+# RETURN:
+#   0       success: message improved or skipped
+#   else    failure
+#
+# EXAMPLE:
+#   hooks_utility_improve_commit_message "${1}"
+hooks_utility_improve_commit_message() {
+    hooks_utility_enter "${ICM_DISPLAY_NAME}"
+
+    local -r commit_editmsg_path="${1}"
+
+    # decide branch by commit type  --------------------------------------------
+    local -i branch=0
+    if hooks_utility_is_finish_feature_merge_commit; then
+        branch=1
+    elif hooks_utility_is_release_merge_commit; then
+        branch=2
+    fi
+
+    echo "branch=${branch}" | hooks_utility_debug
+
+    if ((!branch)); then # skip for trivial commit type
+        echo "trivial commit type" |
+            hooks_utility_skip "${ICM_DISPLAY_NAME}"
+        return 0
+    fi
+
+    # get git default message  ------------------------=------------------------
+    # i.e. read from COMMIT_EDITMSG & get non # lines
+    local content_lines='' comment_lines='' line trimmed target
+    while IFS= read -r line || [ -n "$line" ]; do
+        # remove leading whitespace for comment detection
+        trimmed="${line#"${line%%[![:space:]]*}"}"
+
+        # choose which accumulator to use
+        if [ -n "$trimmed" ] && [ "${trimmed:0:1}" = "#" ]; then
+            target=comment_lines
+        else
+            target=content_lines
+        fi
+
+        # append preserving original line; insert \n between entries
+        if [ -z "${!target}" ]; then
+            printf -v "$target" '%s' "$line"
+        else
+            printf -v "$target" '%s\n%s' "${!target}" "$line"
+        fi
+    done <"${commit_editmsg_path}"
+    echo "${content_lines}" | hooks_utility_debug 'content_lines'
+
+    # actual branching  --------------------------------------------------------
+    local improved_lines
+    case "${branch}" in
+    1)
+        improved_lines="$(_improve_commit_msg_for_finish_feature "${content_lines}")"
+        ;;
+    2)
+        improved_lines="$(_improve_commit_msg_for_release "${content_lines}")"
+        ;;
+    esac
+    echo "${improved_lines}" | hooks_utility_debug 'improved_lines'
+
+    # write COMMIT_EDITMSG  ----------------------------------------------------
+    # create a tmp file
+    dir="$(dirname -- "$commit_editmsg_path")"
+    tmp="$(mktemp --tmpdir="$dir" commit-msg.XXXXXX)" || tmp="$dir/commit-msg.$(date +%s).$$"
+
+    printf '%s\n%s' "${improved_lines}" "${comment_lines}" >"$tmp"
+
+    # atomically move the temp file over the commit message file
+    mv -- "$tmp" "$commit_editmsg_path"
+
+    # report success improvement  ----------------------------------------------
+    case "${branch}" in
+    1)
+        echo 'for Finish Feature merge' |
+            hooks_utility_pass "${ICM_DISPLAY_NAME}"
+        ;;
+    2)
+        echo 'for Release merge' | hooks_utility_pass "${ICM_DISPLAY_NAME}"
+        ;;
+    esac
+
+    return 0
+}
+
+_improve_commit_msg_for_finish_feature() {
+    local default_msg="${1}"
+
+    local source_branch
+    source_branch="$(_get_incoming_branch_name)"
+
+    # print improved syntax, followed by original default msg
+    printf 'finish Feature: %s\n\n%s' \
+        "${source_branch}" "${default_msg}"
+
+    return 0
+}
+
+_improve_commit_msg_for_release() {
+    local default_msg="${1}"
+
+    local version=''
+    # find current project version  --------------------------------------------
+    if [[ -f "${PROJECT_VERSION_FILE}" &&
+        -n $PROJECT_VERSION_LINE_PATTERN ]]; then
+        while IFS= read -r line || [ -n "$line" ]; do
+            # search each line in file
+            if [[ $line =~ $PROJECT_VERSION_LINE_PATTERN ]]; then
+                version="${BASH_REMATCH[1]}"
+                break
+            fi
+        done <"${PROJECT_VERSION_FILE}"
+    fi
+
+    # create commit msg  -------------------------------------------------------
+    if [[ -n $version ]]; then
+        printf 'Release Version: %s' "${version}"
+    else
+        # fall back
+        printf 'Release'
+    fi
+
+    # followed by original default msg
+    printf '\n\n%s' "${default_msg}"
+
+    return 0
+}
+
+# constants  ===================================================================
+ICM_DISPLAY_NAME='Improve Commit Message'
 ENSURE_VERSION_UPDATED_MSG='must bump Project Version'
