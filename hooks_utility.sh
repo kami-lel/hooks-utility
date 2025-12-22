@@ -1179,9 +1179,7 @@ _improve_commit_msg_for_release() {
         while IFS= read -r line || [ -n "$line" ]; do
             # search each line in file
             if [[ $line =~ $PROJECT_VERSION_LINE_PATTERN ]]; then
-                version="${BASH_REMATCH[1]}" # BUG
-                echo "version found: ${version}" |
-                    hooks_utility_debug "${ICM_DISPLAY_NAME}"
+                version="${BASH_REMATCH[1]}"
                 break
             fi
         done <"${PROJECT_VERSION_FILE}"
