@@ -1010,7 +1010,7 @@ hooks_utility_ensure_version_updated() {
         "${PROJECT_VERSION_FILE}" \
         'merge-binary-release' \
         "${ENSURE_VERSION_UPDATED_MSG}" \
-        "${PROJECT_VERSION_FILE}"
+        "${PROJECT_VERSION_LINE_PATTERN}"
 
     return "$?"
 }
