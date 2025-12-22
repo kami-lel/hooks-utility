@@ -1115,16 +1115,18 @@ hooks_utility_improve_commit_message() {
 _write_commit_msg() {
     local improved
     improved=$(cat -) # read from stdin
+    local comment_lines="${1}"
 
-    # TODO
+    # HACK
+    echo "${improved}" | hooks_utility_debug 'improved'
+    echo "${comment_lines}" | hooks_utility_debug 'commentary lines'
 }
 
 _improve_commit_msg_for_finish_feature() {
     local default_msg
     default_msg=$(cat -) # read from stdin
 
-    # TODO perform improvement
-    printf '%s' "${default_msg}"
+    printf '%s' "${default_msg}" # HACK
 
     return 0
 }
@@ -1133,8 +1135,7 @@ _improve_commit_msg_for_release() {
     local default_msg
     default_msg=$(cat -) # read from stdin
 
-    # TODO perform improvement
-    printf '%s' "${default_msg}"
+    printf '%s' "${default_msg}" # HACK
 
     return 0
 }
