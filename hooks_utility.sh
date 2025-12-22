@@ -622,7 +622,7 @@ _parse_adding_padding() {
 #   hooks_utility_get_commit_type
 #
 # PREREQUISITE:
-#   invoked within the `pre-commit` Git hook
+#   - invoked within Git Hook: pre-commit
 #
 # OUTPUT:
 #   commit type printed to stdout:
@@ -688,7 +688,7 @@ hooks_utility_get_commit_type() {
 #   hooks_utility_is_release_merge_commit
 #
 # PREREQUISITE:
-#   invoked within the `pre-commit` Git hook
+#   - invoked within Git Hook: pre-commit
 #
 # RETURN:
 #   0   current commit is the specific merge type
@@ -871,7 +871,7 @@ _highlight_am_by_types() {
 #   hooks_utility_ensure_file_modified FILE COMMIT_TYPE MESSAGE [PATTERN]
 #
 # PREREQUISITE:
-#   invoked within the `pre-commit` Git hook
+#   - invoked within Git Hook: pre-commit
 #
 # ARGUMENT:
 #   FILE            file which is required to be changed,
@@ -969,7 +969,7 @@ hooks_utility_ensure_file_modified() {
 #   hooks_utility_ensure_changelog_edited CHANGELOG_FILE
 #
 # PREREQUISITE:
-#   invoked within the `pre-commit` Git hook
+#   - invoked within Git Hook: pre-commit
 #
 # ARGUMENT:
 #   CHANGELOG_FILE  file path of CHANGELOG file, relative path to repo root
@@ -993,8 +993,11 @@ hooks_utility_ensure_changelog_edited() {
 # ensure file containing version is updated when release
 #
 # PREREQUISITE:
-#   invoked within the `pre-commit` Git hook, and both environmental variable:
-#   PROJECT_VERSION_FILE and PROJECT_VERSION_LINE_PATTERN are set properly
+#   - invoked within Git Hook: pre-commit
+#   - environmental variables set:
+#
+#     - PROJECT_VERSION_FILE
+#     - PROJECT_VERSION_LINE_PATTERN are set properly
 #
 # USAGE:
 #   hooks_utility_ensure_version_updated FILE LINE
