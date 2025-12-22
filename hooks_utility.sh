@@ -1123,7 +1123,6 @@ hooks_utility_improve_commit_message() {
         improved_lines="$(_improve_commit_msg_for_release "${content_lines}")"
         ;;
     esac
-    # BUG can not do mux lines
     echo "${improved_lines}" | hooks_utility_debug 'improved_lines'
 
     # write COMMIT_EDITMSG  ----------------------------------------------------
@@ -1151,12 +1150,12 @@ hooks_utility_improve_commit_message() {
 }
 
 _improve_commit_msg_for_finish_feature() {
-    local default_msg
-    default_msg=$(cat -) # read from stdin
+    local default_msg="${1}"
 
     local source_branch
     source_branch="$(_get_incoming_branch_name)"
 
+    # print improved syntax, followed by original default msg
     printf 'Finish Feature branch: %s\n\n%s' \
         "${source_branch}" "${default_msg}"
 
@@ -1164,7 +1163,8 @@ _improve_commit_msg_for_finish_feature() {
 }
 
 _improve_commit_msg_for_release() {
-    local default_msg
+    local default_msg="${1}"
+
     default_msg=$(cat -) # read from stdin
 
     printf '%s' "${default_msg}" # HACK
