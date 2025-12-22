@@ -1053,7 +1053,11 @@ ENSURE_VERSION_UPDATED_MSG='must Bump project Version'
 # hooks_utility_improve_commit_message()
 #
 # PREREQUISITE:
-#   invoked within Git Hooks: prepare-commit-msg
+#   - invoked within Git Hook: prepare-commit-msg
+#   - environmental variables set:
+#
+#     - PROJECT_VERSION_FILE
+#     - PROJECT_VERSION_LINE_PATTERN are set properly
 #
 # USAGE:
 #   hooks_utility_improve_commit_message COMMIT_EDITMSG_PATH
