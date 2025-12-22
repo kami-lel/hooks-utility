@@ -1162,7 +1162,7 @@ _improve_commit_msg_for_finish_feature() {
     source_branch="$(_get_incoming_branch_name)"
 
     # print improved syntax, followed by original default msg
-    printf 'Merge to Finish Feature branch: %s\n\n%s' \
+    printf 'finish Feature: %s\n\n%s' \
         "${source_branch}" "${default_msg}"
 
     return 0
@@ -1186,10 +1186,10 @@ _improve_commit_msg_for_release() {
 
     # create commit msg  -------------------------------------------------------
     if [[ -n $version ]]; then
-        printf 'Merge to Release Version: %s' "${version}"
+        printf 'Release Version: %s' "${version}"
     else
         # fall back
-        printf 'Merge to Release'
+        printf 'Release'
     fi
 
     # followed by original default msg
