@@ -768,7 +768,8 @@ hooks_utility_protect_branch() {
 
     if [[ -n $DISABLE_BRANCH_PROTECTION_ONCE ]]; then
         # skip branch protection temporarily once
-        export DISABLE_BRANCH_PROTECTION_ONCE=''
+        export DISABLE_BRANCH_PROTECTION_ONCE=0
+        # BUG did not reset
         echo "DISABLE_BRANCH_PROTECTION_ONCE is set" |
             hooks_utility_skip "${BP_DISPLAY_NAME}"
         return 0
