@@ -1100,8 +1100,8 @@ hooks_utility_ensure_changelog_edited() {
 #   hooks_utility_ensure_version_updated 'project.ini' '^version: [0-9.]+'
 hooks_utility_ensure_version_updated() {
     local file line_pattern
-    file="${1}"
-    line_pattern="${1}"
+    file="${1-}"
+    line_pattern="${2-}"
 
     if [[ -n "${file}" && -n "${line_pattern}" ]]; then
         # check by info from args
