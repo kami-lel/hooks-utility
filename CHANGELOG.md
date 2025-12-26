@@ -27,6 +27,11 @@
 
 - function of `SKIP_BRANCH_PROTECTION`
 
+*Ensure File Modified*:
+
+- calling of `hooks_utility_ensure_version_updated()` with arguments,
+  allowing checking multiple files for version information
+
 ### Changed
 ### Deprecated
 ### Removed
