@@ -659,10 +659,10 @@ hooks_utility_get_commit_type() {
     if ! [[ -f "${merge_head_dir}" ]]; then
         # regular commit  ------------------------------------------------------
         # include other non-merge commit types
-        if [[ "${r_flag}" ]]; then
-            printf ''
-        else
+        if ((r_flag)); then
             printf 'regular'
+        else
+            printf ''
         fi
 
     elif [[ $(wc -l <"${merge_head_dir}") -ne 1 ]]; then
