@@ -1098,11 +1098,29 @@ hooks_utility_ensure_changelog_edited() {
 #   hooks_utility_ensure_version_updated
 #   hooks_utility_ensure_version_updated 'project.ini' '^version: [0-9.]+'
 hooks_utility_ensure_version_updated() {
-    hooks_utility_ensure_file_modified \
-        "${PROJECT_VERSION_FILE}" \
-        'merge-binary-release' \
-        "${ENSURE_VERSION_UPDATED_MSG}" \
-        "${PROJECT_VERSION_LINE_PATTERN}"
+    local file line_pattern
+    file="${1}"
+    line_pattern="${1}"
+
+    if [[ -n "${file}" && -n "${line_pattern}" ]]; then
+        # check by info from args
+        hooks_utility_ensure_file_modified \
+            "${file}" \
+            'merge-binary-release' \
+            "${ENSURE_VERSION_UPDATED_MSG}" \
+            "${line_pattern}"
+    elif [[ -n "${PROJECT_VERSION_FILE}" &&
+        -n "${PROJECT_VERSION_LINE_PATTERN}" ]]; then
+        # check by info from environment variables
+        hooks_utility_ensure_file_modified \
+            "${PROJECT_VERSION_FILE}" \
+            'merge-binary-release' \
+            "${ENSURE_VERSION_UPDATED_MSG}" \
+            "${PROJECT_VERSION_LINE_PATTERN}"
+    else
+        # TODO err print
+        return 1
+    fi
 
     return "$?"
 }
