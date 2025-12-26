@@ -418,24 +418,13 @@ _print_log_message() {
             "${lc_c_flag}" "${uc_c_flag}"
 
     # create source part  ------------------------------------------------------
-    local source=""
     if [[ -n ${source_arg} ]]; then
-        source="(${source_arg})"
+        printf '(%s)' "${source_arg}" >&"${target_fd}"
     fi
 
     # create message part  -----------------------------------------------------
-    local message=""
     if [[ -n ${message_arg} ]]; then
-        message=":\t${message_arg}"
-    fi
-
-    # print source & message part
-    if [[ ${target_fd} == 1 ]]; then
-        # print to stdout
-        printf "%b%b\n" "${source}" "${message}"
-    else
-        # print to stderr
-        printf "%b%b\n" "${source}" "${message}" >&2
+        printf ':\t%s\n' "${message_arg}" >&"${target_fd}"
     fi
 
     return 0
