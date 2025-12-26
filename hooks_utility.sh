@@ -850,7 +850,7 @@ hooks_utility_protect_branch() {
             hooks_utility_fail "${BP_DISPLAY_NAME}"
         return 1
     else
-        echo "${BP_DISPLAY_NAME}" | hooks_utility_pass ''
+        printf '%s' "${BP_DISPLAY_NAME}" | hooks_utility_pass ''
         return 0
     fi
 }
