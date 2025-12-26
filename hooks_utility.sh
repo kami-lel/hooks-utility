@@ -39,8 +39,8 @@ PROJECT_VERSION_LINE_PATTERN="${PROJECT_VERSION_LINE_PATTERN-}"
 # branch protection config  ----------------------------------------------------
 MAIN_BRANCH_NAME="${MAIN_BRANCH_NAME:-main}"
 DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
-# when set as true, disable branch protection function once
-DISABLE_BRANCH_PROTECTION_ONCE="${DISABLE_BRANCH_PROTECTION_ONCE-}"
+# when set as true, disable branch protection function
+SKIP_BRANCH_PROTECTION="${SKIP_BRANCH_PROTECTION-}"
 
 # ANSI colorful print  #########################################################
 
@@ -810,12 +810,10 @@ _get_incoming_branch_name() {
 hooks_utility_protect_branch() {
     echo "${BP_DISPLAY_NAME}" | hooks_utility_enter ''
 
-    if [[ -n "$DISABLE_BRANCH_PROTECTION_ONCE" ]]; then
-        # skip branch protection temporarily once
-        echo "DISABLE_BRANCH_PROTECTION_ONCE is set" |
+    if [[ -n "$SKIP_BRANCH_PROTECTION" ]]; then
+        # skip branch protection temporarily
+        echo "SKIP_BRANCH_PROTECTION is set" |
             hooks_utility_skip "${BP_DISPLAY_NAME}"
-        export DISABLE_BRANCH_PROTECTION_ONCE=
-        # BUG did not reset
         return 0
     fi
 
