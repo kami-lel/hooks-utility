@@ -5,6 +5,9 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
 echo "log style tests: multiple lines" | hooks_utility_padding_centered '#'
 
+# paragraphs  ==================================================================
+echo "paragraphs" | hooks_utility_padding_centered '='
+
 echo "This informational message is intentionally long and spans \
 multiple lines to test wrapping and handling by the logging function.
 It includes several paragraphs and list-like lines to increase length and \
@@ -15,6 +18,9 @@ variety:
 Additional paragraph to make the content even longer and ensure the logger\
 preserves newlines and spacing correctly.
 End of informational message." | hooks_utility_info
+
+# code  ========================================================================
+echo "code" | hooks_utility_padding_centered '='
 
 echo "Error: Failed to process request: configuration parse
 failure
@@ -29,3 +35,10 @@ Caused by: Unexpected token '}' in line 45 of config.yaml
           password: pass}word
 Suggestion: check configuration file for syntax errors and escape
 special characters." | hooks_utility_error
+
+
+# with newline  ================================================================
+echo "with newline" | hooks_utility_padding_centered '='
+
+printf 'aaa \n zzz' | hooks_utility_critical
+
