@@ -1093,6 +1093,7 @@ hooks_utility_ensure_changelog_edited() {
 # RETURN:
 #   0       success
 #   1       failure
+#   2       fail to set environment variables nor providing arguments
 #
 # EXAMPLE:
 #   hooks_utility_ensure_version_updated
@@ -1122,7 +1123,7 @@ hooks_utility_ensure_version_updated() {
     else
         printf '%s' "${EVU_FAILURE_MSG}" |
             hooks_utility_error "${EFM_DISPLAY_NAME}"
-        return 1
+        return 2
     fi
 
     return "$?"
