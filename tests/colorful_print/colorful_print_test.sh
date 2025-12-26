@@ -6,104 +6,158 @@
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
-# BUG \n is lost
-
 # Regular Color  ---------------------------------------------------------------
-echo "Regular Color" | hooks_utility_padding_left_just "-"
+echo "Regular Color" | hooks_utility_padding_centered "-"
 
-printf '%s\n' "Regular Black" | hooks_utility_colorful_print "\e[0;30m"
-printf '%s\n' "Regular Red" | hooks_utility_colorful_print "\e[0;31m"
-printf '%s\n' "Regular Green" | hooks_utility_colorful_print "\e[0;32m"
-printf '%s\n' "Regular Yellow" | hooks_utility_colorful_print "\e[0;33m"
-printf '%s\n' "Regular Blue" | hooks_utility_colorful_print "\e[0;34m"
-printf '%s\n' "Regular Purple" | hooks_utility_colorful_print "\e[0;35m"
-printf '%s\n' "Regular Cyan" | hooks_utility_colorful_print "\e[0;36m"
-printf '%s\n' "Regular White" | hooks_utility_colorful_print "\e[0;37m"
+printf '%s' "Regular Black" | hooks_utility_colorful_print "\e[0;30m"
+printf '\n'
+printf '%s' "Regular Red" | hooks_utility_colorful_print "\e[0;31m"
+printf '\n'
+printf '%s' "Regular Green" | hooks_utility_colorful_print "\e[0;32m"
+printf '\n'
+printf '%s' "Regular Yellow" | hooks_utility_colorful_print "\e[0;33m"
+printf '\n'
+printf '%s' "Regular Blue" | hooks_utility_colorful_print "\e[0;34m"
+printf '\n'
+printf '%s' "Regular Purple" | hooks_utility_colorful_print "\e[0;35m"
+printf '\n'
+printf '%s' "Regular Cyan" | hooks_utility_colorful_print "\e[0;36m"
+printf '\n'
+printf '%s' "Regular White" | hooks_utility_colorful_print "\e[0;37m"
+printf '\n'
 
 # Bold  ------------------------------------------------------------------------
-echo "Bold" | hooks_utility_padding_left_just "-"
+echo "Bold" | hooks_utility_padding_centered "-"
 
-printf '%s\n' "Bold Black" | hooks_utility_colorful_print "\e[1;30m"
-printf '%s\n' "Bold Red" | hooks_utility_colorful_print "\e[1;31m"
-printf '%s\n' "Bold Green" | hooks_utility_colorful_print "\e[1;32m"
-printf '%s\n' "Bold Yellow" | hooks_utility_colorful_print "\e[1;33m"
-printf '%s\n' "Bold Blue" | hooks_utility_colorful_print "\e[1;34m"
-printf '%s\n' "Bold Purple" | hooks_utility_colorful_print "\e[1;35m"
-printf '%s\n' "Bold Cyan" | hooks_utility_colorful_print "\e[1;36m"
-printf '%s\n' "Bold White" | hooks_utility_colorful_print "\e[1;37m"
+printf '%s' "Bold Black" | hooks_utility_colorful_print "\e[1;30m"
+printf '\n'
+printf '%s' "Bold Red" | hooks_utility_colorful_print "\e[1;31m"
+printf '\n'
+printf '%s' "Bold Green" | hooks_utility_colorful_print "\e[1;32m"
+printf '\n'
+printf '%s' "Bold Yellow" | hooks_utility_colorful_print "\e[1;33m"
+printf '\n'
+printf '%s' "Bold Blue" | hooks_utility_colorful_print "\e[1;34m"
+printf '\n'
+printf '%s' "Bold Purple" | hooks_utility_colorful_print "\e[1;35m"
+printf '\n'
+printf '%s' "Bold Cyan" | hooks_utility_colorful_print "\e[1;36m"
+printf '\n'
+printf '%s' "Bold White" | hooks_utility_colorful_print "\e[1;37m"
+printf '\n'
 
 # Underline  -------------------------------------------------------------------
-echo "Underline" | hooks_utility_padding_left_just "-"
+echo "Underline" | hooks_utility_padding_centered "-"
 
-printf '%s\n' "Underline Black" | hooks_utility_colorful_print "\e[4;30m"
-printf '%s\n' "Underline Red" | hooks_utility_colorful_print "\e[4;31m"
-printf '%s\n' "Underline Green" | hooks_utility_colorful_print "\e[4;32m"
-printf '%s\n' "Underline Yellow" | hooks_utility_colorful_print "\e[4;33m"
-printf '%s\n' "Underline Blue" | hooks_utility_colorful_print "\e[4;34m"
-printf '%s\n' "Underline Purple" | hooks_utility_colorful_print "\e[4;35m"
-printf '%s\n' "Underline Cyan" | hooks_utility_colorful_print "\e[4;36m"
-printf '%s\n' "Underline White" | hooks_utility_colorful_print "\e[4;37m"
+printf '%s' "Underline Black" | hooks_utility_colorful_print "\e[4;30m"
+printf '\n'
+printf '%s' "Underline Red" | hooks_utility_colorful_print "\e[4;31m"
+printf '\n'
+printf '%s' "Underline Green" | hooks_utility_colorful_print "\e[4;32m"
+printf '\n'
+printf '%s' "Underline Yellow" | hooks_utility_colorful_print "\e[4;33m"
+printf '\n'
+printf '%s' "Underline Blue" | hooks_utility_colorful_print "\e[4;34m"
+printf '\n'
+printf '%s' "Underline Purple" | hooks_utility_colorful_print "\e[4;35m"
+printf '\n'
+printf '%s' "Underline Cyan" | hooks_utility_colorful_print "\e[4;36m"
+printf '\n'
+printf '%s' "Underline White" | hooks_utility_colorful_print "\e[4;37m"
+printf '\n'
 
 # Background  ------------------------------------------------------------------
-echo "Background" | hooks_utility_padding_left_just "-"
+echo "Background" | hooks_utility_padding_centered "-"
 
-printf '%s\n' "Background Black" | hooks_utility_colorful_print "\e[40m"
-printf '%s\n' "Background Red" | hooks_utility_colorful_print "\e[41m"
-printf '%s\n' "Background Green" | hooks_utility_colorful_print "\e[42m"
-printf '%s\n' "Background Yellow" | hooks_utility_colorful_print "\e[43m"
-printf '%s\n' "Background Blue" | hooks_utility_colorful_print "\e[44m"
-printf '%s\n' "Background Purple" | hooks_utility_colorful_print "\e[45m"
-printf '%s\n' "Background Cyan" | hooks_utility_colorful_print "\e[46m"
-printf '%s\n' "Background White" | hooks_utility_colorful_print "\e[47m"
+printf '%s' "Background Black" | hooks_utility_colorful_print "\e[40m"
+printf '\n'
+printf '%s' "Background Red" | hooks_utility_colorful_print "\e[41m"
+printf '\n'
+printf '%s' "Background Green" | hooks_utility_colorful_print "\e[42m"
+printf '\n'
+printf '%s' "Background Yellow" | hooks_utility_colorful_print "\e[43m"
+printf '\n'
+printf '%s' "Background Blue" | hooks_utility_colorful_print "\e[44m"
+printf '\n'
+printf '%s' "Background Purple" | hooks_utility_colorful_print "\e[45m"
+printf '\n'
+printf '%s' "Background Cyan" | hooks_utility_colorful_print "\e[46m"
+printf '\n'
+printf '%s' "Background White" | hooks_utility_colorful_print "\e[47m"
+printf '\n'
 
 # High Intensity  --------------------------------------------------------------
-echo "High Intensity" | hooks_utility_padding_left_just "-"
+echo "High Intensity" | hooks_utility_padding_centered "-"
 
-printf '%s\n' "High Intensity Black" | hooks_utility_colorful_print "\e[0;90m"
-printf '%s\n' "High Intensity Red" | hooks_utility_colorful_print "\e[0;91m"
-printf '%s\n' "High Intensity Green" | hooks_utility_colorful_print "\e[0;92m"
-printf '%s\n' "High Intensity Yellow" | hooks_utility_colorful_print "\e[0;93m"
-printf '%s\n' "High Intensity Blue" | hooks_utility_colorful_print "\e[0;94m"
-printf '%s\n' "High Intensity Purple" | hooks_utility_colorful_print "\e[0;95m"
-printf '%s\n' "High Intensity Cyan" | hooks_utility_colorful_print "\e[0;96m"
-printf '%s\n' "High Intensity White" | hooks_utility_colorful_print "\e[0;97m"
+printf '%s' "High Intensity Black" | hooks_utility_colorful_print "\e[0;90m"
+printf '\n'
+printf '%s' "High Intensity Red" | hooks_utility_colorful_print "\e[0;91m"
+printf '\n'
+printf '%s' "High Intensity Green" | hooks_utility_colorful_print "\e[0;92m"
+printf '\n'
+printf '%s' "High Intensity Yellow" | hooks_utility_colorful_print "\e[0;93m"
+printf '\n'
+printf '%s' "High Intensity Blue" | hooks_utility_colorful_print "\e[0;94m"
+printf '\n'
+printf '%s' "High Intensity Purple" | hooks_utility_colorful_print "\e[0;95m"
+printf '\n'
+printf '%s' "High Intensity Cyan" | hooks_utility_colorful_print "\e[0;96m"
+printf '\n'
+printf '%s' "High Intensity White" | hooks_utility_colorful_print "\e[0;97m"
+printf '\n'
 
 # Bold High Intensity  ---------------------------------------------------------
-echo "Bold High Intensity" | hooks_utility_padding_left_just "-"
+echo "Bold High Intensity" | hooks_utility_padding_centered "-"
 
-printf '%s\n' "Bold High Intensity Black" |
+printf '%s' "Bold High Intensity Black" |
     hooks_utility_colorful_print "\e[1;90m"
-printf '%s\n' "Bold High Intensity Red" |
+printf '\n'
+printf '%s' "Bold High Intensity Red" |
     hooks_utility_colorful_print "\e[1;91m"
-printf '%s\n' "Bold High Intensity Green" |
+printf '\n'
+printf '%s' "Bold High Intensity Green" |
     hooks_utility_colorful_print "\e[1;92m"
-printf '%s\n' "Bold High Intensity Yellow" |
+printf '\n'
+printf '%s' "Bold High Intensity Yellow" |
     hooks_utility_colorful_print "\e[1;93m"
-printf '%s\n' "Bold High Intensity Blue" |
+printf '\n'
+printf '%s' "Bold High Intensity Blue" |
     hooks_utility_colorful_print "\e[1;94m"
-printf '%s\n' "Bold High Intensity Purple" |
+printf '\n'
+printf '%s' "Bold High Intensity Purple" |
     hooks_utility_colorful_print "\e[1;95m"
-printf '%s\n' "Bold High Intensity Cyan" |
+printf '\n'
+printf '%s' "Bold High Intensity Cyan" |
     hooks_utility_colorful_print "\e[1;96m"
-printf '%s\n' "Bold High Intensity White" |
+printf '\n'
+printf '%s' "Bold High Intensity White" |
     hooks_utility_colorful_print "\e[1;97m"
+printf '\n'
 
 # High Intensity backgrounds  --------------------------------------------------
-echo "High Intensity backgrounds" | hooks_utility_padding_left_just "-"
+echo "High Intensity backgrounds" | hooks_utility_padding_centered "-"
 
-printf '%s\n' "High Intensity backgrounds Black" |
+printf '%s' "High Intensity backgrounds Black" |
     hooks_utility_colorful_print "\e[0;100m"
-printf '%s\n' "High Intensity backgrounds Red" |
+printf '\n'
+printf '%s' "High Intensity backgrounds Red" |
     hooks_utility_colorful_print "\e[0;101m"
-printf '%s\n' "High Intensity backgrounds Green" |
+printf '\n'
+printf '%s' "High Intensity backgrounds Green" |
     hooks_utility_colorful_print "\e[0;102m"
-printf '%s\n' "High Intensity backgrounds Yellow" |
+printf '\n'
+printf '%s' "High Intensity backgrounds Yellow" |
     hooks_utility_colorful_print "\e[0;103m"
-printf '%s\n' "High Intensity backgrounds Blue" |
+printf '\n'
+printf '%s' "High Intensity backgrounds Blue" |
     hooks_utility_colorful_print "\e[0;104m"
-printf '%s\n' "High Intensity backgrounds Purple" |
+printf '\n'
+printf '%s' "High Intensity backgrounds Purple" |
     hooks_utility_colorful_print "\e[0;105m"
-printf '%s\n' "High Intensity backgrounds Cyan" |
+printf '\n'
+printf '%s' "High Intensity backgrounds Cyan" |
     hooks_utility_colorful_print "\e[0;106m"
-printf '%s\n' "High Intensity backgrounds White" |
+printf '\n'
+printf '%s' "High Intensity backgrounds White" |
     hooks_utility_colorful_print "\e[0;107m"
+printf '\n'
