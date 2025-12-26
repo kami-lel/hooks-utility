@@ -2,7 +2,7 @@
 
 [^format]
 
-<!-- bug log style message can't handle message w/ \n -->
+<!-- BUG log style message can't handle message w/ \n -->
 
 
 
