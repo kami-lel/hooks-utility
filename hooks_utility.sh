@@ -183,21 +183,10 @@ _colorful_print_with_target_fd() {
     message=$(cat -) # read from stdin
 
     # actually print  ---------------------------------------------------------
-    local content
-    # decide if coloring
     if ((use_color)); then
-        content="${color}${message}${ANSI_RESET}"
+        printf '%b%s%b' "${color}" "${message}" "${ANSI_RESET}" >&"${target_fd}"
     else
-        content="${message}"
-    fi
-
-    # decide stdout or stderr
-    if [[ ${target_fd} == 1 ]]; then
-        # print to stdout
-        printf "%b" "$content"
-    else
-        # print to stderr
-        printf "%b" "$content" >&2
+        printf '%s' "${message}" >&"${target_fd}"
     fi
 
     return 0
