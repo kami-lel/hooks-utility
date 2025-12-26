@@ -17,6 +17,10 @@
 ## [Unreleased]
 
 ### Added
+
+- `hooks_utility_get_commit_type`: option `-r` to show `"regular"` instead of empty string
+
+
 ### Changed
 ### Deprecated
 ### Removed
