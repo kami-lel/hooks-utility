@@ -716,6 +716,32 @@ hooks_utility_is_release_merge_commit() {
     [[ "$(hooks_utility_get_commit_type)" == "merge-binary-release" ]]
 }
 
+# hooks_utility_debug_commit_type()
+#
+# debug-print the commit type in log message style
+# q.v. hooks_utility_get_commit_type()
+#
+# PREREQUISITE:
+#   invoked within Git Hooks:
+#
+#   - pre-commit
+#   - prepare-commit-msg
+#
+# USAGE:
+#   hooks_utility_debug_commit_type
+#
+# OUTPUT:
+#   printed to stdout
+#
+# EXAMPLE:
+#   hooks_utility_debug_commit_type
+hooks_utility_debug_commit_type() {
+    local commit_type
+    commit_type=$(hooks_utility_get_commit_type)
+    printf '%s' "${commit_type}" | hooks_utility_debug "${GCT_DISPLAY_NAME}"
+    return "$?"
+}
+
 # helper method  ===============================================================
 
 # _get_incoming_branch_name()
@@ -740,6 +766,9 @@ _get_incoming_branch_name() {
     git name-rev --name-only "${source_sha}"
     return "$?"
 }
+
+# constant  ====================================================================
+GCT_DISPLAY_NAME='Get Commit Type'
 
 # branch protection  ###########################################################
 # abbr. BP
