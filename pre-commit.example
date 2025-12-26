@@ -23,7 +23,6 @@ hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 
 # make sure version is bumped when finish feature branch
 hooks_utility_ensure_version_updated
-# Todo check another file for version
 
 # perform branch protection  ---------------------------------------------------
 hooks_utility_protect_branch

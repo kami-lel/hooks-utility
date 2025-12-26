@@ -856,7 +856,7 @@ hooks_utility_protect_branch() {
 }
 
 # constants  ===================================================================
-BP_DISPLAY_NAME='branch protection'
+BP_DISPLAY_NAME='Branch Protection'
 
 PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
 SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
@@ -1015,6 +1015,8 @@ hooks_utility_ensure_file_modified() {
                     l="${line#+}" # remove leading +
                     # search the line for the pattern
                     if [[ $l =~ $pattern ]]; then
+                        printf 'find line matching LINE_PATTERN:\n%s' "${pattern}" |
+                            hooks_utility_debug "${EFM_DISPLAY_NAME}"
                         pass=1
                         break
                     fi
@@ -1074,28 +1076,59 @@ hooks_utility_ensure_changelog_edited() {
 #
 # ensure file containing version is updated when release
 #
+# if both FILE and LINE_PATTERN are present, use them;
+# else check version based on information provided by environmental variables:
+#
+# - PROJECT_VERSION_FILE
+# - PROJECT_VERSION_LINE_PATTERN
+#
 # PREREQUISITE:
 #   - invoked within Git Hook: pre-commit
-#   - environmental variables set:
-#
-#     - PROJECT_VERSION_FILE
-#     - PROJECT_VERSION_LINE_PATTERN
 #
 # USAGE:
-#   hooks_utility_ensure_version_updated FILE LINE
+#   hooks_utility_ensure_version_updated [FILE LINE_PATTERN]
+#
+# ARGUMENT:
+#   [FILE]          file containing version information,
+#                   relative path to repo root
+#   [LINE_PATTERN]  version line pattern in FILE,
+#                   in Extended RE
 #
 # RETURN:
 #   0       success
 #   1       failure
+#   2       fail to set environment variables nor providing arguments
 #
 # EXAMPLE:
-#   hooks_utility_ensure_version_updated 'project.ini' 5
+#   hooks_utility_ensure_version_updated
+#   hooks_utility_ensure_version_updated 'project.ini' '^version: [0-9.]+'
 hooks_utility_ensure_version_updated() {
-    hooks_utility_ensure_file_modified \
-        "${PROJECT_VERSION_FILE}" \
-        'merge-binary-release' \
-        "${ENSURE_VERSION_UPDATED_MSG}" \
-        "${PROJECT_VERSION_LINE_PATTERN}"
+    local file line_pattern
+    file="${1-}"
+    line_pattern="${2-}"
+
+    if [[ -n "${file}" && -n "${line_pattern}" ]]; then
+        # check by info from args
+        hooks_utility_ensure_file_modified \
+            "${file}" \
+            "${EVU_COMMIT_TYPE}" \
+            "${EVU_UPDATED_MSG}" \
+            "${line_pattern}"
+
+    elif [[ -n "${PROJECT_VERSION_FILE}" &&
+        -n "${PROJECT_VERSION_LINE_PATTERN}" ]]; then
+        # check by info from environment variables
+        hooks_utility_ensure_file_modified \
+            "${PROJECT_VERSION_FILE}" \
+            "${EVU_COMMIT_TYPE}" \
+            "${EVU_UPDATED_MSG}" \
+            "${PROJECT_VERSION_LINE_PATTERN}"
+
+    else
+        printf '%s' "${EVU_FAILURE_MSG}" |
+            hooks_utility_error "${EFM_DISPLAY_NAME}"
+        return 2
+    fi
 
     return "$?"
 }
@@ -1103,7 +1136,9 @@ hooks_utility_ensure_version_updated() {
 # constants  ===================================================================
 EFM_DISPLAY_NAME='Ensure File Modified'
 ENSURE_CHANGELOG_EDITED_MSG='must record Feature Branch changes'
-ENSURE_VERSION_UPDATED_MSG='must bump Project Version'
+EVU_COMMIT_TYPE='merge-binary-release'
+EVU_UPDATED_MSG='must bump Project Version'
+EVU_FAILURE_MSG='fail to set PROJECT_VERSION_FILE & PROJECT_VERSION_LINE_PATTERN, nor arguments provided'
 
 # improve commit message  ######################################################
 
@@ -1254,4 +1289,3 @@ _improve_commit_msg_for_release() {
 
 # constants  ===================================================================
 ICM_DISPLAY_NAME='Improve Commit Message'
-ENSURE_VERSION_UPDATED_MSG='must bump Project Version'
