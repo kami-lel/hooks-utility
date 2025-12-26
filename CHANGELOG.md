@@ -2,6 +2,8 @@
 
 [^format]
 
+<!-- BUG branch protection: \n in line get interpreted -->
+
 
 
 
