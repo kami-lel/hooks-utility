@@ -18,9 +18,14 @@
 
 ### Added
 
-- `hooks_utility_get_commit_type`: option `-r` to show `"regular"` instead of empty string
+*Get Commit Type*:
+
+- option `-r` of `hooks_utility_get_commit_type`: show `"regular"` instead of empty string
 - `hooks_utility_debug_commit_type`
-- *Branch Protection*: function of `SKIP_BRANCH_PROTECTION`
+
+*Branch Protection*:
+
+- function of `SKIP_BRANCH_PROTECTION`
 
 ### Changed
 ### Deprecated
