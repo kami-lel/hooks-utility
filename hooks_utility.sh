@@ -627,12 +627,15 @@ _parse_adding_padding() {
 #   - prepare-commit-msg
 #
 # USAGE:
-#   hooks_utility_get_commit_type
+#   hooks_utility_get_commit_type [-r]
+#
+# ARGUMENT:
+#   [-r]    v.i.
 #
 # OUTPUT:
 #   commit type printed to stdout:
 #
-#   - '': regular commit, and other non-merge commit
+#   - ''; 'regular' if -r: regular commit, and other non-merge commit
 #   - 'merge-binary': binary merge commit of 2 branches
 #
 #       - 'merge-binary-finish_feature': any branch (except main) -> dev branch
@@ -643,12 +646,27 @@ _parse_adding_padding() {
 # EXAMPLE:
 #   commit_type=$(hooks_utility_get_commit_type)
 hooks_utility_get_commit_type() {
+    # parse ipt
+    local -i r_flag=0
+    while getopts ":r" opn; do
+        case "$opn" in
+        r) r_flag=1 ;;
+        *) return 2 ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
     local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
 
     if ! [[ -f "${merge_head_dir}" ]]; then
         # regular commit  ------------------------------------------------------
         # include other non-merge commit types
-        printf ''
+        if ((r_flag)); then
+            printf 'regular'
+        else
+            printf ''
+        fi
+
     elif [[ $(wc -l <"${merge_head_dir}") -ne 1 ]]; then
         # octopus merge  -------------------------------------------------------
         printf 'merge-octopus'
@@ -716,6 +734,32 @@ hooks_utility_is_finish_feature_merge_commit() {
 
 hooks_utility_is_release_merge_commit() {
     [[ "$(hooks_utility_get_commit_type)" == "merge-binary-release" ]]
+}
+
+# hooks_utility_debug_commit_type()
+#
+# debug-print the commit type in log message style
+# q.v. hooks_utility_get_commit_type()
+#
+# PREREQUISITE:
+#   invoked within Git Hooks:
+#
+#   - pre-commit
+#   - prepare-commit-msg
+#
+# USAGE:
+#   hooks_utility_debug_commit_type
+#
+# OUTPUT:
+#   printed to stdout
+#
+# EXAMPLE:
+#   hooks_utility_debug_commit_type
+hooks_utility_debug_commit_type() {
+    local commit_type
+    commit_type=$(hooks_utility_get_commit_type -r)
+    printf '%s' "${commit_type}" | hooks_utility_debug 'Commit Type'
+    return "$?"
 }
 
 # helper method  ===============================================================

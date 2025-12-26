@@ -10,6 +10,8 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 # start pre-commit  ############################################################
 echo "pre-commit" | hooks_utility_enter
 
+hooks_utility_debug_commit_type
+
 # ensure file modification  ----------------------------------------------------
 # make sure CHANGELOG.md is edited when finish feature branch
 hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
