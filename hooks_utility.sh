@@ -1106,19 +1106,22 @@ hooks_utility_ensure_version_updated() {
         # check by info from args
         hooks_utility_ensure_file_modified \
             "${file}" \
-            'merge-binary-release' \
-            "${ENSURE_VERSION_UPDATED_MSG}" \
+            "${EVU_COMMIT_TYPE}" \
+            "${EVU_UPDATED_MSG}" \
             "${line_pattern}"
+
     elif [[ -n "${PROJECT_VERSION_FILE}" &&
         -n "${PROJECT_VERSION_LINE_PATTERN}" ]]; then
         # check by info from environment variables
         hooks_utility_ensure_file_modified \
             "${PROJECT_VERSION_FILE}" \
-            'merge-binary-release' \
-            "${ENSURE_VERSION_UPDATED_MSG}" \
+            "${EVU_COMMIT_TYPE}" \
+            "${EVU_UPDATED_MSG}" \
             "${PROJECT_VERSION_LINE_PATTERN}"
+
     else
-        # TODO err print
+        printf '%s' "${EVU_FAILURE_MSG}" |
+            hooks_utility_error "${EFM_DISPLAY_NAME}"
         return 1
     fi
 
@@ -1128,7 +1131,9 @@ hooks_utility_ensure_version_updated() {
 # constants  ===================================================================
 EFM_DISPLAY_NAME='Ensure File Modified'
 ENSURE_CHANGELOG_EDITED_MSG='must record Feature Branch changes'
-ENSURE_VERSION_UPDATED_MSG='must bump Project Version'
+EVU_COMMIT_TYPE='merge-binary-release'
+EVU_UPDATED_MSG='must bump Project Version'
+EVU_FAILURE_MSG='fail to set PROJECT_VERSION_FILE & PROJECT_VERSION_LINE_PATTERN, nor arguments provided'
 
 # improve commit message  ######################################################
 
@@ -1279,4 +1284,3 @@ _improve_commit_msg_for_release() {
 
 # constants  ===================================================================
 ICM_DISPLAY_NAME='Improve Commit Message'
-ENSURE_VERSION_UPDATED_MSG='must bump Project Version'
