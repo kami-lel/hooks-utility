@@ -39,6 +39,10 @@
 ### Removed
 ### Fixed
 
+*Log Style Message*:
+
+- fix bug interpreting `\n` in message
+
 
 
 
