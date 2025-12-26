@@ -883,8 +883,6 @@ _search_am_from_git_diff_cached() {
             grep '^+[^+]' |
             cut -c2- | grep -E "${pattern}" || true)
 
-        # BUG \n get interpreted
-
         if [[ -n ${lines} ]]; then
             # print file name
             printf '%s' "${filename}" | hooks_utility_padding_centered -c '-'

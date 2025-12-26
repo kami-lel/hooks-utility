@@ -2,7 +2,7 @@
 
 [^format]
 
-<!-- BUG branch protection: \n in line get interpreted -->
+<!-- bug log style message can't handle message w/ \n -->
 
 
 
