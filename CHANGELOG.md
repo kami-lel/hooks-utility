@@ -30,7 +30,7 @@
 *Ensure File Modified*:
 
 - calling of `hooks_utility_ensure_version_updated()` with arguments,
-  allowing mu
+  allowing checking multiple files for version information
 
 ### Changed
 ### Deprecated
