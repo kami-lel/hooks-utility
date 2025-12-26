@@ -38,6 +38,8 @@ echo "Fail Some Script" | hooks_utility_fail -D
 echo "LOGGING_LEVEL=20" | hooks_utility_padding_centered '#'
 export LOGGING_LEVEL=20
 
+# BUG not shown error & critical
+
 echo "Some Debugging Message Content" | hooks_utility_debug -D
 echo "Content of Informational Message" | hooks_utility_info -D
 echo "Warning!" | hooks_utility_warning -D
