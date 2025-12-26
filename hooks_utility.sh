@@ -810,12 +810,12 @@ _get_incoming_branch_name() {
 hooks_utility_protect_branch() {
     echo "${BP_DISPLAY_NAME}" | hooks_utility_enter ''
 
-    if [[ -n $DISABLE_BRANCH_PROTECTION_ONCE ]]; then
+    if [[ -n "$DISABLE_BRANCH_PROTECTION_ONCE" ]]; then
         # skip branch protection temporarily once
-        export DISABLE_BRANCH_PROTECTION_ONCE=0
-        # BUG did not reset
         echo "DISABLE_BRANCH_PROTECTION_ONCE is set" |
             hooks_utility_skip "${BP_DISPLAY_NAME}"
+        export DISABLE_BRANCH_PROTECTION_ONCE=
+        # BUG did not reset
         return 0
     fi
 
