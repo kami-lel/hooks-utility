@@ -3,7 +3,6 @@
 a collections of utility functions for **git hooks**
 
 <!-- bug branch protection: \n in line get interpreted -->
-<!-- TODO new feature, disable branch protection temporarly once -->
 
 
 
