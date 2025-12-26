@@ -1072,22 +1072,31 @@ hooks_utility_ensure_changelog_edited() {
 #
 # ensure file containing version is updated when release
 #
+# if both FILE and LINE_PATTERN are present, use them;
+# else check version based on information provided by environmental variables:
+#
+# - PROJECT_VERSION_FILE
+# - PROJECT_VERSION_LINE_PATTERN
+#
 # PREREQUISITE:
 #   - invoked within Git Hook: pre-commit
-#   - environmental variables set:
-#
-#     - PROJECT_VERSION_FILE
-#     - PROJECT_VERSION_LINE_PATTERN
 #
 # USAGE:
-#   hooks_utility_ensure_version_updated FILE LINE
+#   hooks_utility_ensure_version_updated [FILE LINE_PATTERN]
+#
+# ARGUMENT:
+#   [FILE]          file containing version information,
+#                   relative path to repo root
+#   [LINE_PATTERN]  version line pattern in FILE,
+#                   in Extended RE
 #
 # RETURN:
 #   0       success
 #   1       failure
 #
 # EXAMPLE:
-#   hooks_utility_ensure_version_updated 'project.ini' 5
+#   hooks_utility_ensure_version_updated
+#   hooks_utility_ensure_version_updated 'project.ini' '^version: [0-9.]+'
 hooks_utility_ensure_version_updated() {
     hooks_utility_ensure_file_modified \
         "${PROJECT_VERSION_FILE}" \
