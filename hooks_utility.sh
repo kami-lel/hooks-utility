@@ -856,7 +856,7 @@ hooks_utility_protect_branch() {
 }
 
 # constants  ===================================================================
-BP_DISPLAY_NAME='branch protection'
+BP_DISPLAY_NAME='Branch Protection'
 
 PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
 SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
@@ -1013,6 +1013,8 @@ hooks_utility_ensure_file_modified() {
                     l="${line#+}" # remove leading +
                     # search the line for the pattern
                     if [[ $l =~ $pattern ]]; then
+                        printf 'find line matching LINE_PATTERN:\n%s' "${pattern}" |
+                            hooks_utility_debug "${EFM_DISPLAY_NAME}"
                         pass=1
                         break
                     fi
