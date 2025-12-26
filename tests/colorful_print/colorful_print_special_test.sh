@@ -11,10 +11,25 @@ echo "special character tests" | hooks_utility_padding_centered '#'
 
 # as literal  ==================================================================
 echo "as literal" | hooks_utility_padding_centered '='
+
+# \n  --------------------------------------------------------------------------
 printf '%s' "\n" | hooks_utility_padding_centered '-'
+printf 'AAAAA%sZZZZZ' "\n" | hooks_utility_colorful_print "\e[0;31m"
+printf '\n'
+
+# \t  --------------------------------------------------------------------------
 printf '%s' "\t" | hooks_utility_padding_centered '-'
+printf 'AAAAA%sZZZZZ' "\t" | hooks_utility_colorful_print "\e[0;32m"
+printf '\n'
 
 # as interpreted  ==============================================================
 echo "as interpreted" | hooks_utility_padding_centered '='
+# \n  --------------------------------------------------------------------------
 printf '%s' "\n" | hooks_utility_padding_centered '-'
+printf 'AAAAA%bZZZZZ' "\n" | hooks_utility_colorful_print "\e[0;31m"
+printf '\n'
+
+# \t  --------------------------------------------------------------------------
 printf '%s' "\t" | hooks_utility_padding_centered '-'
+printf 'AAAAA%bZZZZZ' "\t" | hooks_utility_colorful_print "\e[0;32m"
+printf '\n'
