@@ -856,7 +856,7 @@ hooks_utility_protect_branch() {
 }
 
 # constants  ===================================================================
-BP_DISPLAY_NAME='branch protection'
+BP_DISPLAY_NAME='Branch Protection'
 
 PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
 SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
