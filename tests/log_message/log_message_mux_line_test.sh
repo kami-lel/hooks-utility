@@ -29,3 +29,5 @@ Caused by: Unexpected token '}' in line 45 of config.yaml
           password: pass}word
 Suggestion: check configuration file for syntax errors and escape
 special characters." | hooks_utility_error
+
+# TODO more tests of deal with \t, \n etc
