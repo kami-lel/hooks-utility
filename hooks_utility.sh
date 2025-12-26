@@ -424,9 +424,10 @@ _print_log_message() {
 
     # create message part  -----------------------------------------------------
     if [[ -n ${message_arg} ]]; then
-        printf ':\t%s\n' "${message_arg}" >&"${target_fd}"
+        printf ':\t%s' "${message_arg}" >&"${target_fd}"
     fi
 
+    printf '\n' >&"${target_fd}"
     return 0
 }
 

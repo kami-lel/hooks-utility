@@ -7,7 +7,6 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
 echo "special character tests" | hooks_utility_padding_centered '#'
 # as literal  ==================================================================
-# BUG
 echo "as literal" | hooks_utility_padding_centered '='
 
 # \n  --------------------------------------------------------------------------
