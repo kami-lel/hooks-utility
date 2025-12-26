@@ -755,7 +755,7 @@ hooks_utility_is_release_merge_commit() {
 #   hooks_utility_debug_commit_type
 hooks_utility_debug_commit_type() {
     local commit_type
-    commit_type=$(hooks_utility_get_commit_type)
+    commit_type=$(hooks_utility_get_commit_type -r)
     printf '%s' "${commit_type}" | hooks_utility_debug "${GCT_DISPLAY_NAME}"
     return "$?"
 }
