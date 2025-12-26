@@ -756,7 +756,7 @@ hooks_utility_is_release_merge_commit() {
 hooks_utility_debug_commit_type() {
     local commit_type
     commit_type=$(hooks_utility_get_commit_type -r)
-    printf '%s' "${commit_type}" | hooks_utility_debug "${GCT_DISPLAY_NAME}"
+    printf '%s' "${commit_type}" | hooks_utility_debug 'Commit Type'
     return "$?"
 }
 
@@ -784,9 +784,6 @@ _get_incoming_branch_name() {
     git name-rev --name-only "${source_sha}"
     return "$?"
 }
-
-# constant  ====================================================================
-GCT_DISPLAY_NAME='Get Commit Type'
 
 # branch protection  ###########################################################
 # abbr. BP
