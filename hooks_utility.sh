@@ -1150,7 +1150,7 @@ hooks_utility_improve_commit_message() {
         return 0
     fi
 
-    # get git default message  ------------------------=------------------------
+    # get git default message  -------------------------------------------------
     # i.e. read from COMMIT_EDITMSG & get non # lines
     local content_lines='' comment_lines='' line trimmed target
     while IFS= read -r line || [ -n "$line" ]; do
