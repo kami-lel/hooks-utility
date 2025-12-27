@@ -17,8 +17,7 @@ hooks_utility_debug_commit_type
 hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 
 # make sure version is bumped when finish feature branch
-pattern='^# version: *v[0-9.]+'
-hooks_utility_ensure_version_updated 'hooks_utility.sh' "${pattern}"
+hooks_utility_ensure_version_updated
 
 # make sure hooks_utility.sh contains no AM
 if hooks_utility_is_release_merge_commit; then
