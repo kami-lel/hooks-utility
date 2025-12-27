@@ -2,8 +2,6 @@
 
 [^format]
 
-<!-- BUG log style message can't handle message w/ AAA \n ZZZ -->
-
 
 
 
