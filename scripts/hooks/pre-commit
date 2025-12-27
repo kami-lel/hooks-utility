@@ -10,17 +10,18 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 # start pre-commit  ############################################################
 echo "pre-commit" | hooks_utility_enter
 
+hooks_utility_debug_commit_type
+
 # ensure file modification  ----------------------------------------------------
 # make sure CHANGELOG.md is edited when finish feature branch
 hooks_utility_ensure_changelog_edited 'CHANGELOG.md'
 
 # make sure version is bumped when finish feature branch
-pattern='^# version: *v[0-9.]+'
-hooks_utility_ensure_version_updated 'hooks_utility.sh' "${pattern}"
+hooks_utility_ensure_version_updated
 
 # make sure hooks_utility.sh contains no AM
 if hooks_utility_is_release_merge_commit; then
-    PATTERN="${PRIMARY_AM_PATTERN}|${SECONDARY_AM_PATTERN}|${TERTIARY_AM_PATTERN}"
+    PATTERN="# (${PRIMARY_AM_PATTERN}|${SECONDARY_AM_PATTERN}|${TERTIARY_AM_PATTERN})"
     if git diff --cached --unified=0 --no-color hooks_utility.sh |
         grep -E -q -- "$PATTERN"; then
         echo "hooks_utility.sh must contains no AM at all" | hooks_utility_fail

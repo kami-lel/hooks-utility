@@ -5,6 +5,9 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
 echo "log style tests: multiple lines" | hooks_utility_padding_centered '#'
 
+# info paragraph  ==============================================================
+echo "info paragraph" | hooks_utility_padding_centered '='
+
 echo "This informational message is intentionally long and spans \
 multiple lines to test wrapping and handling by the logging function.
 It includes several paragraphs and list-like lines to increase length and \
@@ -16,6 +19,8 @@ Additional paragraph to make the content even longer and ensure the logger\
 preserves newlines and spacing correctly.
 End of informational message." | hooks_utility_info
 
+# error code  ==================================================================
+echo "error code" | hooks_utility_padding_centered '='
 echo "Error: Failed to process request: configuration parse
 failure
     at parse_config (config_parser.sh:132)

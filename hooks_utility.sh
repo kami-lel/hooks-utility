@@ -7,7 +7,7 @@ set -euo pipefail
 # a collections of utility functions for git hooks
 #
 # author:  kamiLeL
-# version: v2.1.0
+# version: v2.2.0
 ################################################################################
 
 # configurations  ##############################################################
@@ -39,6 +39,8 @@ PROJECT_VERSION_LINE_PATTERN="${PROJECT_VERSION_LINE_PATTERN-}"
 # branch protection config  ----------------------------------------------------
 MAIN_BRANCH_NAME="${MAIN_BRANCH_NAME:-main}"
 DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
+# when set as true, disable branch protection function
+SKIP_BRANCH_PROTECTION="${SKIP_BRANCH_PROTECTION-}"
 
 # ANSI colorful print  #########################################################
 
@@ -181,21 +183,10 @@ _colorful_print_with_target_fd() {
     message=$(cat -) # read from stdin
 
     # actually print  ---------------------------------------------------------
-    local content
-    # decide if coloring
     if ((use_color)); then
-        content="${color}${message}${ANSI_RESET}"
+        printf '%b%s%b' "${color}" "${message}" "${ANSI_RESET}" >&"${target_fd}"
     else
-        content="${message}"
-    fi
-
-    # decide stdout or stderr
-    if [[ ${target_fd} == 1 ]]; then
-        # print to stdout
-        printf "%b" "$content"
-    else
-        # print to stderr
-        printf "%b" "$content" >&2
+        printf '%s' "${message}" >&"${target_fd}"
     fi
 
     return 0
@@ -427,26 +418,16 @@ _print_log_message() {
             "${lc_c_flag}" "${uc_c_flag}"
 
     # create source part  ------------------------------------------------------
-    local source=""
     if [[ -n ${source_arg} ]]; then
-        source="(${source_arg})"
+        printf '(%s)' "${source_arg}" >&"${target_fd}"
     fi
 
     # create message part  -----------------------------------------------------
-    local message=""
     if [[ -n ${message_arg} ]]; then
-        message=":\t${message_arg}"
+        printf ':\t%s' "${message_arg}" >&"${target_fd}"
     fi
 
-    # print source & message part
-    if [[ ${target_fd} == 1 ]]; then
-        # print to stdout
-        printf "%b%b\n" "${source}" "${message}"
-    else
-        # print to stderr
-        printf "%b%b\n" "${source}" "${message}" >&2
-    fi
-
+    printf '\n' >&"${target_fd}"
     return 0
 }
 
@@ -625,12 +606,15 @@ _parse_adding_padding() {
 #   - prepare-commit-msg
 #
 # USAGE:
-#   hooks_utility_get_commit_type
+#   hooks_utility_get_commit_type [-r]
+#
+# ARGUMENT:
+#   [-r]    v.i.
 #
 # OUTPUT:
 #   commit type printed to stdout:
 #
-#   - '': regular commit, and other non-merge commit
+#   - ''; 'regular' if -r: regular commit, and other non-merge commit
 #   - 'merge-binary': binary merge commit of 2 branches
 #
 #       - 'merge-binary-finish_feature': any branch (except main) -> dev branch
@@ -641,12 +625,27 @@ _parse_adding_padding() {
 # EXAMPLE:
 #   commit_type=$(hooks_utility_get_commit_type)
 hooks_utility_get_commit_type() {
+    # parse ipt
+    local -i r_flag=0
+    while getopts ":r" opn; do
+        case "$opn" in
+        r) r_flag=1 ;;
+        *) return 2 ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
     local -r merge_head_dir="$(git rev-parse --git-dir)/MERGE_HEAD"
 
     if ! [[ -f "${merge_head_dir}" ]]; then
         # regular commit  ------------------------------------------------------
         # include other non-merge commit types
-        printf ''
+        if ((r_flag)); then
+            printf 'regular'
+        else
+            printf ''
+        fi
+
     elif [[ $(wc -l <"${merge_head_dir}") -ne 1 ]]; then
         # octopus merge  -------------------------------------------------------
         printf 'merge-octopus'
@@ -716,6 +715,32 @@ hooks_utility_is_release_merge_commit() {
     [[ "$(hooks_utility_get_commit_type)" == "merge-binary-release" ]]
 }
 
+# hooks_utility_debug_commit_type()
+#
+# debug-print the commit type in log message style
+# q.v. hooks_utility_get_commit_type()
+#
+# PREREQUISITE:
+#   invoked within Git Hooks:
+#
+#   - pre-commit
+#   - prepare-commit-msg
+#
+# USAGE:
+#   hooks_utility_debug_commit_type
+#
+# OUTPUT:
+#   printed to stdout
+#
+# EXAMPLE:
+#   hooks_utility_debug_commit_type
+hooks_utility_debug_commit_type() {
+    local commit_type
+    commit_type=$(hooks_utility_get_commit_type -r)
+    printf '%s' "${commit_type}" | hooks_utility_debug 'Commit Type'
+    return "$?"
+}
+
 # helper method  ===============================================================
 
 # _get_incoming_branch_name()
@@ -742,7 +767,6 @@ _get_incoming_branch_name() {
 }
 
 # branch protection  ###########################################################
-# abbr. BP
 
 # hooks_utility_protect_branch()
 #
@@ -764,6 +788,13 @@ _get_incoming_branch_name() {
 #   1   failure: undesired AM detected
 hooks_utility_protect_branch() {
     echo "${BP_DISPLAY_NAME}" | hooks_utility_enter ''
+
+    if [[ -n "$SKIP_BRANCH_PROTECTION" ]]; then
+        # skip branch protection temporarily
+        echo "SKIP_BRANCH_PROTECTION is set" |
+            hooks_utility_skip "${BP_DISPLAY_NAME}"
+        return 0
+    fi
 
     local commit_type
     commit_type=$(hooks_utility_get_commit_type)
@@ -798,13 +829,13 @@ hooks_utility_protect_branch() {
             hooks_utility_fail "${BP_DISPLAY_NAME}"
         return 1
     else
-        echo "${BP_DISPLAY_NAME}" | hooks_utility_pass ''
+        printf '%s' "${BP_DISPLAY_NAME}" | hooks_utility_pass ''
         return 0
     fi
 }
 
 # constants  ===================================================================
-BP_DISPLAY_NAME='branch protection'
+BP_DISPLAY_NAME='Branch Protection'
 
 PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
 SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
@@ -961,6 +992,8 @@ hooks_utility_ensure_file_modified() {
                     l="${line#+}" # remove leading +
                     # search the line for the pattern
                     if [[ $l =~ $pattern ]]; then
+                        printf 'find line matching LINE_PATTERN:\n%s' "${pattern}" |
+                            hooks_utility_debug "${EFM_DISPLAY_NAME}"
                         pass=1
                         break
                     fi
@@ -1020,28 +1053,59 @@ hooks_utility_ensure_changelog_edited() {
 #
 # ensure file containing version is updated when release
 #
+# if both FILE and LINE_PATTERN are present, use them;
+# else check version based on information provided by environmental variables:
+#
+# - PROJECT_VERSION_FILE
+# - PROJECT_VERSION_LINE_PATTERN
+#
 # PREREQUISITE:
 #   - invoked within Git Hook: pre-commit
-#   - environmental variables set:
-#
-#     - PROJECT_VERSION_FILE
-#     - PROJECT_VERSION_LINE_PATTERN
 #
 # USAGE:
-#   hooks_utility_ensure_version_updated FILE LINE
+#   hooks_utility_ensure_version_updated [FILE LINE_PATTERN]
+#
+# ARGUMENT:
+#   [FILE]          file containing version information,
+#                   relative path to repo root
+#   [LINE_PATTERN]  version line pattern in FILE,
+#                   in Extended RE
 #
 # RETURN:
 #   0       success
 #   1       failure
+#   2       fail to set environment variables nor providing arguments
 #
 # EXAMPLE:
-#   hooks_utility_ensure_version_updated 'project.ini' 5
+#   hooks_utility_ensure_version_updated
+#   hooks_utility_ensure_version_updated 'project.ini' '^version: [0-9.]+'
 hooks_utility_ensure_version_updated() {
-    hooks_utility_ensure_file_modified \
-        "${PROJECT_VERSION_FILE}" \
-        'merge-binary-release' \
-        "${ENSURE_VERSION_UPDATED_MSG}" \
-        "${PROJECT_VERSION_LINE_PATTERN}"
+    local file line_pattern
+    file="${1-}"
+    line_pattern="${2-}"
+
+    if [[ -n "${file}" && -n "${line_pattern}" ]]; then
+        # check by info from args
+        hooks_utility_ensure_file_modified \
+            "${file}" \
+            "${EVU_COMMIT_TYPE}" \
+            "${EVU_UPDATED_MSG}" \
+            "${line_pattern}"
+
+    elif [[ -n "${PROJECT_VERSION_FILE}" &&
+        -n "${PROJECT_VERSION_LINE_PATTERN}" ]]; then
+        # check by info from environment variables
+        hooks_utility_ensure_file_modified \
+            "${PROJECT_VERSION_FILE}" \
+            "${EVU_COMMIT_TYPE}" \
+            "${EVU_UPDATED_MSG}" \
+            "${PROJECT_VERSION_LINE_PATTERN}"
+
+    else
+        printf '%s' "${EVU_FAILURE_MSG}" |
+            hooks_utility_error "${EFM_DISPLAY_NAME}"
+        return 2
+    fi
 
     return "$?"
 }
@@ -1049,7 +1113,9 @@ hooks_utility_ensure_version_updated() {
 # constants  ===================================================================
 EFM_DISPLAY_NAME='Ensure File Modified'
 ENSURE_CHANGELOG_EDITED_MSG='must record Feature Branch changes'
-ENSURE_VERSION_UPDATED_MSG='must bump Project Version'
+EVU_COMMIT_TYPE='merge-binary-release'
+EVU_UPDATED_MSG='must bump Project Version'
+EVU_FAILURE_MSG='fail to set PROJECT_VERSION_FILE & PROJECT_VERSION_LINE_PATTERN, nor arguments provided'
 
 # improve commit message  ######################################################
 
@@ -1096,7 +1162,7 @@ hooks_utility_improve_commit_message() {
         return 0
     fi
 
-    # get git default message  ------------------------=------------------------
+    # get git default message  -------------------------------------------------
     # i.e. read from COMMIT_EDITMSG & get non # lines
     local content_lines='' comment_lines='' line trimmed target
     while IFS= read -r line || [ -n "$line" ]; do
@@ -1200,4 +1266,3 @@ _improve_commit_msg_for_release() {
 
 # constants  ===================================================================
 ICM_DISPLAY_NAME='Improve Commit Message'
-ENSURE_VERSION_UPDATED_MSG='must bump Project Version'

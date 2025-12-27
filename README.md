@@ -2,8 +2,6 @@
 
 a collections of utility functions for **git hooks**
 
-<!-- bug branch protection: \n in line get interpreted -->
-
 
 
 

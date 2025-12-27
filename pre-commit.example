@@ -12,6 +12,8 @@ source "$(dirname "${BASH_SOURCE[0]}")/../hooks_utility/hooks_utility.sh"
 # start pre-commit checks  #####################################################
 echo "pre-commit" | hooks_utility_enter
 
+hooks_utility_debug_commit_type
+
 # ensure file modification  ----------------------------------------------------
 # make sure working_note.txt is edited in all commit
 hooks_utility_ensure_file_modified 'working_note.txt' '' "remember to take note"
