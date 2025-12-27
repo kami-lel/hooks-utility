@@ -17,6 +17,26 @@
 ## [Unreleased]
 
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+
+
+
+
+
+
+
+
+
+
+
+
+
+## [2.2.0] - 2025-12-26
+
+### Added
 
 *Get Commit Type*:
 
@@ -27,14 +47,13 @@
 
 - function of `SKIP_BRANCH_PROTECTION`
 
+### Changed
+
 *Ensure File Modified*:
 
 - calling of `hooks_utility_ensure_version_updated()` with arguments,
   allowing checking multiple files for version information
 
-### Changed
-### Deprecated
-### Removed
 ### Fixed
 
 *Log Style Message*:
@@ -181,7 +200,8 @@
 
 
 
-[unreleased]: https://github.com/kami-lel/kami-log-py/compare/v2.1.0...dev
+[unreleased]: https://github.com/kami-lel/kami-log-py/compare/v2.2.0...dev
+[2.2.0]: https://github.com/kami-lel/kami-log-py/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/kami-lel/kami-log-py/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/kami-lel/kami-log-py/compare/v1.1.1...v2.0.0
 [1.1.1]: https://github.com/kami-lel/kami-log-py/compare/v1.1.0...v1.1.1
