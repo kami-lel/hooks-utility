@@ -183,21 +183,10 @@ _colorful_print_with_target_fd() {
     message=$(cat -) # read from stdin
 
     # actually print  ---------------------------------------------------------
-    local content
-    # decide if coloring
     if ((use_color)); then
-        content="${color}${message}${ANSI_RESET}"
+        printf '%b%s%b' "${color}" "${message}" "${ANSI_RESET}" >&"${target_fd}"
     else
-        content="${message}"
-    fi
-
-    # decide stdout or stderr
-    if [[ ${target_fd} == 1 ]]; then
-        # print to stdout
-        printf "%b" "$content"
-    else
-        # print to stderr
-        printf "%b" "$content" >&2
+        printf '%s' "${message}" >&"${target_fd}"
     fi
 
     return 0
@@ -429,26 +418,16 @@ _print_log_message() {
             "${lc_c_flag}" "${uc_c_flag}"
 
     # create source part  ------------------------------------------------------
-    local source=""
     if [[ -n ${source_arg} ]]; then
-        source="(${source_arg})"
+        printf '(%s)' "${source_arg}" >&"${target_fd}"
     fi
 
     # create message part  -----------------------------------------------------
-    local message=""
     if [[ -n ${message_arg} ]]; then
-        message=":\t${message_arg}"
+        printf ':\t%s' "${message_arg}" >&"${target_fd}"
     fi
 
-    # print source & message part
-    if [[ ${target_fd} == 1 ]]; then
-        # print to stdout
-        printf "%b%b\n" "${source}" "${message}"
-    else
-        # print to stderr
-        printf "%b%b\n" "${source}" "${message}" >&2
-    fi
-
+    printf '\n' >&"${target_fd}"
     return 0
 }
 
@@ -1183,7 +1162,7 @@ hooks_utility_improve_commit_message() {
         return 0
     fi
 
-    # get git default message  ------------------------=------------------------
+    # get git default message  -------------------------------------------------
     # i.e. read from COMMIT_EDITMSG & get non # lines
     local content_lines='' comment_lines='' line trimmed target
     while IFS= read -r line || [ -n "$line" ]; do

@@ -2,8 +2,6 @@
 
 [^format]
 
-<!-- bug log style message can't handle message w/ \n -->
-
 
 
 
@@ -38,6 +36,10 @@
 ### Deprecated
 ### Removed
 ### Fixed
+
+*Log Style Message*:
+
+- fix bug of interpreting `\n` in message
 
 
 

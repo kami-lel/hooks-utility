@@ -21,6 +21,9 @@ echo "Enter Some Script" | hooks_utility_enter -D
 echo "Finish Some Script" | hooks_utility_pass -D
 echo "Fail Some Script" | hooks_utility_fail -D
 
+echo "(should be FULL)" | hooks_utility_print_in_black
+printf '\n'
+
 # LOGGING_LEVEL=10  ============================================================
 echo "LOGGING_LEVEL=10" | hooks_utility_padding_centered '#'
 export LOGGING_LEVEL=10
@@ -33,6 +36,9 @@ echo "Giving Critical Error Message" | hooks_utility_critical -D
 echo "Enter Some Script" | hooks_utility_enter -D
 echo "Finish Some Script" | hooks_utility_pass -D
 echo "Fail Some Script" | hooks_utility_fail -D
+
+echo "(should be FULL)" | hooks_utility_print_in_black
+printf '\n'
 
 # LOGGING_LEVEL=20  ============================================================
 echo "LOGGING_LEVEL=20" | hooks_utility_padding_centered '#'
@@ -47,6 +53,9 @@ echo "Enter Some Script" | hooks_utility_enter -D
 echo "Finish Some Script" | hooks_utility_pass -D
 echo "Fail Some Script" | hooks_utility_fail -D
 
+echo "(should be EMPTY)" | hooks_utility_print_in_black
+printf '\n'
+
 # LOGGING_LEVEL=30  ============================================================
 echo "LOGGING_LEVEL=30" | hooks_utility_padding_centered '#'
 export LOGGING_LEVEL=30
@@ -59,5 +68,8 @@ echo "Giving Critical Error Message" | hooks_utility_critical -D
 echo "Enter Some Script" | hooks_utility_enter -D
 echo "Finish Some Script" | hooks_utility_pass -D
 echo "Fail Some Script" | hooks_utility_fail -D
+
+echo "(should be EMPTY)" | hooks_utility_print_in_black
+printf '\n'
 
 export LOGGING_LEVEL="${logging_level_default}"

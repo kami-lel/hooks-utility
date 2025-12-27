@@ -13,11 +13,19 @@
 # shellcheck source=/dev/null
 source "$(dirname "${BASH_SOURCE[0]}")/../../hooks_utility.sh"
 
-printf '%s' "Content in Black\n" | hooks_utility_print_in_black
-printf '%s' "Content in Red\n" | hooks_utility_print_in_red
-printf '%s' "Content in Green\n" | hooks_utility_print_in_green
-printf '%s' "Content in Yellow\n" | hooks_utility_print_in_yellow
-printf '%s' "Content in Blue\n" | hooks_utility_print_in_blue
-printf '%s' "Content in Purple\n" | hooks_utility_print_in_purple
-printf '%s' "Content in Cyan\n" | hooks_utility_print_in_cyan
-printf '%s' "Content in White\n" | hooks_utility_print_in_white
+printf '%s' "Content in Black" | hooks_utility_print_in_black
+printf '\n'
+printf '%s' "Content in Red" | hooks_utility_print_in_red
+printf '\n'
+printf '%s' "Content in Green" | hooks_utility_print_in_green
+printf '\n'
+printf '%s' "Content in Yellow" | hooks_utility_print_in_yellow
+printf '\n'
+printf '%s' "Content in Blue" | hooks_utility_print_in_blue
+printf '\n'
+printf '%s' "Content in Purple" | hooks_utility_print_in_purple
+printf '\n'
+printf '%s' "Content in Cyan" | hooks_utility_print_in_cyan
+printf '\n'
+printf '%s' "Content in White" | hooks_utility_print_in_white
+printf '\n'
