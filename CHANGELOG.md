@@ -39,7 +39,7 @@
 
 *Log Style Message*:
 
-- fix bug interpreting `\n` in message
+- fix bug of interpreting `\n` in message
 
 
 
