@@ -4,6 +4,7 @@
 
 <!-- Fixme mpv debug print info for ensure file updated -->
 <!-- todo show line number for any features which involve git diff --cached -->
+<!-- Fixme mpv setting up procedure, such as write test scripts for correct pattern line pattern (must has 1 capture group -->
 
 
 
