@@ -3,6 +3,7 @@
 [^format]
 
 <!-- Fixme mpv debug print info for ensure file updated -->
+<!-- todo show line number for any features which involve git diff --cached -->
 
 
 
