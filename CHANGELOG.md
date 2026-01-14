@@ -6,7 +6,9 @@
 <!-- todo show line number for any features which involve git diff --cached -->
 <!-- Fixme mpv setting up procedure, such as write test scripts for correct pattern line pattern (must has 1 capture group -->
 <!-- Todo allow set PASS message as an arg, otherwise checking same file for different purpose print confusing message -->
-todo: for commit message, distinguish Major/Minor/Patch Release
+<!-- todo: for commit message, distinguish Major/Minor/Patch Release -->
+<!-- Bug: when matching for AMs, make sure space around keywords -->
+<!-- todo UI to interactively setting env vars -->
 
 
 
