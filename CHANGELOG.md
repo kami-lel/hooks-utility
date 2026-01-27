@@ -3,6 +3,8 @@
 [^format]
 
 <!-- Fixme mpv debug print info for ensure file updated -->
+<!-- Todo conditional check for update -->
+<!-- Todo write docs (moving from README.md) -->
 <!-- todo show line number for any features which involve git diff --cached -->
 <!-- Fixme mpv setting up procedure, such as write test scripts for correct pattern line pattern (must has 1 capture group -->
 <!-- Todo allow set PASS message as an arg, otherwise checking same file for different purpose print confusing message -->
