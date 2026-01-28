@@ -810,7 +810,7 @@ hooks_utility_protect_branch() {
 
     # decide whether check is passed
     if [[ -n "${result}" ]]; then
-        printf 'remove AM(s) of incoming branch in file(s):\n%s' "${result}" |
+        printf 'incoming branch must not contains:\n%s' "${result}" |
             hooks_utility_fail "${BP_DISPLAY_NAME}"
         return 1
     else
