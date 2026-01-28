@@ -3,7 +3,7 @@
 [^format]
 
 <!-- Fixme mpv debug print info for ensure file updated -->
-<!-- Todo conditional check for update -->
+<!-- todo conditional check for EFC -->
 <!-- Todo write docs (moving from README.md) -->
 <!-- todo show line number for any features which involve git diff --cached -->
 <!-- Fixme mpv setting up procedure, such as write test scripts for correct pattern line pattern (must has 1 capture group -->
