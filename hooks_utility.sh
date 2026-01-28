@@ -39,8 +39,6 @@ PROJECT_VERSION_LINE_PATTERN="${PROJECT_VERSION_LINE_PATTERN-}"
 # branch protection config  ----------------------------------------------------
 MAIN_BRANCH_NAME="${MAIN_BRANCH_NAME:-main}"
 DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
-# when set as true, disable branch protection function
-SKIP_BRANCH_PROTECTION="${SKIP_BRANCH_PROTECTION-}"
 
 # ANSI colorful print  #########################################################
 
@@ -789,13 +787,6 @@ _get_incoming_branch_name() {
 hooks_utility_protect_branch() {
     echo "${BP_DISPLAY_NAME}" | hooks_utility_enter ''
 
-    if [[ -n "$SKIP_BRANCH_PROTECTION" ]]; then
-        # skip branch protection temporarily
-        echo "SKIP_BRANCH_PROTECTION is set" |
-            hooks_utility_skip "${BP_DISPLAY_NAME}"
-        return 0
-    fi
-
     local commit_type
     commit_type=$(hooks_utility_get_commit_type)
     printf 'commit_type=%s' "${commit_type}" |
@@ -808,13 +799,7 @@ hooks_utility_protect_branch() {
         result=$(_search_am_from_git_diff_cached 1)
         ;;
     merge-binary-release)
-        result1="$(_search_am_from_git_diff_cached 1)"
-        result2="$(_search_am_from_git_diff_cached 2)"
-        if [[ -n $result1 || -n $result2 ]]; then
-            result="${result1}"$'\n'"${result2}"
-        else
-            result=""
-        fi
+        result=$(_search_am_from_git_diff_cached 2)
         ;;
     *)
         echo "trivial commit type" |
@@ -825,7 +810,7 @@ hooks_utility_protect_branch() {
 
     # decide whether check is passed
     if [[ -n "${result}" ]]; then
-        printf 'remove AM(s) of incoming branch in file(s):\n%s' "${result}" |
+        printf 'incoming branch must not contains:\n%s' "${result}" |
             hooks_utility_fail "${BP_DISPLAY_NAME}"
         return 1
     else
@@ -837,88 +822,87 @@ hooks_utility_protect_branch() {
 # constants  ===================================================================
 BP_DISPLAY_NAME='Branch Protection'
 
-PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
-SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
-TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
-AM_TYPE_TODO='todo'
-AM_TYPE_BUG='bug'
-AM_TYPE_FIXME='fixme'
-AM_TYPE_HACK='hack'
+# pattern to check when: merge from feature to dev
+FEATURE_AM_PATTERN='(^|[[:space:]])(Todo|Bug|Fixme|Hack)([[:space:]]|$)'
+# pattern to check when: merge from dev to main (release)
+RELEASE_AM_PATTERN='(^|[[:space:]])(TODO|Todo|BUG|Bug|FIXME|Fixme|HACK|Hack)([[:space:]]|$)'
+
+# hack tmp disable coloring in this version
+# AM_TYPE_TODO='todo'
+# AM_TYPE_BUG='bug'
+# AM_TYPE_FIXME='fixme'
+# AM_TYPE_HACK='hack'
 
 # helper functions  ============================================================
 
 # perform git diff --cached, find all AMs, print to stdout
 _search_am_from_git_diff_cached() {
-    local -i am_class="$1" # 1:primary AM, 2:secondary, 3: tertiary
+    local -i am_class="$1" # 1:release, 2:feature finish
 
     # decide which pattern to use
     local pattern
-    pattern="$(_am_class_index2pattern "${am_class}")"
+    case "${am_class}" in
+    1) pattern="${FEATURE_AM_PATTERN}" ;;
+    2) pattern="${RELEASE_AM_PATTERN}" ;;
+    esac
 
-    # iterate each added & modified files
+    # iterate each added & modified files by filename
     while IFS= read -r -d '' filename; do
         local lines
         lines=$(git diff --cached --unified=0 --no-color -- "${filename}" |
-            grep '^+[^+]' |
-            cut -c2- | grep -E "${pattern}" || true)
+            grep '^+[^+]' |               # take only lines start w/ single +
+            cut -c2- |                    # remove leading +
+            grep -E "${pattern}" || true) # match line w/ AM mattern
 
         if [[ -n ${lines} ]]; then
             # print file name
             printf '%s' "${filename}" | hooks_utility_padding_centered -c '-'
+            printf '%s\n' "${lines}"
 
-            # print lines with AMs
-            while IFS= read -r line || [ -n "$line" ]; do
-                _highlight_am_line_in_git_diff_cached "${line}" "${pattern}"
-            done <<<"$lines"
+            # hack tmp disable coloring in this version
+            # # print lines with AMs
+            # while IFS= read -r line || [ -n "$line" ]; do
+            #     _highlight_am_line_in_git_diff_cached "${line}" "${pattern}"
+            # done <<<"$lines"
 
         fi
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 }
 
-# convert AM class index [1~3] to pattern
-_am_class_index2pattern() {
-    local am_class="${1}"
+# hack tmp disable coloring in this version
+# _highlight_am_line_in_git_diff_cached() {
+#     local line pattern split_pattern
+#     line="${1}"
+#     pattern="${2}"
 
-    case "${am_class}" in
-    1) echo "${PRIMARY_AM_PATTERN}" ;;
-    2) echo "${SECONDARY_AM_PATTERN}" ;;
-    3) echo "${TERTIARY_AM_PATTERN}" ;;
-    esac
-}
+#     split_pattern="^(.*)(${pattern})(.*)$"
 
-_highlight_am_line_in_git_diff_cached() {
-    local line pattern split_pattern
-    line="${1}"
-    pattern="${2}"
+#     if [[ $line =~ $split_pattern ]]; then
+#         printf '%s' "${BASH_REMATCH[1]}"
+#         _highlight_am_by_types "${BASH_REMATCH[2]}"
+#         printf '%s\n' "${BASH_REMATCH[3]}"
+#     else
+#         printf '%s\n' "${line}" # fallback
+#     fi
+# }
+#
+# # add coloring of AM based on types
+# _highlight_am_by_types() {
+#     local am am_lc color
+#     am="${1}"
+#     am_lc="${am,,}" # make lower case
 
-    split_pattern="^(.*)(${pattern})(.*)$"
+#     case "${am_lc}" in
+#     "${AM_TYPE_TODO}") color="${ANSI_COLOR_GREEN_BG}" ;;
+#     "${AM_TYPE_BUG}") color="${ANSI_COLOR_RED_BG}" ;;
+#     "${AM_TYPE_FIXME}") color="${ANSI_COLOR_YELLOW_BG}" ;;
+#     "${AM_TYPE_HACK}") color="${ANSI_COLOR_BLUE_BG}" ;;
+#     esac
 
-    if [[ $line =~ $split_pattern ]]; then
-        printf '%s' "${BASH_REMATCH[1]}"
-        _highlight_am_by_types "${BASH_REMATCH[2]}"
-        printf '%s\n' "${BASH_REMATCH[3]}"
-    else
-        printf '%s\n' "${line}" # fallback
-    fi
-}
+#     printf '%s' "${am}" | hooks_utility_colorful_print -c "${color}"
+# }
 
-# add coloring of AM based on types
-_highlight_am_by_types() {
-    local am am_lc color
-    am="${1}"
-    am_lc="${am,,}" # make lower case
-
-    case "${am_lc}" in
-    "${AM_TYPE_TODO}") color="${ANSI_COLOR_GREEN_BG}" ;;
-    "${AM_TYPE_BUG}") color="${ANSI_COLOR_RED_BG}" ;;
-    "${AM_TYPE_FIXME}") color="${ANSI_COLOR_YELLOW_BG}" ;;
-    "${AM_TYPE_HACK}") color="${ANSI_COLOR_BLUE_BG}" ;;
-    esac
-
-    printf '%s' "${am}" | hooks_utility_colorful_print -c "${color}"
-}
-
-# ensure file modified  ####################################################
+# ensure file modified  ########################################################
 #
 # abbr. EFM
 
