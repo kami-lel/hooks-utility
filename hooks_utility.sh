@@ -869,12 +869,16 @@ _search_am_from_git_diff_cached() {
 # convert AM class index [1~3] to pattern
 _am_class_index2pattern() {
     local am_class="${1}"
+    local opt
 
     case "${am_class}" in
-    1) echo "${PRIMARY_AM_PATTERN}" ;;
-    2) echo "${SECONDARY_AM_PATTERN}" ;;
-    3) echo "${TERTIARY_AM_PATTERN}" ;;
+    1) opt="${PRIMARY_AM_PATTERN}" ;;
+    2) opt="${SECONDARY_AM_PATTERN}" ;;
+    3) opt="${TERTIARY_AM_PATTERN}" ;;
     esac
+
+    # BUG need test
+    echo '(^|[[:space:]])'"${opt}"'([[:space:]]|$)'
 }
 
 _highlight_am_line_in_git_diff_cached() {
@@ -909,7 +913,7 @@ _highlight_am_by_types() {
     printf '%s' "${am}" | hooks_utility_colorful_print -c "${color}"
 }
 
-# ensure file modified  ####################################################
+# ensure file modified  ########################################################
 #
 # abbr. EFM
 
