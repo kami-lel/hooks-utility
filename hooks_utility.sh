@@ -827,7 +827,6 @@ FEATURE_AM_PATTERN='(^|[[:space:]])(Todo|Bug|Fixme|Hack)([[:space:]]|$)'
 # pattern to check when: merge from dev to main (release)
 RELEASE_AM_PATTERN='(^|[[:space:]])(TODO|Todo|BUG|Bug|FIXME|Fixme|HACK|Hack)([[:space:]]|$)'
 
-# hack tmp disable coloring in this version
 # AM_TYPE_TODO='todo'
 # AM_TYPE_BUG='bug'
 # AM_TYPE_FIXME='fixme'
@@ -859,7 +858,6 @@ _search_am_from_git_diff_cached() {
             printf '%s' "${filename}" | hooks_utility_padding_centered -c '-'
             printf '%s\n' "${lines}"
 
-            # hack tmp disable coloring in this version
             # # print lines with AMs
             # while IFS= read -r line || [ -n "$line" ]; do
             #     _highlight_am_line_in_git_diff_cached "${line}" "${pattern}"
@@ -869,7 +867,6 @@ _search_am_from_git_diff_cached() {
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 }
 
-# hack tmp disable coloring in this version
 # _highlight_am_line_in_git_diff_cached() {
 #     local line pattern split_pattern
 #     line="${1}"
