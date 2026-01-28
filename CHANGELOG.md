@@ -10,7 +10,7 @@
 <!-- Todo allow set PASS message as an arg, otherwise checking same file for different purpose print confusing message -->
 <!-- todo: for commit message, distinguish Major/Minor/Patch Release -->
 <!-- todo UI to interactively setting env vars -->
-<!-- hack tmp disable coloring in this version -->
+<!-- hack tmp disable coloring for bp -->
 
 
 
