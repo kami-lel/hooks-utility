@@ -828,9 +828,8 @@ hooks_utility_protect_branch() {
 # constants  ===================================================================
 BP_DISPLAY_NAME='Branch Protection'
 
-PRIMARY_AM_PATTERN='TODO|BUG|FIXME|HACK'
-SECONDARY_AM_PATTERN='Todo|Bug|Fixme|Hack'
-TERTIARY_AM_PATTERN='todo|bug|fixme|hack'
+PRIMARY_AM_PATTERN='(^|[[:space:]])(TODO|BUG|FIXME|HACK)([[:space:]]|$)'
+SECONDARY_AM_PATTERN='(^|[[:space:]])(Todo|Bug|Fixme|Hack)([[:space:]]|$)'
 AM_TYPE_TODO='todo'
 AM_TYPE_BUG='bug'
 AM_TYPE_FIXME='fixme'
@@ -844,7 +843,10 @@ _search_am_from_git_diff_cached() {
 
     # decide which pattern to use
     local pattern
-    pattern="$(_am_class_index2pattern "${am_class}")"
+    case "${am_class}" in
+    1) pattern="${PRIMARY_AM_PATTERN}" ;;
+    2) pattern="${PRIMARY_AM_PATTERN}" ;;
+    esac
 
     # iterate each added & modified files
     while IFS= read -r -d '' filename; do
@@ -858,27 +860,13 @@ _search_am_from_git_diff_cached() {
             printf '%s' "${filename}" | hooks_utility_padding_centered -c '-'
 
             # print lines with AMs
-            while IFS= read -r line || [ -n "$line" ]; do
-                _highlight_am_line_in_git_diff_cached "${line}" "${pattern}"
-            done <<<"$lines"
+            # HACK
+            # while IFS= read -r line || [ -n "$line" ]; do
+            #     _highlight_am_line_in_git_diff_cached "${line}" "${pattern}"
+            # done <<<"$lines"
 
         fi
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
-}
-
-# convert AM class index [1~3] to pattern
-_am_class_index2pattern() {
-    local am_class="${1}"
-    local opt
-
-    case "${am_class}" in
-    1) opt="${PRIMARY_AM_PATTERN}" ;;
-    2) opt="${SECONDARY_AM_PATTERN}" ;;
-    3) opt="${TERTIARY_AM_PATTERN}" ;;
-    esac
-
-    # BUG need test
-    echo '(^|[[:space:]])'"${opt}"'([[:space:]]|$)'
 }
 
 _highlight_am_line_in_git_diff_cached() {
