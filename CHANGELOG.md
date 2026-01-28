@@ -37,7 +37,7 @@
 
 ### Fixed
 
-- BP pattern 
+- BP pattern to not match unintentional pattern
 
 
 
