@@ -799,9 +799,7 @@ hooks_utility_protect_branch() {
         result=$(_search_am_from_git_diff_cached 1)
         ;;
     merge-binary-release)
-        result1="$(_search_am_from_git_diff_cached 1)"
-        result2="$(_search_am_from_git_diff_cached 2)"
-        result="${result1}${result2}"
+        result=$(_search_am_from_git_diff_cached 2)
         ;;
     *)
         echo "trivial commit type" |
@@ -824,8 +822,14 @@ hooks_utility_protect_branch() {
 # constants  ===================================================================
 BP_DISPLAY_NAME='Branch Protection'
 
+# HACK rm
 PRIMARY_AM_PATTERN='(^|[[:space:]])(TODO|BUG|FIXME|HACK)([[:space:]]|$)'
 SECONDARY_AM_PATTERN='(^|[[:space:]])(Todo|Bug|Fixme|Hack)([[:space:]]|$)'
+
+# pattern to check when: merge from dev to main (release)
+RELEASE_AM_PATTERN='(^|[[:space:]])(TODO|Todo|BUG|Bug|FIXME|Fixme|HACK|Hack)([[:space:]]|$)'
+# pattern to check when: merge from feature to dev
+FEATURE_AM_PATTERN='(^|[[:space:]])(Todo|Bug|Fixme|Hack)([[:space:]]|$)'
 AM_TYPE_TODO='todo'
 AM_TYPE_BUG='bug'
 AM_TYPE_FIXME='fixme'
@@ -835,13 +839,13 @@ AM_TYPE_HACK='hack'
 
 # perform git diff --cached, find all AMs, print to stdout
 _search_am_from_git_diff_cached() {
-    local -i am_class="$1" # 1:primary AM, 2:secondary, 3: tertiary
+    local -i am_class="$1" # 1:release, 2:feature finish
 
     # decide which pattern to use
     local pattern
     case "${am_class}" in
-    1) pattern="${PRIMARY_AM_PATTERN}" ;;
-    2) pattern="${SECONDARY_AM_PATTERN}" ;;
+    1) pattern="${RELEASE_AM_PATTERN}" ;;
+    2) pattern="${FEATURE_AM_PATTERN}" ;;
     esac
 
     # iterate each added & modified files by filename
@@ -861,13 +865,12 @@ _search_am_from_git_diff_cached() {
             # while IFS= read -r line || [ -n "$line" ]; do
             #     _highlight_am_line_in_git_diff_cached "${line}" "${pattern}"
             # done <<<"$lines"
-            # TODO add empty line
 
         fi
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 }
 
-_highlight_am_line_in_git_diff_cached() {
+_highlight_am_line_in_git_diff_cached() { # HACK no use
     local line pattern split_pattern
     line="${1}"
     pattern="${2}"
@@ -884,7 +887,7 @@ _highlight_am_line_in_git_diff_cached() {
 }
 
 # add coloring of AM based on types
-_highlight_am_by_types() {
+_highlight_am_by_types() { # HACK no use
     local am am_lc color
     am="${1}"
     am_lc="${am,,}" # make lower case
