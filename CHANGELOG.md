@@ -33,6 +33,9 @@
 
 ### Deprecated
 ### Removed
+
+- branch skip feature
+
 ### Fixed
 
 

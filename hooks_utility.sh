@@ -39,8 +39,6 @@ PROJECT_VERSION_LINE_PATTERN="${PROJECT_VERSION_LINE_PATTERN-}"
 # branch protection config  ----------------------------------------------------
 MAIN_BRANCH_NAME="${MAIN_BRANCH_NAME:-main}"
 DEV_BRANCH_NAME="${DEV_BRANCH_NAME:-dev}"
-# when set as true, disable branch protection function
-SKIP_BRANCH_PROTECTION="${SKIP_BRANCH_PROTECTION-}"
 
 # ANSI colorful print  #########################################################
 
@@ -788,13 +786,6 @@ _get_incoming_branch_name() {
 #   1   failure: undesired AM detected
 hooks_utility_protect_branch() {
     echo "${BP_DISPLAY_NAME}" | hooks_utility_enter ''
-
-    if [[ -n "$SKIP_BRANCH_PROTECTION" ]]; then
-        # skip branch protection temporarily
-        echo "SKIP_BRANCH_PROTECTION is set" |
-            hooks_utility_skip "${BP_DISPLAY_NAME}"
-        return 0
-    fi
 
     local commit_type
     commit_type=$(hooks_utility_get_commit_type)
