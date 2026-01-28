@@ -822,18 +822,16 @@ hooks_utility_protect_branch() {
 # constants  ===================================================================
 BP_DISPLAY_NAME='Branch Protection'
 
-# HACK rm
-PRIMARY_AM_PATTERN='(^|[[:space:]])(TODO|BUG|FIXME|HACK)([[:space:]]|$)'
-SECONDARY_AM_PATTERN='(^|[[:space:]])(Todo|Bug|Fixme|Hack)([[:space:]]|$)'
-
 # pattern to check when: merge from feature to dev
 FEATURE_AM_PATTERN='(^|[[:space:]])(Todo|Bug|Fixme|Hack)([[:space:]]|$)'
 # pattern to check when: merge from dev to main (release)
 RELEASE_AM_PATTERN='(^|[[:space:]])(TODO|Todo|BUG|Bug|FIXME|Fixme|HACK|Hack)([[:space:]]|$)'
-AM_TYPE_TODO='todo'
-AM_TYPE_BUG='bug'
-AM_TYPE_FIXME='fixme'
-AM_TYPE_HACK='hack'
+
+# hack tmp disable coloring in this version
+# AM_TYPE_TODO='todo'
+# AM_TYPE_BUG='bug'
+# AM_TYPE_FIXME='fixme'
+# AM_TYPE_HACK='hack'
 
 # helper functions  ============================================================
 
@@ -859,9 +857,10 @@ _search_am_from_git_diff_cached() {
         if [[ -n ${lines} ]]; then
             # print file name
             printf '%s' "${filename}" | hooks_utility_padding_centered -c '-'
-            printf '%s\n' "${lines}" # HACK coloring
+            printf '%s\n' "${lines}"
 
-            # print lines with AMs
+            # hack tmp disable coloring in this version
+            # # print lines with AMs
             # while IFS= read -r line || [ -n "$line" ]; do
             #     _highlight_am_line_in_git_diff_cached "${line}" "${pattern}"
             # done <<<"$lines"
@@ -870,37 +869,38 @@ _search_am_from_git_diff_cached() {
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
 }
 
-_highlight_am_line_in_git_diff_cached() { # HACK no use
-    local line pattern split_pattern
-    line="${1}"
-    pattern="${2}"
+# hack tmp disable coloring in this version
+# _highlight_am_line_in_git_diff_cached() {
+#     local line pattern split_pattern
+#     line="${1}"
+#     pattern="${2}"
 
-    split_pattern="^(.*)(${pattern})(.*)$"
+#     split_pattern="^(.*)(${pattern})(.*)$"
 
-    if [[ $line =~ $split_pattern ]]; then
-        printf '%s' "${BASH_REMATCH[1]}"
-        _highlight_am_by_types "${BASH_REMATCH[2]}"
-        printf '%s\n' "${BASH_REMATCH[3]}"
-    else
-        printf '%s\n' "${line}" # fallback
-    fi
-}
+#     if [[ $line =~ $split_pattern ]]; then
+#         printf '%s' "${BASH_REMATCH[1]}"
+#         _highlight_am_by_types "${BASH_REMATCH[2]}"
+#         printf '%s\n' "${BASH_REMATCH[3]}"
+#     else
+#         printf '%s\n' "${line}" # fallback
+#     fi
+# }
+#
+# # add coloring of AM based on types
+# _highlight_am_by_types() {
+#     local am am_lc color
+#     am="${1}"
+#     am_lc="${am,,}" # make lower case
 
-# add coloring of AM based on types
-_highlight_am_by_types() { # HACK no use
-    local am am_lc color
-    am="${1}"
-    am_lc="${am,,}" # make lower case
+#     case "${am_lc}" in
+#     "${AM_TYPE_TODO}") color="${ANSI_COLOR_GREEN_BG}" ;;
+#     "${AM_TYPE_BUG}") color="${ANSI_COLOR_RED_BG}" ;;
+#     "${AM_TYPE_FIXME}") color="${ANSI_COLOR_YELLOW_BG}" ;;
+#     "${AM_TYPE_HACK}") color="${ANSI_COLOR_BLUE_BG}" ;;
+#     esac
 
-    case "${am_lc}" in
-    "${AM_TYPE_TODO}") color="${ANSI_COLOR_GREEN_BG}" ;;
-    "${AM_TYPE_BUG}") color="${ANSI_COLOR_RED_BG}" ;;
-    "${AM_TYPE_FIXME}") color="${ANSI_COLOR_YELLOW_BG}" ;;
-    "${AM_TYPE_HACK}") color="${ANSI_COLOR_BLUE_BG}" ;;
-    esac
-
-    printf '%s' "${am}" | hooks_utility_colorful_print -c "${color}"
-}
+#     printf '%s' "${am}" | hooks_utility_colorful_print -c "${color}"
+# }
 
 # ensure file modified  ########################################################
 #
