@@ -826,10 +826,10 @@ BP_DISPLAY_NAME='Branch Protection'
 PRIMARY_AM_PATTERN='(^|[[:space:]])(TODO|BUG|FIXME|HACK)([[:space:]]|$)'
 SECONDARY_AM_PATTERN='(^|[[:space:]])(Todo|Bug|Fixme|Hack)([[:space:]]|$)'
 
-# pattern to check when: merge from dev to main (release)
-RELEASE_AM_PATTERN='(^|[[:space:]])(TODO|Todo|BUG|Bug|FIXME|Fixme|HACK|Hack)([[:space:]]|$)'
 # pattern to check when: merge from feature to dev
 FEATURE_AM_PATTERN='(^|[[:space:]])(Todo|Bug|Fixme|Hack)([[:space:]]|$)'
+# pattern to check when: merge from dev to main (release)
+RELEASE_AM_PATTERN='(^|[[:space:]])(TODO|Todo|BUG|Bug|FIXME|Fixme|HACK|Hack)([[:space:]]|$)'
 AM_TYPE_TODO='todo'
 AM_TYPE_BUG='bug'
 AM_TYPE_FIXME='fixme'
@@ -844,8 +844,8 @@ _search_am_from_git_diff_cached() {
     # decide which pattern to use
     local pattern
     case "${am_class}" in
-    1) pattern="${RELEASE_AM_PATTERN}" ;;
-    2) pattern="${FEATURE_AM_PATTERN}" ;;
+    1) pattern="${FEATURE_AM_PATTERN}" ;;
+    2) pattern="${RELEASE_AM_PATTERN}" ;;
     esac
 
     # iterate each added & modified files by filename
