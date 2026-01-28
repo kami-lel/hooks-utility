@@ -801,11 +801,7 @@ hooks_utility_protect_branch() {
     merge-binary-release)
         result1="$(_search_am_from_git_diff_cached 1)"
         result2="$(_search_am_from_git_diff_cached 2)"
-        if [[ -n $result1 || -n $result2 ]]; then
-            result="${result1}"$'\n'"${result2}"
-        else
-            result=""
-        fi
+        result="${result1}${result2}"
         ;;
     *)
         echo "trivial commit type" |
@@ -845,25 +841,27 @@ _search_am_from_git_diff_cached() {
     local pattern
     case "${am_class}" in
     1) pattern="${PRIMARY_AM_PATTERN}" ;;
-    2) pattern="${PRIMARY_AM_PATTERN}" ;;
+    2) pattern="${SECONDARY_AM_PATTERN}" ;;
     esac
 
-    # iterate each added & modified files
+    # iterate each added & modified files by filename
     while IFS= read -r -d '' filename; do
         local lines
         lines=$(git diff --cached --unified=0 --no-color -- "${filename}" |
-            grep '^+[^+]' |
-            cut -c2- | grep -E "${pattern}" || true)
+            grep '^+[^+]' |               # take only lines start w/ single +
+            cut -c2- |                    # remove leading +
+            grep -E "${pattern}" || true) # match line w/ AM mattern
 
         if [[ -n ${lines} ]]; then
             # print file name
             printf '%s' "${filename}" | hooks_utility_padding_centered -c '-'
+            printf '%s\n' "${lines}" # HACK coloring
 
             # print lines with AMs
-            # HACK
             # while IFS= read -r line || [ -n "$line" ]; do
             #     _highlight_am_line_in_git_diff_cached "${line}" "${pattern}"
             # done <<<"$lines"
+            # TODO add empty line
 
         fi
     done < <(git diff --cached --name-only -z --diff-filter=ACMR)
