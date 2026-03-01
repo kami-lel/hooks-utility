@@ -11,6 +11,7 @@
 <!-- todo: for commit message, distinguish Major/Minor/Patch Release -->
 <!-- todo UI to interactively setting env vars -->
 <!-- hack tmp disable coloring for bp -->
+<!-- todo unit tests -->
 
 
 
