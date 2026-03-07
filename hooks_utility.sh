@@ -821,6 +821,7 @@ hooks_utility_protect_branch() {
 
 # constants  ===================================================================
 BP_DISPLAY_NAME='Branch Protection'
+# Todo prompt to interactively turn off branch protection
 
 # pattern to check when: merge from feature to dev
 FEATURE_AM_PATTERN='(^|[[:space:]])(Todo|Bug|Fixme|Hack)([[:space:]]|$)'
