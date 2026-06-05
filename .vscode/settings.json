@@ -1,5 +1,8 @@
 {
     "cSpell.words": [
         "ACMR","EDITMSG"
+    ],
+    "better-todo-tree.filtering.excludeGlobs": [
+      "**/highlight_am_line_test.sh"
     ]
 }
